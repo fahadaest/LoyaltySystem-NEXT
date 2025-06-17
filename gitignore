@@ -41,11 +41,6 @@ jest-test-results.json
 *.tgz
 *.swp
 
-# Tailwind CSS
-tailwind.config.js
-tailwind.config.cjs
-tailwind.config.ts
-
 # Next.js export
 export/
 
