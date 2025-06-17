@@ -1,0 +1,56 @@
+# Node modules
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+.babel_cache/
+.cache/
+.eslintcache/
+.postcss-cache/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env*
+!.env.example
+
+# VSCode settings
+.vscode/
+
+# Testing
+coverage/
+jest-test-results.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+*.log
+*.tgz
+*.swp
+
+# Tailwind CSS
+tailwind.config.js
+tailwind.config.cjs
+tailwind.config.ts
+
+# Next.js export
+export/
+
+# Chakra UI custom theme cache (if any)
+.chakra-ui/
+
+# Ignore local-only files
+*.local.*
