@@ -4,8 +4,14 @@ import Default from 'components/auth/variants/DefaultAuthLayout';
 import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
 import Button from 'components/button/Button';
+import { useRouter } from 'next/navigation';
 
 function SignInDefault() {
+  const router = useRouter();
+  const handleSignIn = () => {
+    router.push('/product/all');
+  };
+
   return (
     <Default
       maincard={
@@ -67,7 +73,7 @@ function SignInDefault() {
               className="w-full"
               size="lg"
               icon={undefined}
-              onClick={undefined}
+              onClick={handleSignIn}
             />
             <div className="mt-4">
               <span className="text-sm font-medium text-navy-700 dark:text-gray-500">

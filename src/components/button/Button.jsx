@@ -28,7 +28,7 @@ const Button = ({
             {Icon && (
                 <Icon
                     size={18}
-                    className="text-white transition-transform duration-300 group-hover:rotate-90"
+                    className="text-white transition-transform duration-300 group-hover:rotate-[360deg]"
                 />
             )}
             <span className="leading-none">{text}</span>
