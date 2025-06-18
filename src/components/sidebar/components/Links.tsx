@@ -1,18 +1,13 @@
-/* eslint-disable */
 import React from 'react';
 import { useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import NavLink from 'components/link/NavLink';
 import DashIcon from 'components/icons/DashIcon';
-// chakra imports
 
 export const SidebarLinks = (props: { routes: RoutesType[] }): JSX.Element => {
-  // Chakra color mode
   const pathname = usePathname();
-
   const { routes } = props;
 
-  // verifies if routeName is the one active (in browser input)
   const activeRoute = useCallback(
     (routeName: string) => {
       return pathname?.includes(routeName);
@@ -23,6 +18,7 @@ export const SidebarLinks = (props: { routes: RoutesType[] }): JSX.Element => {
   const createLinks = (routes: RoutesType[]) => {
     return routes.map((route, index) => {
       if (
+        route.layout === '/product' ||
         route.layout === '/admin' ||
         route.layout === '/auth' ||
         route.layout === '/rtl'
@@ -35,20 +31,18 @@ export const SidebarLinks = (props: { routes: RoutesType[] }): JSX.Element => {
                 key={index}
               >
                 <span
-                  className={`${
-                    activeRoute(route.path) === true
-                      ? 'font-bold text-brand-500 dark:text-white'
-                      : 'font-medium text-gray-600'
-                  }`}
+                  className={`${activeRoute(route.path) === true
+                    ? 'font-bold text-brand-500 dark:text-white'
+                    : 'font-medium text-gray-600'
+                    }`}
                 >
                   {route.icon ? route.icon : <DashIcon />}{' '}
                 </span>
                 <p
-                  className={`leading-1 ml-4 flex ${
-                    activeRoute(route.path) === true
-                      ? 'font-bold text-navy-700 dark:text-white'
-                      : 'font-medium text-gray-600'
-                  }`}
+                  className={`leading-1 ml-4 flex ${activeRoute(route.path) === true
+                    ? 'font-bold text-navy-700 dark:text-white'
+                    : 'font-medium text-gray-600'
+                    }`}
                 >
                   {route.name}
                 </p>

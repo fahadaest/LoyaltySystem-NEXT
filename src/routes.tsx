@@ -1,8 +1,4 @@
 import React from 'react';
-
-// Admin Imports
-
-// Icon Imports
 import {
   MdHome,
   MdOutlineShoppingCart,
@@ -12,6 +8,18 @@ import {
 } from 'react-icons/md';
 
 const routes = [
+  {
+    name: 'Product Listing',
+    layout: '/product',
+    path: 'all',
+    icon: <MdHome className="h-6 w-6" />,
+  },
+  {
+    name: 'Product Sizes',
+    layout: '/product',
+    path: 'size',
+    icon: <MdHome className="h-6 w-6" />,
+  },
   {
     name: 'Main Dashboard',
     layout: '/admin',

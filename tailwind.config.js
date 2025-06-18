@@ -148,6 +148,11 @@ module.exports = {
       '4xl-max': { max: '1850px' },
     },
     colors: {
+      brandGreen: '#36a18f',
+      brandGreenHighlight: '#c7eee8',
+      brandBlue: '#173878',
+      brandRed: '#FE6A49',
+      brandYellow: '#FFAE1A',
       white: '#ffffff',
       lightPrimary: '#F4F7FE',
       blueSecondary: '#4318FF',
