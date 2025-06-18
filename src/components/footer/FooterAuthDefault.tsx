@@ -12,7 +12,7 @@ export default function Footer() {
             href="mailto:hello@simmmple.com"
             className="text-sm text-gray-600 hover:text-gray-600 md:text-base lg:text-white lg:hover:text-white"
           >
-            Support
+            Auth
           </a>
         </li>
         <li className="mr-12">

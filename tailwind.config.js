@@ -149,6 +149,7 @@ module.exports = {
     },
     colors: {
       brandGreen: '#36a18f',
+      brandGreenLight: '#45aa99',
       brandGreenHighlight: '#c7eee8',
       brandBlue: '#173878',
       brandRed: '#FE6A49',
