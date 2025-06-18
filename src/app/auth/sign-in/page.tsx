@@ -75,7 +75,7 @@ function SignInDefault() {
               </span>
               <a
                 href="/auth/sign-up/default"
-                className="ml-1 text-sm font-medium text-brandGreen hover:text-brand-600 dark:text-white"
+                className="ml-1 text-sm font-medium text-brandGreen dark:text-white transition-transform duration-200 hover:scale-105"
               >
                 Create an account
               </a>

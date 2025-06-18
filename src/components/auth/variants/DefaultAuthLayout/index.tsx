@@ -1,6 +1,7 @@
 import authImg from '/public/img/auth/auth.png';
 import logo from '/public/img/logo/logo.png';
 import NavLink from 'components/link/NavLink';
+import { Typewriter } from 'react-simple-typewriter';
 
 function Default(props: { maincard: JSX.Element }) {
   const { maincard } = props;
@@ -15,7 +16,17 @@ function Default(props: { maincard: JSX.Element }) {
                 <img src={logo.src} alt="Logo" className="max-w-[40%] max-h-[40%]" />
                 <div className="mt-8 text-left text-white text-5xl leading-tight">
                   <span className="font-thin">Welcome to</span><br />
-                  <span className="font-bold">LOYALTY SYSTEM!</span>
+                  <span className="font-bold">
+                    <Typewriter
+                      words={['LOYALTY SYSTEM!']}
+                      loop={false}
+                      cursor
+                      cursorStyle="|"
+                      typeSpeed={70}
+                      deleteSpeed={20}
+                      delaySpeed={1000}
+                    />
+                  </span>
                 </div>
               </div>
             </div>

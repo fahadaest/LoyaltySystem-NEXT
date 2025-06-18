@@ -15,7 +15,6 @@ import Sidebar from 'components/sidebar';
 import Footer from 'components/footer/Footer';
 
 export default function Admin({ children }: { children: React.ReactNode }) {
-  // states and functions
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   if (isWindowAvailable()) document.documentElement.dir = 'ltr';
