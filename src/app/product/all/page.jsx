@@ -3,31 +3,32 @@ import ProductCard from 'components/card/ProductCard';
 import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
 import AddProductForm from 'components/form/AddProductForm';
-import Image from 'next/image';
-
+import Button from 'components/button/Button';
+import { MdAdd, MdFilterList } from "react-icons/md";
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <div className="mt-3 h-full px-4 py-5 bg-white rounded-3xl">
+    <div className="mt-3 h-full px-4 py-5 bg-white rounded-3xl shadow-lg shadow-green-400/30">
       <div className=" mb-6 flex flex-col justify-between px-4 py-3 md:flex-row md:items-center rounded-lg">
         <h4 className="ml-1 text-2xl font-bold text-navy-700 dark:text-white">
           Manage Products
         </h4>
         <div className="flex gap-2">
-          <button className="inline-flex bg-brandGreen hover:bg-brandGreenDark text-white font-medium py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-95 shadow-md hover:shadow-lg group/edit relative overflow-hidden whitespace-nowrap" aria-label="Edit product"  >
-            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/edit:translate-y-0 transition-transform duration-300 rounded-xl" />
-            <div className="relative z-10 flex items-center justify-center gap-2">
-              <span>Filter</span>
-            </div>
-          </button>
-
-          <button onClick={onOpen} className="inline-flex bg-brandGreen hover:bg-brandGreenDark text-white font-medium py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-95 shadow-md hover:shadow-lg group/edit relative overflow-hidden whitespace-nowrap" aria-label="Edit product"  >
-            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/edit:translate-y-0 transition-transform duration-300 rounded-xl" />
-            <div className="relative z-10 flex items-center justify-center gap-2">
-              <span>Add Product</span>
-            </div>
-          </button>
+          {/* <Button
+            icon={MdFilterList}
+            text="Filter"
+            size="sm"
+            color="bg-brandGreen"
+            onClick={""}
+          /> */}
+          <Button
+            icon={MdAdd}
+            text="Add Product"
+            size="sm"
+            color="bg-brandGreen"
+            onClick={onOpen}
+          />
         </div>
       </div>
 
@@ -39,7 +40,6 @@ const Dashboard = () => {
           image="/img/coffee/latte.png"
           extra="any-additional-classes"
         />
-
         <ProductCard
           title="Latte Coffee"
           price="Large"

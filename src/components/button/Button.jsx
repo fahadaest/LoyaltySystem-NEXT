@@ -1,7 +1,8 @@
 import React from "react";
 
 const sizeClasses = {
-    xs: "py-0.5 px-2 text-xs",
+    icon: "py-1 px-2 text-xs",
+    xs: "py-1 px-2 text-xs",
     sm: "py-1 px-3 text-sm",
     md: "py-2 px-4 text-base",
     lg: "py-3 px-6 text-lg",
@@ -17,21 +18,22 @@ const Button = ({
     className = "",
     ...rest
 }) => {
-    const borderRadiusClass = size === "xs" || size === "sm" ? "rounded-md" : "rounded-lg";
+    const borderRadiusClass = size === "xs" || size === "sm" || size === "icon" ? "rounded-md" : "rounded-lg";
+    const gapClass = text ? "gap-2" : "";
 
     return (
         <button
             onClick={onClick}
-            className={`group flex py-2 items-center justify-center gap-2 ${color} ${hoverColor} text-white font-medium ${borderRadiusClass} transition-all duration-300 transform hover:scale-105 shadow-md ${sizeClasses[size]} ${className}`}
+            className={`group flex py-2 items-center justify-center ${gapClass} ${color} ${hoverColor} text-white font-medium ${borderRadiusClass} transition-all duration-300 transform hover:scale-105 shadow-md ${sizeClasses[size]} ${className}`}
             {...rest}
         >
             {Icon && (
                 <Icon
-                    size={18}
+                    size={size === "icon" ? 15 : 18}
                     className="text-white transition-transform duration-300 group-hover:rotate-[360deg]"
                 />
             )}
-            <span className="leading-none">{text}</span>
+            {text && <span className="leading-none">{text}</span>}
         </button>
     );
 };

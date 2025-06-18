@@ -23,14 +23,14 @@ function SignInDefault() {
             <p className="mb-9 ml-1 text-base text-gray-600">
               Enter your email and password to sign in!
             </p>
-            <div className="mb-6 flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-lightPrimary hover:cursor-pointer dark:bg-navy-800 dark:text-white">
+            {/* <div className="mb-6 flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-lightPrimary hover:cursor-pointer dark:bg-navy-800 dark:text-white">
               <div className="rounded-full text-xl">
                 <FcGoogle />
               </div>
               <p className="text-sm font-medium text-navy-700 dark:text-white">
                 Sign In with Google
               </p>
-            </div>
+            </div> */}
             <div className="mb-6 flex items-center  gap-3">
               <div className="h-px w-full bg-gray-200 dark:!bg-navy-700" />
               <p className="text-base text-gray-600"> or </p>
@@ -75,7 +75,7 @@ function SignInDefault() {
               icon={undefined}
               onClick={handleSignIn}
             />
-            <div className="mt-4">
+            {/* <div className="mt-4">
               <span className="text-sm font-medium text-navy-700 dark:text-gray-500">
                 Not registered yet?
               </span>
@@ -85,7 +85,7 @@ function SignInDefault() {
               >
                 Create an account
               </a>
-            </div>
+            </div> */}
           </div>
         </div>
       }

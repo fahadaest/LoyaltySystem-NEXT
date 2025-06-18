@@ -1,10 +1,5 @@
-/* eslint-disable */
-
 import { HiX } from 'react-icons/hi';
 import Links from './components/Links';
-import logo from '/public/img/logo/logo.png';
-
-import SidebarCard from 'components/sidebar/components/SidebarCard';
 import { IRoute } from 'types/navigation';
 
 function SidebarHorizon(props: { routes: IRoute[];[x: string]: any }) {
@@ -14,12 +9,6 @@ function SidebarHorizon(props: { routes: IRoute[];[x: string]: any }) {
       <span className="absolute right-4 top-4 block cursor-pointer xl:hidden" onClick={() => setOpen(false)} >
         <HiX />
       </span>
-
-      {/* <div className={`mx-[56px] mt-[50px] flex items-center`}>
-        <div className="ml-1 mt-1 h-2.5 font-poppins text-[26px] font-bold uppercase text-navy-700 dark:text-white">
-          REWARD <span className="font-medium">HIVE</span>
-        </div>
-      </div> */}
 
       <div className="mx-[50px] mt-[30px] flex items-center">
         <img src="/img/logo/logo.png"
@@ -32,11 +21,6 @@ function SidebarHorizon(props: { routes: IRoute[];[x: string]: any }) {
       <ul className="mb-auto pt-1">
         <Links routes={routes} />
       </ul>
-
-      {/* Free Horizon Card */}
-      {/* <div className="flex justify-center">
-        <SidebarCard />
-      </div> */}
     </div>
   );
 }

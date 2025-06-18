@@ -1,4 +1,4 @@
-export {};
+export { };
 
 declare global {
   /**
@@ -7,10 +7,12 @@ declare global {
    */
 
   interface RoutesType {
+    submenu: any;
     name: string;
     layout: string;
     icon: JSX.Element | string;
     path: string;
     secondary?: boolean | undefined;
+    submenu?: RoutesType[];
   }
 }

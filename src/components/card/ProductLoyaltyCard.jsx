@@ -2,9 +2,16 @@ import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import { useState } from "react";
 import Card from "components/card";
 import { IoEyeOutline, IoCreateOutline, IoTrashOutline, IoCopyOutline } from "react-icons/io5";
+import Button from "components/button/Button";
 
 const ProductLoyaltyCard = ({ rewardTitle, rewardDescription, product, purchaseQuantity, title, author, image, extra }) => {
   const [heart, setHeart] = useState(true);
+  const handleEdit = () => {
+    console.log('Edit clicked');
+  }
+  const handleDelete = () => {
+    console.log('Delete clicked');
+  }
   return (
     <Card
       extra={`flex flex-col w-full h-full !p-4 3xl:p-![18px] bg-white ${extra}`}
@@ -36,30 +43,30 @@ const ProductLoyaltyCard = ({ rewardTitle, rewardDescription, product, purchaseQ
         </div>
 
         <div className="flex gap-2 flex-col">
-          <button
-            className="linear rounded-[5px] bg-brandBlue p-2 text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-            aria-label="View"
-          >
-            <IoEyeOutline size={15} />
-          </button>
-          <button
-            className="linear rounded-[5px] bg-brandGreen p-2 text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-            aria-label="Edit"
-          >
-            <IoCreateOutline size={15} />
-          </button>
-          <button
-            className="linear rounded-[5px] bg-brandRed p-2 text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-            aria-label="Delete"
-          >
-            <IoTrashOutline size={15} />
-          </button>
-          <button
-            className="linear rounded-[5px] bg-brandYellow p-2 text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-            aria-label="Copy URL"
-          >
-            <IoCopyOutline size={15} />
-          </button>
+          <Button
+            icon={IoEyeOutline}
+            size="icon"
+            color="bg-brandBlue"
+            onClick={handleEdit}
+          />
+          <Button
+            icon={IoCreateOutline}
+            size="icon"
+            color="bg-brandGreen"
+            onClick={handleEdit}
+          />
+          <Button
+            icon={IoTrashOutline}
+            size="icon"
+            color="bg-brandRed"
+            onClick={handleEdit}
+          />
+          <Button
+            icon={IoCopyOutline}
+            size="icon"
+            color="bg-brandYellow"
+            onClick={handleEdit}
+          />
         </div>
       </div>
     </Card>

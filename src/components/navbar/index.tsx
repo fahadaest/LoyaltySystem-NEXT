@@ -12,6 +12,7 @@ import {
 } from 'react-icons/io';
 import avatar from '/public/img/avatars/avatar4.png';
 import Image from 'next/image';
+import { Typewriter } from 'react-simple-typewriter';
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -32,7 +33,16 @@ const Navbar = (props: {
               href="#"
               className="font-bold capitalize hover:text-navy-700 dark:hover:text-white"
             >
-              Welcome Codehive!
+              Welcome{' '}
+              <Typewriter
+                words={['Codehive!']}
+                loop={false}
+                cursor
+                cursorStyle="|"
+                typeSpeed={70}
+                deleteSpeed={20}
+                delaySpeed={3000}
+              />
             </NavLink>
             <span className="animate-wave text-2xl">👋</span>
           </p>
