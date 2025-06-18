@@ -21,6 +21,20 @@ const routes = [
     icon: <MdHome className="h-6 w-6" />,
   },
   {
+    name: 'Product Loyalty',
+    layout: '/loyalty',
+    path: 'product',
+    icon: <MdHome className="h-6 w-6" />,
+  },
+  {
+    name: 'Point Loyalty',
+    layout: '/loyalty',
+    path: 'point',
+    icon: <MdHome className="h-6 w-6" />,
+  },
+
+
+  {
     name: 'Main Dashboard',
     layout: '/admin',
     path: 'default',
