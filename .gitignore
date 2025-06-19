@@ -54,3 +54,9 @@ export/
 
 # Ignore local-only files
 *.local.*
+
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
