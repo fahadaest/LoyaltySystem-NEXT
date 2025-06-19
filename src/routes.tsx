@@ -5,6 +5,9 @@ import {
   MdBarChart,
   MdPerson,
   MdLock,
+  MdAdminPanelSettings,
+  MdOutlineSubscriptions,
+  MdOutlineCreate,
 } from 'react-icons/md';
 
 const routes = [
@@ -94,13 +97,19 @@ const superAdminroutes = [
     name: 'Create Admin',
     layout: '/reseller-profile',
     path: 'manage-admin/create',
-    icon: <MdHome className="h-6 w-6" />,
+    icon: <MdOutlineCreate className="h-6 w-6" />,
   },
   {
     name: 'Admin List',
     layout: '/reseller-profile',
     path: 'manage-admin/list',
-    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+    icon: <MdAdminPanelSettings className="h-6 w-6" />,
+  },
+  {
+    name: 'Manage Subscription',
+    layout: '/reseller-profile',
+    path: 'subscriptions/list',
+    icon: <MdOutlineSubscriptions className="h-6 w-6" />,
   },
 ];
 export default { superAdminroutes, routes };

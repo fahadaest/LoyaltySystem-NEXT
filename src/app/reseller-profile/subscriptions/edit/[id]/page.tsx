@@ -1,132 +1,59 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import AdminForm from 'components/superadmin/AdminForm';
-import { useRouter, useParams } from 'next/navigation';
 
-const EditAdminPage = () => {
-  const router = useRouter();
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { Subscription } from 'utils/types';
+import SubscriptionForm from 'components/superadmin/SubscriptionForm';
+import { subscriptionsData } from 'utils/data';
+
+export default function EditSubscriptionPage() {
   const params = useParams();
-  const id = params.id;
-  const [adminToEdit, setAdminToEdit] = useState(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) {
-      // Simulate fetching admin data by ID from an API
-      const mockAdmins = [
-        {
-          id: 1,
-          email: 'john.doe@example.com',
-          name: 'John Doe',
-          role: 'Super Admin',
-          status: 'Active',
-          createdAt: '2024-01-15',
-          lastLogin: '2024-06-17',
-          countryCode: '+1',
-          phoneNumber: '1234567890',
-          loyaltyAccess: {
-            pointBased: true,
-            productBased: true,
-          },
-        },
-        {
-          id: 2,
-          email: 'jane.smith@example.com',
-          name: 'Jane Smith',
-          role: 'Admin',
-          status: 'Active',
-          createdAt: '2024-02-20',
-          lastLogin: '2024-06-16',
-          countryCode: '+44',
-          phoneNumber: '9876543210',
-          loyaltyAccess: {
-            pointBased: true,
-            productBased: false,
-          },
-        },
-        {
-          id: 3,
-          email: 'mike.johnson@example.com',
-          name: 'Mike Johnson',
-          role: 'Admin',
-          status: 'Inactive',
-          createdAt: '2024-03-10',
-          lastLogin: '2024-06-10',
-          countryCode: '+1',
-          phoneNumber: '5555555555',
-          loyaltyAccess: {
-            pointBased: false,
-            productBased: true,
-          },
-        },
-        {
-          id: 4,
-          email: 'sarah.wilson@example.com',
-          name: 'Sarah Wilson',
-          role: 'Admin',
-          status: 'Active',
-          createdAt: '2024-04-05',
-          lastLogin: '2024-06-15',
-          countryCode: '+91',
-          phoneNumber: '7777777777',
-          loyaltyAccess: {
-            pointBased: true,
-            productBased: true,
-          },
-        },
-      ];
+    if (params.id) {
+      fetchSubscription(params.id as string);
+    }
+  }, [params.id]);
 
-      const foundAdmin = mockAdmins.find(
-        (admin) => admin.id === parseInt(id[0]),
-      );
-      if (foundAdmin) {
-        setAdminToEdit(foundAdmin);
-      } else {
-        // Redirect if admin not found
-        router.push('/reseller-profile/manage-admin/list');
-      }
+  const fetchSubscription = async (id: string) => {
+    try {
+      const response = subscriptionsData.find((subs) => subs.id == params.id);
+      setSubscription(response);
+    } catch (err) {
+      setError('Failed to load subscription');
+      console.error('Error fetching subscription:', err);
+    } finally {
       setLoading(false);
     }
-  }, [id, router]);
-
-  const handleEditSubmit = async (formData) => {
-    // Simulate API call for updating an admin
-    console.log(`Updating Admin ${id}:`, formData);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    alert('Admin updated successfully!');
-    router.back();
-  };
-
-  const handleCancel = () => {
-    router.back();
   };
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
-        <p className="text-gray-600">Loading admin data...</p>
+      <div className="mx-auto max-w-2xl p-6">
+        <div className="animate-pulse rounded-lg bg-white p-6 shadow-md">
+          <div className="mb-6 h-8 w-1/3 rounded bg-gray-200"></div>
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-12 rounded bg-gray-200"></div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (!adminToEdit) {
+  if (error || !subscription) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
-        <p className="text-red-600">Admin not found.</p>
+      <div className="mx-auto max-w-2xl p-6">
+        <div className="rounded-md border border-red-200 bg-red-50 p-4">
+          <p className="text-red-600">{error || 'Subscription not found'}</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <AdminForm
-        initialData={adminToEdit}
-        onSubmit={handleEditSubmit}
-        onCancel={handleCancel}
-        isEditMode={true} // Explicitly set to true for edit mode
-      />
-    </div>
-  );
-};
-
-export default EditAdminPage;
+  return <SubscriptionForm mode="edit" subscription={subscription} />;
+}
