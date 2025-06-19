@@ -1,8 +1,4 @@
 import React from 'react';
-
-// Admin Imports
-
-// Icon Imports
 import {
   MdHome,
   MdOutlineShoppingCart,
@@ -12,6 +8,47 @@ import {
 } from 'react-icons/md';
 
 const routes = [
+  {
+    name: 'Products',
+    icon: <MdHome className="h-6 w-6" />,
+    layout: '/product',
+    path: '',
+    submenu: [
+      {
+        name: 'Product Listing',
+        layout: '/product',
+        path: 'all',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+      {
+        name: 'Product Sizes',
+        layout: '/product',
+        path: 'size',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+    ],
+  },
+  {
+    name: 'Loyalty',
+    icon: <MdHome className="h-6 w-6" />,
+    layout: '/loyalty',
+    path: '',
+    submenu: [
+      {
+        name: 'Product Loyalty',
+        layout: '/loyalty',
+        path: 'product',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+      {
+        name: 'Point Loyalty',
+        layout: '/loyalty',
+        path: 'point',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+    ],
+  },
+
   {
     name: 'Main Dashboard',
     layout: '/admin',
@@ -44,12 +81,12 @@ const routes = [
     path: 'sign-in',
     icon: <MdLock className="h-6 w-6" />,
   },
-  {
-    name: 'RTL Admin',
-    layout: '/rtl',
-    path: 'rtl-default',
-    icon: <MdHome className="h-6 w-6" />,
-  },
+  // {
+  //   name: 'RTL Admin',
+  //   layout: '/rtl',
+  //   path: 'rtl-default',
+  //   icon: <MdHome className="h-6 w-6" />,
+  // },
 ];
 
 const superAdminroutes = [

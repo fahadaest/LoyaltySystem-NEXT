@@ -5,11 +5,25 @@ module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
-    // Or if using `src` directory:
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
+      animation: {
+        wave: 'wave 2s infinite',
+      },
+      keyframes: {
+        wave: {
+          '0%': { transform: 'rotate(0.0deg)' },
+          '10%': { transform: 'rotate(14.0deg)' },
+          '20%': { transform: 'rotate(-8.0deg)' },
+          '30%': { transform: 'rotate(14.0deg)' },
+          '40%': { transform: 'rotate(-4.0deg)' },
+          '50%': { transform: 'rotate(10.0deg)' },
+          '60%': { transform: 'rotate(0.0deg)' },
+          '100%': { transform: 'rotate(0.0deg)' },
+        },
+      },
       width: {
         '1p': '1%',
         '2p': '2%',
@@ -148,6 +162,12 @@ module.exports = {
       '4xl-max': { max: '1850px' },
     },
     colors: {
+      brandGreen: '#36a18f',
+      brandGreenLight: '#45aa99',
+      brandGreenHighlight: '#c7eee8',
+      brandBlue: '#173878',
+      brandRed: '#FE6A49',
+      brandYellow: '#FFAE1A',
       white: '#ffffff',
       lightPrimary: '#F4F7FE',
       blueSecondary: '#4318FF',
