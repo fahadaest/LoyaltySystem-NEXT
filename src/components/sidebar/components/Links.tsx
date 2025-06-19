@@ -88,12 +88,21 @@ export const SidebarLinks = ({
                   {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </span>
 
-                {isOpen && lineHeight > 0 && (
-                  <span
-                    className="absolute left-8 top-full z-0 w-px bg-white/30"
-                    style={{ height: lineHeight + 'px' }}
-                  />
-                )}
+                {/* Main vertical line - stops before the last submenu item */}
+                {isOpen &&
+                  lineHeight > 0 &&
+                  route.submenu &&
+                  route.submenu.length > 0 && (
+                    <span
+                      className="absolute left-8 top-full z-0 w-0.5 bg-white/30"
+                      style={{
+                        height:
+                          lineHeight -
+                          (route.submenu.length > 0 ? 24 : 0) +
+                          'px', // Subtract height of last item
+                      }}
+                    />
+                  )}
               </div>
 
               <div
@@ -103,18 +112,45 @@ export const SidebarLinks = ({
                 }`}
               >
                 {route.submenu.map((sub, subIndex) => (
-                  <NavLink key={subIndex} href={`${sub.layout}/${sub.path}`}>
-                    <li
-                      className={`my-2 flex cursor-pointer items-center rounded-md px-4 py-2 transition-colors
-                      ${
-                        activeRoute(`${sub.layout}/${sub.path}`)
-                          ? ' font-semibold text-white'
-                          : 'text-white hover:bg-white/10'
-                      }`}
-                    >
-                      <p className="ml-3">{sub.name}</p>
-                    </li>
-                  </NavLink>
+                  <div key={subIndex} className="relative">
+                    {/* Curved line for each submenu item */}
+                    {isOpen && (
+                      <div className="pointer-events-none absolute left-2 top-1/2 z-0 h-4 w-6">
+                        <svg
+                          width="24"
+                          height="16"
+                          viewBox="0 0 24 16"
+                          className="absolute -translate-y-1/2"
+                        >
+                          <path
+                            d="M 0 0 Q 0 8 12 8"
+                            stroke="rgba(255, 255, 255, 0.3)"
+                            strokeWidth="2"
+                            fill="none"
+                          />
+                          <circle
+                            cx="12"
+                            cy="8"
+                            r="2.5"
+                            fill="rgba(255, 255, 255, 0.3)"
+                          />
+                        </svg>
+                      </div>
+                    )}
+
+                    <NavLink href={`${sub.layout}/${sub.path}`}>
+                      <li
+                        className={`relative z-10 my-2 ml-4 flex cursor-pointer items-center rounded-md py-2 transition-colors
+                        ${
+                          activeRoute(`${sub.layout}/${sub.path}`)
+                            ? 'bg-white/10 px-4 font-semibold text-white'
+                            : 'px-4 text-white hover:bg-white/10'
+                        }`}
+                      >
+                        <p className="ml-3">{sub.name}</p>
+                      </li>
+                    </NavLink>
+                  </div>
                 ))}
               </div>
             </>

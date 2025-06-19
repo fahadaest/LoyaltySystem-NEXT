@@ -12,6 +12,12 @@ import {
 
 const routes = [
   {
+    name: 'Main Dashboard',
+    layout: '/admin',
+    path: 'default',
+    icon: <MdHome className="h-6 w-6" />,
+  },
+  {
     name: 'Products',
     icon: <MdHome className="h-6 w-6" />,
     layout: '/product',
@@ -52,12 +58,7 @@ const routes = [
     ],
   },
 
-  {
-    name: 'Main Dashboard',
-    layout: '/admin',
-    path: 'default',
-    icon: <MdHome className="h-6 w-6" />,
-  },
+
   {
     name: 'NFT Marketplace',
     layout: '/admin',
