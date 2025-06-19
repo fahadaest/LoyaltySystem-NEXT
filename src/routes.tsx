@@ -58,7 +58,6 @@ const routes = [
     ],
   },
 
-
   {
     name: 'NFT Marketplace',
     layout: '/admin',
@@ -96,19 +95,19 @@ const routes = [
 const superAdminroutes = [
   {
     name: 'Create Admin',
-    layout: '/reseller-profile',
+    layout: '/superadmin',
     path: 'manage-admin/create',
     icon: <MdOutlineCreate className="h-6 w-6" />,
   },
   {
     name: 'Admin List',
-    layout: '/reseller-profile',
+    layout: '/superadmin',
     path: 'manage-admin/list',
     icon: <MdAdminPanelSettings className="h-6 w-6" />,
   },
   {
     name: 'Manage Subscription',
-    layout: '/reseller-profile',
+    layout: '/superadmin',
     path: 'subscriptions/list',
     icon: <MdOutlineSubscriptions className="h-6 w-6" />,
   },

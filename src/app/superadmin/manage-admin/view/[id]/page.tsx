@@ -34,7 +34,7 @@ const AdminDetailPage = () => {
     alert(`Admin ${adminToDelete?.name} deleted! (Simulated)`);
     setShowDeleteModal(false);
     setAdminToDelete(null);
-    router.push('/reseller-profile/manage-admin/list');
+    router.push('/superadmin/manage-admin/list');
   };
 
   useEffect(() => {
@@ -122,7 +122,7 @@ const AdminDetailPage = () => {
         {/* Header */}
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => router.push('/reseller-profile/manage-admin/list')}
+            onClick={() => router.push('/superadmin/manage-admin/list')}
             className="text-gray-600 hover:text-gray-900"
           >
             <svg
@@ -178,7 +178,7 @@ const AdminDetailPage = () => {
                 <button
                   onClick={() =>
                     router.push(
-                      `/reseller-profile/manage-admin/edit/${selectedAdmin.id}`,
+                      `/superadmin/manage-admin/edit/${selectedAdmin.id}`,
                     )
                   }
                   className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"

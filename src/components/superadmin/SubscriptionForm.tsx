@@ -86,7 +86,7 @@ export default function SubscriptionForm({
       if (onSubmit) {
         await onSubmit(formData);
       } else {
-        router.push('/reseller-profile/subscriptions/list');
+        router.push('/superadmin/subscriptions/list');
       }
     } catch (error) {
       console.error('Error saving subscription:', error);
@@ -242,7 +242,7 @@ export default function SubscriptionForm({
                 type="button"
                 onClick={() =>
                   router.push(
-                    `/reseller-profile/subscriptions/edit/${subscription.id}`,
+                    `/superadmin/subscriptions/edit/${subscription.id}`,
                   )
                 }
                 className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

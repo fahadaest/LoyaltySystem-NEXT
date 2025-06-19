@@ -12,11 +12,11 @@ const CreateAdminPage = () => {
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
     alert('Admin created successfully!');
     // In a real app, you'd integrate with your backend to save the new admin
-    router.push('/reseller-profile/manage-admin/list'); // Navigate back to the list after creation
+    router.push('/superadmin/manage-admin/list'); // Navigate back to the list after creation
   };
 
   const handleCancel = () => {
-    router.push('/reseller-profile/manage-admin/list');
+    router.push('/superadmin/manage-admin/list');
   };
 
   return (

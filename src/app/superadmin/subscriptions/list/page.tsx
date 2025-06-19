@@ -106,7 +106,7 @@ export default function SubscriptionsPage() {
           </p>
         </div>
         <Link
-          href="/reseller-profile/subscriptions/create"
+          href="/superadmin/subscriptions/create"
           className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Create Subscription
@@ -194,13 +194,13 @@ export default function SubscriptionsPage() {
                 {/* Action Buttons */}
                 <div className="flex gap-2">
                   <Link
-                    href={`/reseller-profile/subscriptions/view/${subscription.id}`}
+                    href={`/superadmin/subscriptions/view/${subscription.id}`}
                     className="flex-1 rounded-md bg-gray-100 px-3 py-2 text-center text-sm text-gray-700 transition-colors hover:bg-gray-200"
                   >
                     View
                   </Link>
                   <Link
-                    href={`/reseller-profile/subscriptions/edit/${subscription.id}`}
+                    href={`/superadmin/subscriptions/edit/${subscription.id}`}
                     className="flex-1 rounded-md bg-blue-100 px-3 py-2 text-center text-sm text-blue-700 transition-colors hover:bg-blue-200"
                   >
                     Edit

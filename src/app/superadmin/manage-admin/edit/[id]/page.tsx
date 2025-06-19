@@ -83,7 +83,7 @@ const EditAdminPage = () => {
         setAdminToEdit(foundAdmin);
       } else {
         // Redirect if admin not found
-        router.push('/reseller-profile/manage-admin/list');
+        router.push('/superadmin/manage-admin/list');
       }
       setLoading(false);
     }

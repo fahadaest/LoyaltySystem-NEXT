@@ -118,9 +118,7 @@ const AdminListPage = () => {
             </div>
             <div className="flex items-center space-x-3">
               <button
-                onClick={() =>
-                  router.push('/reseller-profile/manage-admin/create')
-                }
+                onClick={() => router.push('/superadmin/manage-admin/create')}
                 className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
               >
                 Add New Admin
@@ -322,7 +320,7 @@ const AdminListPage = () => {
                           <button
                             onClick={() =>
                               router.push(
-                                `/reseller-profile/manage-admin/view/${admin.id}`,
+                                `/superadmin/manage-admin/view/${admin.id}`,
                               )
                             }
                             className="text-gray-600 hover:text-gray-900"
@@ -332,7 +330,7 @@ const AdminListPage = () => {
                           <button
                             onClick={() =>
                               router.push(
-                                `/reseller-profile/manage-admin/edit/${admin.id}`,
+                                `/superadmin/manage-admin/edit/${admin.id}`,
                               )
                             }
                             className="text-blue-600 hover:text-blue-900"
