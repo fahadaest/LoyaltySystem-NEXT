@@ -25,6 +25,7 @@ export const SidebarLinks = (props: { routes: RoutesType[] }): JSX.Element => {
       if (
         route.layout === '/admin' ||
         route.layout === '/auth' ||
+        route.layout === '/reseller-profile' ||
         route.layout === '/rtl'
       ) {
         return (

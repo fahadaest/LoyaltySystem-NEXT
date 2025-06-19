@@ -51,4 +51,19 @@ const routes = [
     icon: <MdHome className="h-6 w-6" />,
   },
 ];
-export default routes;
+
+const superAdminroutes = [
+  {
+    name: 'Create Admin',
+    layout: '/reseller-profile',
+    path: 'manage-admin/create',
+    icon: <MdHome className="h-6 w-6" />,
+  },
+  {
+    name: 'Admin List',
+    layout: '/reseller-profile',
+    path: 'manage-admin/list',
+    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+  },
+];
+export default { superAdminroutes, routes };
