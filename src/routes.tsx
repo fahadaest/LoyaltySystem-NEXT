@@ -51,7 +51,7 @@ const routes = [
   {
     name: 'Customers',
     layout: '/customer',
-    path: 'default',
+    path: 'all',
     icon: <MdPeopleAlt className="h-6 w-6" />,
   },
   {
