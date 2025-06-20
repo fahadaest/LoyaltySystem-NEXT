@@ -1,7 +1,7 @@
 'use client';
 // Layout components
-import { usePathname } from 'next/navigation';
-import { useContext, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
 import routes from 'routes';
 import {
   getActiveNavbar,
@@ -19,6 +19,31 @@ export default function Admin({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   if (isWindowAvailable()) document.documentElement.dir = 'ltr';
+
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const session = localStorage.getItem('admin_session');
+    const superAdminSession = localStorage.getItem('superadmin_session');
+
+    if (superAdminSession) {
+      router.replace('/superadmin/manage-admin/list');
+    } else if (!session) {
+      router.replace('/auth/sign-in/');
+    } else {
+      setIsAuthorized(true);
+    }
+  }, [router]);
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background-100 dark:bg-background-900">
+        <p className="text-lg font-medium">Loading & Verifying Session...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
       <Sidebar

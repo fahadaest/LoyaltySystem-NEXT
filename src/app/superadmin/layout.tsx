@@ -1,7 +1,7 @@
 'use client';
-// Layout components
-import { usePathname } from 'next/navigation';
-import { useContext, useState } from 'react';
+
+import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import routes from 'routes';
 import {
   getActiveNavbar,
@@ -9,7 +9,6 @@ import {
   isWindowAvailable,
 } from 'utils/navigation';
 import React from 'react';
-import { Portal } from '@chakra-ui/portal';
 import Navbar from 'components/navbar';
 import Sidebar from 'components/sidebar';
 import Footer from 'components/footer/Footer';
@@ -17,7 +16,31 @@ import Footer from 'components/footer/Footer';
 export default function Admin({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  if (isWindowAvailable()) document.documentElement.dir = 'ltr';
+
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const adminSession = localStorage.getItem('admin_session');
+    const superAdminSession = localStorage.getItem('superadmin_session');
+
+    if (adminSession) {
+      router.replace('/product/all');
+    } else if (!superAdminSession) {
+      router.replace('/auth/sign-in/');
+    } else {
+      setIsAuthorized(true);
+    }
+  }, [router]);
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background-100 dark:bg-background-900">
+        <p className="text-lg font-medium">Loading & Verifying Session...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
       <Sidebar
@@ -28,8 +51,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
       />
       <div className="h-full w-full font-dm dark:bg-navy-900">
         <main
-          className={`mx-2.5  flex-none transition-all dark:bg-navy-900 
-              md:pr-2 xl:ml-[323px]`}
+          className={`mx-2.5 flex-none transition-all dark:bg-navy-900 md:pr-2 xl:ml-[323px]`}
         >
           <div>
             <Navbar

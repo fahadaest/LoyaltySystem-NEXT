@@ -32,3 +32,9 @@ export const subscriptionsData: Subscription[] = [
     updatedAt: new Date('2024-03-15'),
   },
 ];
+
+export const SUPER_ADMIN_EMAIL = 'superadmin@gmail.com';
+export const SUPER_ADMIN_PASSWORD = 'password123';
+
+export const ADMIN_EMAIL = 'admin@gmail.com';
+export const ADMIN_PASSWORD = 'password123';
