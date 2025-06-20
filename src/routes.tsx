@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  MdHome,
-  MdOutlineShoppingCart,
-  MdBarChart,
-  MdPerson,
-  MdLock,
-} from 'react-icons/md';
+import { MdHome, MdOutlineShoppingCart, MdBarChart, MdPerson, MdLock, MdInventory2, MdCardGiftcard } from 'react-icons/md';
 
 const routes = [
   {
@@ -16,7 +10,7 @@ const routes = [
   },
   {
     name: 'Products',
-    icon: <MdHome className="h-6 w-6" />,
+    icon: <MdInventory2 className="h-6 w-6" />,
     layout: '/product',
     path: '',
     submenu: [
@@ -36,7 +30,7 @@ const routes = [
   },
   {
     name: 'Loyalty',
-    icon: <MdHome className="h-6 w-6" />,
+    icon: <MdCardGiftcard className="h-6 w-6" />,
     layout: '/loyalty',
     path: '',
     submenu: [
