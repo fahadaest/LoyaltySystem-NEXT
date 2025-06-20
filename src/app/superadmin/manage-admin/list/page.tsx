@@ -1,12 +1,55 @@
 'use client';
+
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import CustomModal from 'components/modal/CustomModal';
+import Card from 'components/card';
+import Button from 'components/button/Button';
+
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+
+import {
+  IoEyeOutline,
+  IoCreateOutline,
+  IoTrashOutline,
+  IoCopyOutline,
+} from 'react-icons/io5';
+import { MdAdd } from 'react-icons/md';
+import { useDisclosure } from '@chakra-ui/react';
+
+type AdminRowObj = {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+  status: string;
+  createdAt: string;
+  lastLogin: string;
+  countryCode: string;
+  phoneNumber: string;
+  loyaltyAccess: {
+    pointBased: boolean;
+    productBased: boolean;
+  };
+};
 
 const AdminListPage = () => {
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+  } = useDisclosure();
 
-  // Admin data state - This should ideally come from an API or global state in a real app
-  const [admins, setAdmins] = useState([
+  const [admins, setAdmins] = useState<AdminRowObj[]>([
     {
       id: 1,
       email: 'john.doe@example.com',
@@ -69,339 +112,413 @@ const AdminListPage = () => {
     },
   ]);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [adminToDelete, setAdminToDelete] = useState(null);
+  const [adminToDelete, setAdminToDelete] = useState<AdminRowObj | null>(null);
 
-  // Helper functions (moved from original AdminManagement)
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     const baseClasses = 'px-3 py-1 rounded-full text-xs font-medium';
     return status === 'Active'
-      ? `${baseClasses} bg-green-100 text-green-800`
-      : `${baseClasses} bg-red-100 text-red-800`;
+      ? `${baseClasses} bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100`
+      : `${baseClasses} bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100`;
   };
 
-  const getRoleBadge = (role) => {
+  const getRoleBadge = (role: string) => {
     const baseClasses = 'px-3 py-1 rounded-full text-xs font-medium';
     return role === 'Super Admin'
-      ? `${baseClasses} bg-purple-100 text-purple-800`
-      : `${baseClasses} bg-blue-100 text-blue-800`;
+      ? `${baseClasses} bg-purple-100 text-purple-800 dark:bg-purple-700 dark:text-purple-100`
+      : `${baseClasses} bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100`;
   };
 
-  const handleDeleteClick = (admin) => {
+  const handleDeleteClick = (admin: AdminRowObj) => {
     setAdminToDelete(admin);
-    setShowDeleteModal(true);
+    onDeleteModalOpen();
   };
 
   const handleDeleteConfirm = () => {
-    setAdmins((prev) => prev.filter((admin) => admin.id !== adminToDelete.id));
-    setShowDeleteModal(false);
+    setAdmins((prev) => prev.filter((admin) => admin.id !== adminToDelete?.id));
+    onDeleteModalClose();
     setAdminToDelete(null);
   };
 
-  // Simulate fetching data on component mount
+  const columnHelper = createColumnHelper<AdminRowObj>();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [data, setData] = useState(() => [...admins]);
+
   useEffect(() => {
-    // In a real application, you would fetch data here
-    // For now, we're using the initial `admins` state
-  }, []);
+    setData([...admins]);
+  }, [admins]);
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Admin Management
-              </h1>
-              <p className="mt-2 text-gray-600">Manage system administrators</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => router.push('/superadmin/manage-admin/create')}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-              >
-                Add New Admin
-              </button>
-              <button className="rounded-lg bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700">
-                Export List
-              </button>
+  const columns = [
+    columnHelper.accessor('name', {
+      id: 'admin',
+      header: () => (
+        <p className="text-sm font-semibold text-gray-700 dark:text-white">
+          Admin
+        </p>
+      ),
+      cell: (info) => (
+        <div className="flex items-center">
+          <div className="h-10 w-10 flex-shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-navy-600">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-200">
+                {info.row.original.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')}
+              </span>
             </div>
           </div>
-
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total Admins</p>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    {admins.length}
-                  </h3>
-                </div>
-                <div className="rounded-lg bg-blue-50 p-3">
-                  <svg
-                    className="h-6 w-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 0 014.5 0z"
-                    />
-                  </svg>
-                </div>
-              </div>
+          <div className="ml-4">
+            <div className="text-sm font-medium text-gray-900 dark:text-white">
+              {info.getValue()}
             </div>
-
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Active Admins</p>
-                  <h3 className="text-2xl font-bold text-green-600">
-                    {admins.filter((admin) => admin.status === 'Active').length}
-                  </h3>
-                </div>
-                <div className="rounded-lg bg-green-50 p-3">
-                  <svg
-                    className="h-6 w-6 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Super Admins</p>
-                  <h3 className="text-2xl font-bold text-purple-600">
-                    {
-                      admins.filter((admin) => admin.role === 'Super Admin')
-                        .length
-                    }
-                  </h3>
-                </div>
-                <div className="rounded-lg bg-purple-50 p-3">
-                  <svg
-                    className="h-6 w-6 text-purple-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Inactive Admins</p>
-                  <h3 className="text-2xl font-bold text-red-600">
-                    {
-                      admins.filter((admin) => admin.status === 'Inactive')
-                        .length
-                    }
-                  </h3>
-                </div>
-                <div className="rounded-lg bg-red-50 p-3">
-                  <svg
-                    className="h-6 w-6 text-red-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-            <div className="border-b border-gray-200 px-6 py-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Admin List
-              </h2>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Admin
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Last Login
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {admins.map((admin) => (
-                    <tr key={admin.id} className="hover:bg-gray-50">
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                              <span className="text-sm font-medium text-blue-700">
-                                {admin.name
-                                  .split(' ')
-                                  .map((n) => n[0])
-                                  .join('')}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {admin.name}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {admin.email}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <span className={getRoleBadge(admin.role)}>
-                          {admin.role}
-                        </span>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <span className={getStatusBadge(admin.status)}>
-                          {admin.status}
-                        </span>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {admin.createdAt}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {admin.lastLogin}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() =>
-                              router.push(
-                                `/superadmin/manage-admin/view/${admin.id}`,
-                              )
-                            }
-                            className="text-gray-600 hover:text-gray-900"
-                          >
-                            View
-                          </button>
-                          <button
-                            onClick={() =>
-                              router.push(
-                                `/superadmin/manage-admin/edit/${admin.id}`,
-                              )
-                            }
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(admin)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="text-sm text-gray-500">
+              {info.row.original.email}
             </div>
           </div>
         </div>
+      ),
+    }),
+    columnHelper.accessor('role', {
+      id: 'role',
+      header: () => (
+        <p className="text-sm font-semibold text-gray-700 dark:text-white">
+          Role
+        </p>
+      ),
+      cell: (info) => (
+        <span className={getRoleBadge(info.getValue())}>{info.getValue()}</span>
+      ),
+    }),
+    columnHelper.accessor('status', {
+      id: 'status',
+      header: () => (
+        <p className="text-sm font-semibold text-gray-700 dark:text-white">
+          Status
+        </p>
+      ),
+      cell: (info) => (
+        <span className={getStatusBadge(info.getValue())}>
+          {info.getValue()}
+        </span>
+      ),
+    }),
+    columnHelper.accessor('createdAt', {
+      id: 'createdAt',
+      header: () => (
+        <p className="text-sm font-semibold text-gray-700 dark:text-white">
+          Created
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm text-gray-800 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.accessor('lastLogin', {
+      id: 'lastLogin',
+      header: () => (
+        <p className="text-sm font-semibold text-gray-700 dark:text-white">
+          Last Login
+        </p>
+      ),
+      cell: (info) => (
+        <p className="text-sm text-gray-800 dark:text-white">
+          {info.getValue()}
+        </p>
+      ),
+    }),
+    columnHelper.display({
+      id: 'actions',
+      header: () => (
+        <p className="text-right text-sm font-semibold text-gray-700 dark:text-white">
+          Actions
+        </p>
+      ),
+      cell: (info) => (
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            icon={IoEyeOutline}
+            text="View"
+            size="sm"
+            color="bg-brandBlue"
+            onClick={() =>
+              router.push(
+                `/superadmin/manage-admin/view/${info.row.original.id}`,
+              )
+            }
+          />
+          <Button
+            icon={IoCreateOutline}
+            text="Edit"
+            size="sm"
+            color="bg-brandGreen"
+            onClick={() =>
+              router.push(
+                `/superadmin/manage-admin/edit/${info.row.original.id}`,
+              )
+            }
+          />
+          <Button
+            icon={IoTrashOutline}
+            text="Delete"
+            size="sm"
+            color="bg-brandRed"
+            onClick={() => handleDeleteClick(info.row.original)}
+          />
+        </div>
+      ),
+    }),
+  ];
 
-        {/* Delete Confirmation Modal */}
-        {showDeleteModal && (
-          <div className="bg-black fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
-            <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                <svg
-                  className="h-6 w-6 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-                  />
-                </svg>
-              </div>
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    debugTable: true,
+  });
 
-              <div className="text-center">
-                <h3 className="mb-2 text-lg font-medium text-gray-900">
-                  Delete Admin
-                </h3>
-                <p className="mb-6 text-sm text-gray-500">
-                  Are you sure you want to delete{' '}
-                  <strong>{adminToDelete?.name}</strong>? This action cannot be
-                  undone.
-                </p>
-              </div>
-
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteConfirm}
-                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </div>
+  return (
+    <div className="mt-5 grid grid-cols-1 gap-5">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+        <Card extra="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Total Admins
+              </p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {admins.length}
+              </h3>
+            </div>
+            <div className="rounded-lg bg-blue-50 p-3 dark:bg-navy-600">
+              <svg
+                className="h-6 w-6 text-blue-600 dark:text-blue-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 0 014.5 0z"
+                />
+              </svg>
             </div>
           </div>
-        )}
+        </Card>
+
+        <Card extra="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Active Admins
+              </p>
+              <h3 className="text-2xl font-bold text-green-600">
+                {admins.filter((admin) => admin.status === 'Active').length}
+              </h3>
+            </div>
+            <div className="rounded-lg bg-green-50 p-3 dark:bg-navy-600">
+              <svg
+                className="h-6 w-6 text-green-500 dark:text-green-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          </div>
+        </Card>
+
+        <Card extra="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Super Admins
+              </p>
+              <h3 className="text-2xl font-bold text-purple-600">
+                {admins.filter((admin) => admin.role === 'Super Admin').length}
+              </h3>
+            </div>
+            <div className="rounded-lg bg-purple-50 p-3 dark:bg-navy-600">
+              <svg
+                className="h-6 w-6 text-purple-500 dark:text-purple-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                />
+              </svg>
+            </div>
+          </div>
+        </Card>
+
+        <Card extra="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Inactive Admins
+              </p>
+              <h3 className="text-2xl font-bold text-red-600">
+                {admins.filter((admin) => admin.status === 'Inactive').length}
+              </h3>
+            </div>
+            <div className="rounded-lg bg-red-50 p-3 dark:bg-navy-600">
+              <svg
+                className="h-6 w-6 text-red-500 dark:text-red-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          </div>
+        </Card>
       </div>
+
+      <Card extra="w-full h-full px-6 pb-6 sm:overflow-x-auto">
+        <div className="flex items-center justify-between pt-4">
+          <h2 className="text-xl font-bold text-navy-700 dark:text-white">
+            Admin List
+          </h2>
+          <Button
+            icon={MdAdd}
+            text="Add New Admin"
+            size="md"
+            color="bg-brandGreen"
+            hoverColor="hover:bg-brandGreenDark"
+            onClick={() => router.push('/superadmin/manage-admin/create')}
+          />
+        </div>
+
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full table-auto border-collapse overflow-hidden rounded-xl">
+            <thead className="bg-gray-100 dark:bg-navy-700">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      onClick={header.column.getToggleSortingHandler()}
+                      className={`cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 ${
+                        header.column.id === 'actions' ? 'text-right' : ''
+                      }`}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row, index) => (
+                <tr
+                  key={row.id}
+                  className={`transition-all duration-200 ${
+                    index % 2 === 0
+                      ? 'bg-white dark:bg-navy-700'
+                      : 'bg-gray-50 dark:bg-navy-800'
+                  } hover:bg-gray-100 dark:hover:bg-navy-600`}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className={`px-4 py-3 text-sm ${
+                        cell.column.id === 'actions' ? 'text-right' : ''
+                      }`}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <CustomModal
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        title="Delete Admin"
+        size="md"
+      >
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+            <svg
+              className="h-6 w-6 text-red-600 dark:text-red-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
+            </svg>
+          </div>
+          <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+            Delete Admin
+          </h3>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+            Are you sure you want to delete{' '}
+            <strong>{adminToDelete?.name}</strong>? This action cannot be
+            undone.
+          </p>
+        </div>
+        <div className="flex justify-center space-x-3">
+          <Button
+            text="Cancel"
+            size="md"
+            color="bg-gray-200"
+            hoverColor="hover:bg-gray-300"
+            onClick={onDeleteModalClose}
+            extra="flex-1"
+            icon={undefined}
+          />
+          <Button
+            text="Delete"
+            size="md"
+            color="bg-brandRed"
+            hoverColor="hover:bg-red-700"
+            onClick={handleDeleteConfirm}
+            extra="flex-1"
+            icon={undefined}
+          />
+        </div>
+      </CustomModal>
     </div>
   );
 };

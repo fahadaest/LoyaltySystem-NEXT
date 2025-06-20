@@ -1,18 +1,17 @@
 'use client';
-import React from 'react';
-import AdminForm from 'components/superadmin/AdminForm';
-import { useRouter } from 'next/navigation';
 
-const CreateAdminPage = () => {
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import AdminForm from 'components/superadmin/AdminForm';
+import Card from 'components/card';
+
+export default function CreateAdminPage() {
   const router = useRouter();
 
   const handleCreateSubmit = async (formData) => {
-    // Simulate API call for creating an admin
-    console.log('Creating Admin:', formData);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-    alert('Admin created successfully!');
-    // In a real app, you'd integrate with your backend to save the new admin
-    router.push('/superadmin/manage-admin/list'); // Navigate back to the list after creation
+    console.log('Submitting new admin:', formData);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    router.push('/superadmin/manage-admin/list');
   };
 
   const handleCancel = () => {
@@ -20,14 +19,14 @@ const CreateAdminPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <AdminForm
-        onSubmit={handleCreateSubmit}
-        onCancel={handleCancel}
-        isEditMode={false} // Explicitly set to false for create mode
-      />
+    <div className="mt-3 h-full px-4 py-5">
+      <Card extra="p-6">
+        <AdminForm
+          onSubmit={handleCreateSubmit}
+          onCancel={handleCancel}
+          isEditMode={false}
+        />
+      </Card>
     </div>
   );
-};
-
-export default CreateAdminPage;
+}
