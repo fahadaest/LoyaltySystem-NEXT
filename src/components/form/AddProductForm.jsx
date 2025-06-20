@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
-import { MdFileUpload, MdClose, MdCrop, MdCheck } from "react-icons/md";
+import { MdFileUpload, MdClose, MdCrop, MdCheck, MdAdd } from "react-icons/md";
 import { FiPlus } from 'react-icons/fi';
+import Button from "components/button/Button";
 
 const AddProductForm = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -264,13 +265,13 @@ const AddProductForm = () => {
         <textarea className="mt-2 flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200 dark:!border-white/10 dark:text-white min-h-[100px] resize-vertical" placeholder="Your Product Description Here" id="product-description" />
       </div>
 
-      <button className="col-span-11 inline-flex bg-brandGreen hover:bg-brandGreenDark text-white font-medium py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-95 shadow-md hover:shadow-lg group/edit relative overflow-hidden whitespace-nowrap" aria-label="Edit product">
-        <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/edit:translate-y-0 transition-transform duration-300 rounded-xl" />
-        <div className="relative z-10 flex items-center justify-center gap-2">
-          <FiPlus className="text-lg" />
-          <span>Add Product</span>
-        </div>
-      </button>
+      <Button
+        icon={MdAdd}
+        text="Add Product"
+        size="sm"
+        color="bg-brandGreen"
+        className="col-span-11 w-full"
+      />
 
       {cropModalOpen && currentImageToCrop && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center h-full z-50 p-4">
@@ -327,13 +328,22 @@ const AddProductForm = () => {
                 Drag to move • Drag corners to resize • 4:3 aspect ratio maintained
               </div>
               <div className="flex gap-3">
-                <button onClick={() => setCropModalOpen(false)} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                  Cancel
-                </button>
-                <button onClick={handleCropComplete} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
-                  <MdCheck size={18} />
-                  Apply Crop
-                </button>
+                <Button
+                  icon={MdClose}
+                  text="Cancel"
+                  size="sm"
+                  color="bg-brandRed"
+                  className="col-span-11 w-full"
+                  onClick={() => setCropModalOpen(false)}
+                />
+                <Button
+                  icon={MdCheck}
+                  text="Apply Crop"
+                  size="sm"
+                  color="bg-brandGreen"
+                  className="col-span-11 w-full"
+                  onClick={handleCropComplete}
+                />
               </div>
             </div>
           </div>

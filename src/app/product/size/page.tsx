@@ -55,7 +55,7 @@ const Dashboard = () => {
         <ProductSizeTable tableData={tableDataComplex} onAddClick={onOpen} />
       </div>
 
-      <CustomModal isOpen={isOpen} onClose={onClose} title="Add Product" size="4xl">
+      <CustomModal isOpen={isOpen} onClose={onClose} title="Add Product" size="md">
         <AddProductSizeComponent />
       </CustomModal>
     </div>

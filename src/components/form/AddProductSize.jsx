@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { MdFileUpload } from "react-icons/md";
 import Card from "components/card";
 import InputField from "components/fields/InputField";
+import Button from "components/button/Button";
+import { MdAdd, MdFilterList } from "react-icons/md";
 
 const AddProductSizeComponent = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -25,15 +27,14 @@ const AddProductSizeComponent = () => {
         />
       </div>
 
-
-      <button
-        href=" "
-        className="col-span-11 linear mt-4 flex items-center justify-center rounded-xl bg-brandGreen px-2 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
-      >
-        Add Size
-      </button>
-
-    </Card>
+      <Button
+        icon={MdAdd}
+        text="Add Product"
+        size="sm"
+        color="bg-brandGreen"
+        className="col-span-11 w-full"
+      />
+    </Card >
   );
 };
 
