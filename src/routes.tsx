@@ -48,6 +48,12 @@ const routes = [
       },
     ],
   },
+  {
+    name: 'Customers',
+    layout: '/customer',
+    path: 'default',
+    icon: <MdHome className="h-6 w-6" />,
+  },
 
 
   {
