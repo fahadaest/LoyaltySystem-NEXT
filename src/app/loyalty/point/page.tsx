@@ -3,6 +3,7 @@ import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
 import AddProductSizeComponent from 'components/form/AddProductSize';
 import PointLoyaltyTable from 'components/admin/default/PointLoyaltyTable';
+import AddLoyalty from 'components/form/AddLoyalty';
 
 type RowObj = {
   name: string;
@@ -76,8 +77,8 @@ const Dashboard = () => {
         <PointLoyaltyTable tableData={tableDataComplex} onAddClick={onOpen} />
       </div>
 
-      <CustomModal isOpen={isOpen} onClose={onClose} title="Add Product" size="4xl">
-        <AddProductSizeComponent />
+      <CustomModal isOpen={isOpen} onClose={onClose} title="Add Product" size="xl">
+        <AddLoyalty />
       </CustomModal>
     </div>
   );

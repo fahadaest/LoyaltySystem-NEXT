@@ -5,24 +5,25 @@ import InputField from "components/fields/InputField";
 import InputDropdown from "components/fields/InputDropDown";
 
 const AddLoyalty = () => {
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const countryOptions = [
+  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [selectedRewardProduct, setSelectedRewardProduct] = useState("");
+  const loyaltyTemplate = [
     { value: 'us', label: 'General Loyalty' },
     { value: 'ca', label: 'Coffee Loyalty' },
-    { value: 'uk', label: 'United Kingdom' },
   ];
 
   return (
-    <Card className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-12">
+    <Card className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-12">
 
       <div className="col-span-12 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800 2xl:grid-cols-12">
         <InputDropdown
-          label="Select royalty template"
-          id="country"
+          label="Select loyalty template"
+          id="template"
           placeholder="Select a template"
-          options={countryOptions}
-          value={selectedCountry}
-          onChange={(option) => setSelectedCountry(option.value)}
+          options={loyaltyTemplate}
+          value={selectedTemplate}
+          onChange={(option) => setSelectedTemplate(option.value)}
           variant="auth"
         />
       </div>
@@ -63,11 +64,11 @@ const AddLoyalty = () => {
       <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white  dark:!bg-navy-800">
         <InputDropdown
           label="Select Product"
-          id="country"
+          id="product"
           placeholder="Select a Product"
-          options={countryOptions}
-          value={selectedCountry}
-          onChange={(option) => setSelectedCountry(option.value)}
+          options={loyaltyTemplate}
+          value={selectedProduct}
+          onChange={(option) => setSelectedProduct(option.value)}
           variant="auth"
         />
       </div>
@@ -75,11 +76,11 @@ const AddLoyalty = () => {
       <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white  dark:!bg-navy-800">
         <InputDropdown
           label="Select Reward Product"
-          id="country"
+          id="reward-product"
           placeholder="Select a Reward Product"
-          options={countryOptions}
-          value={selectedCountry}
-          onChange={(option) => setSelectedCountry(option.value)}
+          options={loyaltyTemplate}
+          value={selectedRewardProduct}
+          onChange={(option) => setSelectedRewardProduct(option.value)}
           variant="auth"
         />
       </div>

@@ -33,7 +33,7 @@ const Button = ({
                     className="text-white transition-transform duration-300 group-hover:rotate-[360deg]"
                 />
             )}
-            {text && <span className="leading-none">{text}</span>}
+            {text && <span className="leading-none whitespace-nowrap">{text}</span>}
         </button>
     );
 };
