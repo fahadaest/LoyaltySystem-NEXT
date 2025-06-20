@@ -4,68 +4,93 @@ import { useDisclosure } from '@chakra-ui/react';
 import AddProductSizeComponent from 'components/form/AddProductSize';
 import PointLoyaltyTable from 'components/admin/default/PointLoyaltyTable';
 import AddLoyalty from 'components/form/AddLoyalty';
+import CustomerTable from 'components/admin/default/CustomerTable';
 
-type RowObj = {
+type Customer = {
+  id: string;
   name: string;
-  spendingAmount: number;
-  rewardPoints: number;
+  email: string;
+  phoneNumber: string;
+  createdAt: string;
 };
 
-const tableDataComplex: RowObj[] = [
+const customerData: Customer[] = [
   {
-    name: "Buy 2 get 1 Free",
-    spendingAmount: 500,
-    rewardPoints: 600,
+    id: "CUST001",
+    name: "Alice Johnson",
+    email: "alice.johnson@example.com",
+    phoneNumber: "+1-202-555-0101",
+    createdAt: "2024-11-15T10:30:00Z",
   },
   {
-    name: "Holiday Special",
-    spendingAmount: 1200,
-    rewardPoints: 1500,
+    id: "CUST002",
+    name: "Brian Smith",
+    email: "brian.smith@example.com",
+    phoneNumber: "+1-202-555-0102",
+    createdAt: "2024-12-02T14:45:00Z",
   },
   {
-    name: "Summer Sale",
-    spendingAmount: 300,
-    rewardPoints: 350,
+    id: "CUST003",
+    name: "Catherine Lee",
+    email: "catherine.lee@example.com",
+    phoneNumber: "+1-202-555-0103",
+    createdAt: "2025-01-05T09:20:00Z",
   },
   {
-    name: "Clearance Discount",
-    spendingAmount: 700,
-    rewardPoints: 800,
+    id: "CUST004",
+    name: "David Kim",
+    email: "david.kim@example.com",
+    phoneNumber: "+1-202-555-0104",
+    createdAt: "2025-01-22T11:10:00Z",
   },
   {
-    name: "New User Bonus",
-    spendingAmount: 100,
-    rewardPoints: 200,
+    id: "CUST005",
+    name: "Emily Nguyen",
+    email: "emily.nguyen@example.com",
+    phoneNumber: "+1-202-555-0105",
+    createdAt: "2025-02-10T16:35:00Z",
   },
   {
-    name: "Weekend Offer",
-    spendingAmount: 450,
-    rewardPoints: 500,
+    id: "CUST006",
+    name: "Frank Turner",
+    email: "frank.turner@example.com",
+    phoneNumber: "+1-202-555-0106",
+    createdAt: "2025-02-28T13:15:00Z",
   },
   {
-    name: "Black Friday Deal",
-    spendingAmount: 2000,
-    rewardPoints: 2500,
+    id: "CUST007",
+    name: "Grace Patel",
+    email: "grace.patel@example.com",
+    phoneNumber: "+1-202-555-0107",
+    createdAt: "2025-03-14T17:50:00Z",
   },
   {
-    name: "Loyalty Reward",
-    spendingAmount: 900,
-    rewardPoints: 1000,
+    id: "CUST008",
+    name: "Henry Zhao",
+    email: "henry.zhao@example.com",
+    phoneNumber: "+1-202-555-0108",
+    createdAt: "2025-04-01T08:05:00Z",
   },
   {
-    name: "Festive Cashback",
-    spendingAmount: 600,
-    rewardPoints: 700,
+    id: "CUST009",
+    name: "Isabelle Martinez",
+    email: "isabelle.martinez@example.com",
+    phoneNumber: "+1-202-555-0109",
+    createdAt: "2025-04-21T12:25:00Z",
   },
   {
-    name: "Referral Bonus",
-    spendingAmount: 400,
-    rewardPoints: 450,
+    id: "CUST010",
+    name: "Jack O'Neil",
+    email: "jack.oneil@example.com",
+    phoneNumber: "+1-202-555-0110",
+    createdAt: "2025-05-10T15:40:00Z",
   },
   {
-    name: "Mid-Year Promo",
-    spendingAmount: 800,
-    rewardPoints: 850,
+    id: "CUST011",
+    name: "Karen Chow",
+    email: "karen.chow@example.com",
+    phoneNumber: "+1-202-555-0111",
+    createdAt: "2025-06-01T10:00:00Z",
   },
 ];
 
@@ -74,7 +99,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-5 grid grid-cols-1 gap-5">
-        <PointLoyaltyTable tableData={tableDataComplex} onAddClick={onOpen} />
+        <CustomerTable customerData={customerData} onAddClick={onOpen} />
       </div>
 
       <CustomModal isOpen={isOpen} onClose={onClose} title="Add Product" size="xl">

@@ -1,56 +1,22 @@
 import React from "react";
-import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
-import { MdAttachMoney } from "react-icons/md";
-import { MdCircle, MdEdit, MdDelete, MdAdd } from "react-icons/md";
-import {
-  TbCircleLetterS,
-  TbCircleLetterM,
-  TbCircleLetterL,
-  TbCircleLetterX,
-} from "react-icons/tb";
 import Button from "components/button/Button";
-import { IoEyeOutline, IoCreateOutline, IoTrashOutline, IoCopyOutline } from "react-icons/io5";
-
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
+import { IoCreateOutline } from "react-icons/io5";
+import { createColumnHelper, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 
 type RowObj = {
   name: string;
-  spendingAmount: number;
-  rewardPoints: number;
+  email: string;
+  phoneNumber: number;
+  createdAt?: string;
 };
 
 const columnHelper = createColumnHelper<RowObj>();
 
-export default function CustomerTable(props: {
-  tableData: any;
-  onAddClick: () => void;
-}) {
-  const { tableData, onAddClick } = props;
+export default function CustomerTable(props: { customerData: any; onAddClick: () => void; }) {
+  const { customerData, onAddClick } = props;
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [data, setData] = React.useState(() => [...tableData]);
-
-  const getSizeIcon = (size: string) => {
-    switch (size.toLowerCase()) {
-      case "small":
-        return <TbCircleLetterS className="text-blue-400 me-2" />;
-      case "medium":
-        return <TbCircleLetterM className="text-green-400 me-2" />;
-      case "large":
-        return <TbCircleLetterL className="text-orange-400 me-2" />;
-      case "extra large":
-        return <TbCircleLetterX className="text-red-400 me-2" />;
-      default:
-        return <MdCircle className="text-gray-400 me-2" />;
-    }
-  };
+  const [data, setData] = React.useState(() => [...customerData]);
 
   const handleEdit = (rowData: RowObj) => {
     console.log("Edit clicked for:", rowData);
@@ -72,28 +38,39 @@ export default function CustomerTable(props: {
         <p className="text-sm text-gray-800 dark:text-white">{info.getValue()}</p>
       ),
     }),
-    columnHelper.accessor("spendingAmount", {
-      id: "spendingAmount",
+    columnHelper.accessor("email", {
+      id: "email",
       header: () => (
         <p className="text-sm font-semibold text-gray-700 dark:text-white">
-          Spending Amount
+          Email
         </p>
       ),
       cell: (info) => (
-        <p className="text-sm text-gray-800 dark:text-white">
-          {info.getValue().toFixed(2)} <span className="text-brandGreen font-bold">AED</span>
-        </p>
+        <p className="text-sm text-gray-800 dark:text-white">{info.getValue()}</p>
       ),
     }),
-    columnHelper.accessor("rewardPoints", {
-      id: "rewardPoints",
+    columnHelper.accessor("phoneNumber", {
+      id: "phoneNumber",
       header: () => (
         <p className="text-sm font-semibold text-gray-700 dark:text-white">
-          Reward Points
+          Phone Number
         </p>
       ),
       cell: (info) => (
-        <span className="bg-brandGreen text-white text-xs font-medium px-4 py-1 rounded-md">
+        <span className="text-sm text-gray-800 dark:text-white">
+          {info.getValue()}
+        </span>
+      ),
+    }),
+    columnHelper.accessor("createdAt", {
+      id: "createdAt",
+      header: () => (
+        <p className="text-sm font-semibold text-gray-700 dark:text-white">
+          Created At
+        </p>
+      ),
+      cell: (info) => (
+        <span className="text-sm text-gray-800 dark:text-white">
           {info.getValue()}
         </span>
       ),
@@ -108,46 +85,19 @@ export default function CustomerTable(props: {
       cell: (info) => (
         <div className="flex items-center gap-2 justify-end">
           <Button
-            icon={IoEyeOutline}
-            text="View"
-            size="sm"
-            color="bg-brandBlue"
-            onClick={() => handleDelete(info.row.original)}
-          />
-          <Button
             icon={IoCreateOutline}
-            text="Edit"
+            text="Detail"
             size="sm"
             color="bg-brandGreen"
             onClick={() => handleEdit(info.row.original)}
-          />
-          <Button
-            icon={IoTrashOutline}
-            text="Delete"
-            size="sm"
-            color="bg-brandRed"
-            onClick={() => handleDelete(info.row.original)}
-          />
-
-          <Button
-            icon={IoCopyOutline}
-            text="Copy"
-            size="sm"
-            color="bg-brandYellow"
-            onClick={() => handleDelete(info.row.original)}
           />
         </div>
       ),
     }),
   ];
 
-
   const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-    },
+    data, columns, state: { sorting, },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -160,14 +110,14 @@ export default function CustomerTable(props: {
         <h2 className="text-xl font-bold text-navy-700 dark:text-white">
           Customer List
         </h2>
-        <Button
+        {/* <Button
           icon={MdAdd}
           text="Add New Loyalty"
           size="md"
           color="bg-brandGreen"
           hoverColor="hover:bg-brandGreenDark"
           onClick={onAddClick}
-        />
+        /> */}
       </div>
 
       <div className="mt-6 overflow-x-auto">
