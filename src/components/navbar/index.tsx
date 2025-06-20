@@ -13,6 +13,7 @@ import {
 import avatar from '/public/img/avatars/avatar4.png';
 import Image from 'next/image';
 import { Typewriter } from 'react-simple-typewriter';
+import { useRouter } from 'next/navigation';
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -24,11 +25,19 @@ const Navbar = (props: {
   const [darkmode, setDarkmode] = React.useState(
     document.body.classList.contains('dark'),
   );
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem('superadmin_session');
+    localStorage.removeItem('admin_session');
+    router.push('/auth/sign-in');
+  };
+
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       <div className="ml-[6px]">
         <div className="">
-          <p className="shrink text-[30px] capitalize text-navy-700 dark:text-white flex items-center gap-2">
+          <p className="flex shrink items-center gap-2 text-[30px] capitalize text-navy-700 dark:text-white">
             <NavLink
               href="#"
               className="font-bold capitalize hover:text-navy-700 dark:hover:text-white"
@@ -227,12 +236,12 @@ const Navbar = (props: {
               >
                 Newsletter Settings
               </a>
-              <a
-                href=" "
+              <button
+                onClick={handleLogout}
                 className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
               >
                 Log Out
-              </a>
+              </button>
             </div>
           </div>
         </Dropdown>

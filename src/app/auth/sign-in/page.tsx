@@ -1,16 +1,49 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import InputField from 'components/fields/InputField';
 import Default from 'components/auth/variants/DefaultAuthLayout';
-import { FcGoogle } from 'react-icons/fc';
 import Checkbox from 'components/checkbox';
 import Button from 'components/button/Button';
-import { useRouter } from 'next/navigation';
+import {
+  ADMIN_EMAIL,
+  ADMIN_PASSWORD,
+  SUPER_ADMIN_EMAIL,
+  SUPER_ADMIN_PASSWORD,
+} from 'utils/data';
 
 function SignInDefault() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
   const handleSignIn = () => {
-    router.push('/product/all');
+    if (email === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASSWORD) {
+      setError('');
+      localStorage.setItem('superadmin_session', 'true');
+      router.push('/superadmin/manage-admin/list');
+    } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      setError('');
+      localStorage.setItem('admin_session', 'true');
+      router.push('/admin/default');
+    } else {
+      setError('Invalid email or password. Please try again.');
+    }
   };
+
+  useEffect(() => {
+    const adminSession = localStorage.getItem('admin_session');
+    const superAdminSession = localStorage.getItem('superadmin_session');
+
+    if (adminSession) {
+      router.replace('/admin/default');
+    }
+
+    if (superAdminSession) {
+      router.replace('/superadmin/manage-admin/list');
+    }
+  }, [router]);
 
   return (
     <Default
@@ -28,6 +61,7 @@ function SignInDefault() {
               <p className="text-base text-gray-600"> or </p>
               <div className="h-px w-full bg-gray-200 dark:!bg-navy-700" />
             </div>
+
             <InputField
               variant="auth"
               extra="mb-3"
@@ -35,6 +69,8 @@ function SignInDefault() {
               placeholder="mail@simmmple.com"
               id="email"
               type="text"
+              state={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <InputField
@@ -44,7 +80,12 @@ function SignInDefault() {
               placeholder="Min. 8 characters"
               id="password"
               type="password"
+              state={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
+
+            {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+
             <div className="mb-4 flex items-center justify-between px-2">
               <div className="mt-2 flex items-center">
                 <Checkbox />
@@ -59,6 +100,7 @@ function SignInDefault() {
                 Forgot Password?
               </a>
             </div>
+
             <Button
               text="Sign In"
               color="bg-brandGreen"
@@ -67,17 +109,6 @@ function SignInDefault() {
               icon={undefined}
               onClick={handleSignIn}
             />
-            {/* <div className="mt-4">
-              <span className="text-sm font-medium text-navy-700 dark:text-gray-500">
-                Not registered yet?
-              </span>
-              <a
-                href="/auth/sign-up/default"
-                className="ml-1 text-sm font-medium text-brandGreen dark:text-white transition-transform duration-200 hover:scale-105"
-              >
-                Create an account
-              </a>
-            </div> */}
           </div>
         </div>
       }

@@ -1,6 +1,12 @@
 import React from 'react';
 import { MdHome, MdOutlineShoppingCart, MdBarChart, MdPerson, MdLock, MdInventory2, MdCardGiftcard, MdPeopleAlt, MdListAlt, MdLineStyle, MdLoyalty, MdStar, MdSupervisorAccount, MdReport, MdSettings, MdAccountBalanceWallet, MdLink, MdWifiTethering, MdSupport, MdGavel, } from 'react-icons/md';
 
+import {
+  MdAdminPanelSettings,
+  MdOutlineSubscriptions,
+  MdOutlineCreate,
+} from 'react-icons/md';
+
 const routes = [
   {
     name: 'Main Dashboard',
@@ -48,6 +54,7 @@ const routes = [
       },
     ],
   },
+
   {
     name: 'Customers',
     layout: '/customer',
@@ -144,4 +151,25 @@ const routes = [
   //   icon: <MdHome className="h-6 w-6" />,
   // },
 ];
-export default routes;
+
+const superAdminroutes = [
+  {
+    name: 'Create Admin',
+    layout: '/superadmin',
+    path: 'manage-admin/create',
+    icon: <MdOutlineCreate className="h-6 w-6" />,
+  },
+  {
+    name: 'Admin List',
+    layout: '/superadmin',
+    path: 'manage-admin/list',
+    icon: <MdAdminPanelSettings className="h-6 w-6" />,
+  },
+  {
+    name: 'Manage Subscription',
+    layout: '/superadmin',
+    path: 'subscriptions/list',
+    icon: <MdOutlineSubscriptions className="h-6 w-6" />,
+  },
+];
+export default { superAdminroutes, routes };
