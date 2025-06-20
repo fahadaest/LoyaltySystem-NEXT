@@ -25,7 +25,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
     const superAdminSession = localStorage.getItem('superadmin_session');
 
     if (adminSession) {
-      router.replace('/product/all');
+      router.replace('/admin/default');
     } else if (!superAdminSession) {
       router.replace('/auth/sign-in/');
     } else {

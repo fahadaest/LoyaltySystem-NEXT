@@ -26,7 +26,7 @@ function SignInDefault() {
     } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       setError('');
       localStorage.setItem('admin_session', 'true');
-      router.push('/product/all');
+      router.push('/admin/default');
     } else {
       setError('Invalid email or password. Please try again.');
     }
@@ -37,7 +37,7 @@ function SignInDefault() {
     const superAdminSession = localStorage.getItem('superadmin_session');
 
     if (adminSession) {
-      router.replace('/product/all');
+      router.replace('/admin/default');
     }
 
     if (superAdminSession) {
