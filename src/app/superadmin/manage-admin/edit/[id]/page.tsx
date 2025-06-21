@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminForm from 'components/superadmin/AdminForm';
 import { useRouter, useParams } from 'next/navigation';
+import Card from 'components/card';
 
 const EditAdminPage = () => {
   const router = useRouter();
@@ -12,7 +13,6 @@ const EditAdminPage = () => {
 
   useEffect(() => {
     if (id) {
-      // Simulate fetching admin data by ID from an API
       const mockAdmins = [
         {
           id: 1,
@@ -118,13 +118,15 @@ const EditAdminPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <AdminForm
-        initialData={adminToEdit}
-        onSubmit={handleEditSubmit}
-        onCancel={handleCancel}
-        isEditMode={true} // Explicitly set to true for edit mode
-      />
+    <div className="mt-3 h-full px-4 py-5">
+      <Card extra="p-6">
+        <AdminForm
+          initialData={adminToEdit}
+          onSubmit={handleEditSubmit}
+          onCancel={handleCancel}
+          isEditMode={true}
+        />
+      </Card>
     </div>
   );
 };

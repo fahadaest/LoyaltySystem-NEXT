@@ -1,258 +1,240 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  Subscription,
-  CreateSubscriptionData,
-  SubscriptionFormMode,
-} from '../../utils/types';
+import React, { useState, useEffect } from 'react';
+import { Subscription } from 'utils/types';
+import Button from 'components/button/Button';
+import { MdSave, MdCancel, MdAdd } from 'react-icons/md';
 
-interface SubscriptionFormProps {
-  mode: SubscriptionFormMode;
+type SubscriptionFormProps = {
+  mode: 'create' | 'edit' | 'view';
   subscription?: Subscription;
-  onSubmit?: (data: CreateSubscriptionData) => Promise<void>;
-  onCancel?: () => void;
-}
+  onSuccess?: () => void;
+};
 
-export default function SubscriptionForm({
+const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   mode,
   subscription,
-  onSubmit,
-  onCancel,
-}: SubscriptionFormProps) {
-  const router = useRouter();
-  const [formData, setFormData] = useState<CreateSubscriptionData>({
-    name: '',
-    status: 'active',
-    description: '',
-    price: 0,
-    billingCycle: 'monthly',
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  onSuccess,
+}) => {
+  const isReadOnly = mode === 'view';
+  const title =
+    mode === 'create'
+      ? 'Create New Subscription'
+      : mode === 'edit'
+      ? 'Edit Subscription'
+      : 'Subscription Details';
+
+  const [formData, setFormData] = useState<any>(
+    subscription || {
+      id: 0,
+      name: '',
+      price: 0,
+      billingCycle: 'monthly',
+      status: 'active',
+      description: '',
+      features: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  );
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    if (subscription && (mode === 'edit' || mode === 'view')) {
-      setFormData({
-        name: subscription.name,
-        status: subscription.status,
-        description: subscription.description || '',
-        price: subscription.price || 0,
-        billingCycle: subscription.billingCycle || 'monthly',
-      });
+    if (subscription && mode !== 'create') {
+      setFormData(subscription);
     }
   }, [subscription, mode]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'number' ? Number(value) : value,
+      [name]: name === 'price' ? parseFloat(value) || 0 : value,
     }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
+  const validate = () => {
+    let newErrors: { [key: string]: string } = {};
     if (!formData.name.trim()) {
       newErrors.name = 'Subscription name is required';
     }
-
-    if (formData.price && formData.price < 0) {
-      newErrors.price = 'Price cannot be negative';
+    if (formData.price === null || formData.price < 0) {
+      newErrors.price = 'Price must be a non-negative number';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (validate()) {
+      console.log('Form submitted:', formData);
 
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-
-    try {
-      if (onSubmit) {
-        await onSubmit(formData);
-      } else {
-        router.push('/superadmin/subscriptions/list');
+      if (onSuccess) {
+        onSuccess();
       }
-    } catch (error) {
-      console.error('Error saving subscription:', error);
-      setErrors({ submit: 'Failed to save subscription. Please try again.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCancel = () => {
-    if (onCancel) {
-      onCancel();
     } else {
-      router.back();
+      console.log('Form has errors');
     }
   };
-
-  const isReadOnly = mode === 'view';
-  const title =
-    mode === 'create'
-      ? 'Create Subscription'
-      : mode === 'edit'
-      ? 'Edit Subscription'
-      : 'Subscription Details';
 
   return (
-    <div className="mx-auto max-w-2xl p-6">
-      <div className="rounded-lg bg-white p-6 shadow-md">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">{title}</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="name"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Subscription Name *
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              disabled={isReadOnly}
-              className={`w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              } ${isReadOnly ? 'bg-gray-50' : ''}`}
-              placeholder="Enter subscription name"
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="status"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Status *
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              disabled={isReadOnly}
-              className={`w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isReadOnly ? 'bg-gray-50' : ''
-              }`}
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-
-          <div>
-            <label
-              htmlFor="description"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              disabled={isReadOnly}
-              rows={3}
-              className={`w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isReadOnly ? 'bg-gray-50' : ''
-              }`}
-              placeholder="Optional description"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="billingCycle"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Billing Cycle
-            </label>
-            <select
-              id="billingCycle"
-              name="billingCycle"
-              value={formData.billingCycle}
-              onChange={handleInputChange}
-              disabled={isReadOnly}
-              className={`w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isReadOnly ? 'bg-gray-50' : ''
-              }`}
-            >
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
-            </select>
-          </div>
-
-          {errors.submit && (
-            <div className="rounded-md border border-red-200 bg-red-50 p-3">
-              <p className="text-sm text-red-600">{errors.submit}</p>
-            </div>
+    <form
+      onSubmit={handleSubmit}
+      className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none"
+    >
+      <div className="col-span-8 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
+        <div className="mb-3">
+          <label
+            htmlFor="name"
+            className="text-sm font-bold text-navy-700 dark:text-white"
+          >
+            Subscription Name *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            disabled={isReadOnly}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+              errors.name ? 'border-red-500' : 'border-gray-200'
+            } dark:!border-white/10 dark:text-white ${
+              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+            }`}
+            placeholder="Enter subscription name"
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
           )}
+        </div>
 
-          <div className="flex gap-4 pt-4">
-            {!isReadOnly && (
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isLoading
-                  ? 'Saving...'
-                  : mode === 'create'
-                  ? 'Create Subscription'
-                  : 'Update Subscription'}
-              </button>
-            )}
+        <div className="mb-3">
+          <label
+            htmlFor="price"
+            className="text-sm font-bold text-navy-700 dark:text-white"
+          >
+            Price *
+          </label>
+          <input
+            type="number"
+            id="price"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
+            disabled={isReadOnly}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+              errors.price ? 'border-red-500' : 'border-gray-200'
+            } dark:!border-white/10 dark:text-white ${
+              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+            }`}
+            placeholder="0.00"
+            step="0.01"
+          />
+          {errors.price && (
+            <p className="mt-1 text-sm text-red-600">{errors.price}</p>
+          )}
+        </div>
 
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="flex-1 rounded-md bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              {isReadOnly ? 'Back' : 'Cancel'}
-            </button>
+        <div className="mb-3">
+          <label
+            htmlFor="billingCycle"
+            className="text-sm font-bold text-navy-700 dark:text-white"
+          >
+            Billing Cycle *
+          </label>
+          <select
+            id="billingCycle"
+            name="billingCycle"
+            value={formData.billingCycle}
+            onChange={handleInputChange}
+            disabled={isReadOnly}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${
+              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+            }`}
+          >
+            <option value="monthly">Monthly</option>
+            <option value="annually">Annually</option>
+            <option value="quarterly">Quarterly</option>
+          </select>
+        </div>
 
-            {isReadOnly && subscription && (
-              <button
-                type="button"
-                onClick={() =>
-                  router.push(
-                    `/superadmin/subscriptions/edit/${subscription.id}`,
-                  )
-                }
-                className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Edit Subscription
-              </button>
-            )}
-          </div>
-        </form>
+        <div className="mb-3">
+          <label
+            htmlFor="status"
+            className="text-sm font-bold text-navy-700 dark:text-white"
+          >
+            Status *
+          </label>
+          <select
+            id="status"
+            name="status"
+            value={formData.status}
+            onChange={handleInputChange}
+            disabled={isReadOnly}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${
+              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+            }`}
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
-    </div>
+
+      <div className="col-span-8">
+        <label
+          htmlFor="description"
+          className="text-sm font-bold text-navy-700 dark:text-white"
+        >
+          Description
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description || ''}
+          onChange={handleInputChange}
+          disabled={isReadOnly}
+          className={`mt-2 flex min-h-[100px] w-full resize-y items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${
+            isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+          }`}
+          placeholder="Enter subscription description"
+        />
+      </div>
+
+      {!isReadOnly && (
+        <div className="col-span-8 flex justify-end gap-3 pt-4">
+          <Button
+            type="button"
+            icon={MdCancel}
+            text="Cancel"
+            size="md"
+            color="bg-gray-200"
+            // textColor="text-gray-700"
+            hoverColor="hover:bg-gray-300"
+            onClick={onSuccess}
+          />
+          <Button
+            type="submit"
+            icon={mode === 'create' ? MdAdd : MdSave}
+            text={mode === 'create' ? 'Create Subscription' : 'Save Changes'}
+            size="md"
+            color="bg-brandGreen"
+            hoverColor="hover:bg-brandGreenDark"
+            disabled={Object.keys(errors).length > 0}
+            onClick={onSuccess}
+          />
+        </div>
+      )}
+    </form>
   );
-}
+};
+
+export default SubscriptionForm;

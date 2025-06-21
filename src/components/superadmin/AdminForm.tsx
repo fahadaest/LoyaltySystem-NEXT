@@ -1,5 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Button from 'components/button/Button';
+import {
+  MdOutlineArrowBack,
+  MdSave,
+  MdAdd,
+  MdInfoOutline,
+  MdClose,
+} from 'react-icons/md';
 
 const countryCodes = [
   { code: '+1', country: 'US/CA', flag: '🇺🇸' },
@@ -33,25 +41,25 @@ const AdminForm = ({
       pointBased: false,
       productBased: false,
     },
-    ...initialData, // Merge initialData for edit mode
+    ...initialData,
   });
 
   const [errors, setErrors] = useState<any>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Effect to update form data if initialData changes (e.g., when navigating directly to edit page)
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
       ...initialData,
-      // For edit mode, we don't want to pre-fill password for security
       password: '',
       confirmPassword: '',
     }));
-    setErrors({}); // Clear errors on data change
+    setErrors({});
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -66,7 +74,7 @@ const AdminForm = ({
     }
   };
 
-  const handleCheckboxChange = (e) => {
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -96,8 +104,10 @@ const AdminForm = ({
       newErrors.phoneNumber = 'Phone number must be 10-15 digits';
     }
 
-    // Password validation only for create mode or if password is entered in edit mode
-    if (!isEditMode || formData.password) {
+    if (
+      !isEditMode ||
+      (isEditMode && (formData.password || formData.confirmPassword))
+    ) {
       if (!formData.password) {
         newErrors.password = 'Password is required';
       } else if (formData.password.length < 8) {
@@ -123,7 +133,7 @@ const AdminForm = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) return;
@@ -134,332 +144,311 @@ const AdminForm = ({
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      {/* Header */}
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={onCancel}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {isEditMode ? 'Edit Admin' : 'Create New Admin'}
-          </h1>
-          <p className="mt-2 text-gray-600">
-            {isEditMode
-              ? 'Update administrator information'
-              : 'Add a new administrator to the system'}
-          </p>
+    <div className="h-full w-full">
+      <div className="mb-6 flex flex-col justify-between rounded-lg px-4 py-3 md:flex-row md:items-center">
+        <div className="flex items-center space-x-4">
+          <Button
+            icon={MdOutlineArrowBack}
+            onClick={onCancel}
+            text="" // No text, just icon for back button
+            size="md"
+            color="bg-gray-200"
+            // textColor="text-gray-700"
+            hoverColor="hover:bg-gray-300"
+          />
+          <div>
+            <h4 className="ml-1 text-2xl font-bold text-navy-700 dark:text-white">
+              {isEditMode ? 'Edit Admin' : 'Create New Admin'}
+            </h4>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              {isEditMode
+                ? 'Update administrator information'
+                : 'Add a new administrator to the system'}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Form */}
-      <div className="rounded-xl border bg-white p-8 shadow-sm">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name Field */}
+      <form onSubmit={handleSubmit} className="space-y-6 px-4">
+        <div>
+          <label
+            htmlFor="name"
+            className="mb-2 block text-sm font-bold text-navy-700 dark:text-white"
+          >
+            Full Name *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+              errors.name ? 'border-red-500' : 'border-gray-200'
+            } dark:!border-white/10 dark:text-white`}
+            placeholder="Enter full name"
+          />
+          {errors.name && (
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+              {errors.name}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-bold text-navy-700 dark:text-white"
+          >
+            Email Address *
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+              errors.email ? 'border-red-500' : 'border-gray-200'
+            } dark:!border-white/10 dark:text-white`}
+            placeholder="Enter email address"
+          />
+          {errors.email && (
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+              {errors.email}
+            </p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
             <label
-              htmlFor="name"
-              className="mb-2 block text-sm font-medium text-gray-900"
+              htmlFor="role"
+              className="mb-2 block text-sm font-bold text-navy-700 dark:text-white"
             >
-              Full Name *
+              Role *
             </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
               onChange={handleChange}
-              className={`w-full rounded-lg border px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter full name"
-            />
-            {errors.name && (
-              <p className="mt-2 text-sm text-red-600">{errors.name}</p>
-            )}
+              className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white"
+            >
+              <option value="Admin">Admin</option>
+              <option value="Super Admin">Super Admin</option>
+            </select>
           </div>
 
-          {/* Email Field */}
           <div>
             <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-medium text-gray-900"
+              htmlFor="status"
+              className="mb-2 block text-sm font-bold text-navy-700 dark:text-white"
             >
-              Email Address *
+              Status *
             </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+            <select
+              id="status"
+              name="status"
+              value={formData.status}
               onChange={handleChange}
-              className={`w-full rounded-lg border px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter email address"
-            />
-            {errors.email && (
-              <p className="mt-2 text-sm text-red-600">{errors.email}</p>
-            )}
-          </div>
-
-          {/* Role and Status Fields */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <label
-                htmlFor="role"
-                className="mb-2 block text-sm font-medium text-gray-900"
-              >
-                Role *
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Admin">Admin</option>
-                <option value="Super Admin">Super Admin</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="status"
-                className="mb-2 block text-sm font-medium text-gray-900"
-              >
-                Status *
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Phone Number Field */}
-          <div>
-            <label
-              htmlFor="phoneNumber"
-              className="mb-2 block text-sm font-medium text-gray-900"
+              className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white"
             >
-              Phone Number *
-            </label>
-            <div className="flex">
-              <select
-                name="countryCode"
-                value={formData.countryCode}
-                onChange={handleChange}
-                className="rounded-l-lg border border-gray-300 bg-white px-3 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-              >
-                {countryCodes.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.flag} {country.code}
-                  </option>
-                ))}
-              </select>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="phoneNumber"
+            className="mb-2 block text-sm font-bold text-navy-700 dark:text-white"
+          >
+            Phone Number *
+          </label>
+          <div className="flex rounded-xl border border-gray-200 dark:!border-white/10">
+            <select
+              name="countryCode"
+              value={formData.countryCode}
+              onChange={handleChange}
+              className="rounded-l-xl bg-white/0 px-3 py-3 text-sm outline-none dark:!border-white/10 dark:text-white"
+            >
+              {countryCodes.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.flag} {country.code}
+                </option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              id="phoneNumber"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className={`flex-1 rounded-r-xl bg-white/0 px-4 py-3 text-sm outline-none ${
+                errors.phoneNumber ? 'border-red-500' : ''
+              } dark:!border-white/10 dark:text-white`}
+              placeholder="Enter phone number"
+            />
+          </div>
+          {errors.phoneNumber && (
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+              {errors.phoneNumber}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="mb-3 block text-sm font-bold text-navy-700 dark:text-white">
+            Loyalty Access *
+          </label>
+          <div className="space-y-3">
+            <div className="flex items-center">
               <input
-                type="tel"
-                id="phoneNumber"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className={`flex-1 rounded-r-lg border-b border-r border-t px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                  errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="Enter phone number"
+                type="checkbox"
+                id="pointBased"
+                name="pointBased"
+                checked={formData.loyaltyAccess.pointBased}
+                onChange={handleCheckboxChange}
+                className="h-4 w-4 rounded border-gray-300 text-brandLinear focus:ring-brandLinear dark:border-white/10"
               />
+              <label
+                htmlFor="pointBased"
+                className="ml-3 text-sm text-gray-700 dark:text-gray-300"
+              >
+                Point-Based Loyalty
+              </label>
             </div>
-            {errors.phoneNumber && (
-              <p className="mt-2 text-sm text-red-600">{errors.phoneNumber}</p>
-            )}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="productBased"
+                name="productBased"
+                checked={formData.loyaltyAccess.productBased}
+                onChange={handleCheckboxChange}
+                className="h-4 w-4 rounded border-gray-300 text-brandLinear focus:ring-brandLinear dark:border-white/10"
+              />
+              <label
+                htmlFor="productBased"
+                className="ml-3 text-sm text-gray-700 dark:text-gray-300"
+              >
+                Product-Based Loyalty
+              </label>
+            </div>
           </div>
+          {errors.loyaltyAccess && (
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+              {errors.loyaltyAccess}
+            </p>
+          )}
+        </div>
 
-          {/* Loyalty Access Field */}
+        <div className="space-y-6">
           <div>
-            <label className="mb-3 block text-sm font-medium text-gray-900">
-              Loyalty Access *
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-bold text-navy-700 dark:text-white"
+            >
+              Password {isEditMode ? '(Leave blank to keep current)' : '*'}
             </label>
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="pointBased"
-                  name="pointBased"
-                  checked={formData.loyaltyAccess.pointBased}
-                  onChange={handleCheckboxChange}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="pointBased"
-                  className="ml-3 text-sm text-gray-700"
-                >
-                  Point-Based Loyalty
-                </label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="productBased"
-                  name="productBased"
-                  checked={formData.loyaltyAccess.productBased}
-                  onChange={handleCheckboxChange}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="productBased"
-                  className="ml-3 text-sm text-gray-700"
-                >
-                  Product-Based Loyalty
-                </label>
-              </div>
-            </div>
-            {errors.loyaltyAccess && (
-              <p className="mt-2 text-sm text-red-600">
-                {errors.loyaltyAccess}
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+                errors.password ? 'border-red-500' : 'border-gray-200'
+              } dark:!border-white/10 dark:text-white`}
+              placeholder={isEditMode ? 'Enter new password' : 'Enter password'}
+            />
+            {errors.password && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                {errors.password}
               </p>
             )}
           </div>
 
-          {/* Password Fields */}
-          <div className="space-y-6">
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-2 block text-sm font-medium text-gray-900"
-              >
-                Password {isEditMode ? '(Leave blank to keep current)' : '*'}
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full rounded-lg border px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder={
-                  isEditMode ? 'Enter new password' : 'Enter password'
-                }
-              />
-              {errors.password && (
-                <p className="mt-2 text-sm text-red-600">{errors.password}</p>
-              )}
-            </div>
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="mb-2 block text-sm font-bold text-navy-700 dark:text-white"
+            >
+              Confirm Password {isEditMode ? '' : '*'}
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
+                errors.confirmPassword ? 'border-red-500' : 'border-gray-200'
+              } dark:!border-white/10 dark:text-white`}
+              placeholder={
+                isEditMode ? 'Confirm new password' : 'Confirm password'
+              }
+            />
+            {errors.confirmPassword && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
+        </div>
 
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="mb-2 block text-sm font-medium text-gray-900"
-              >
-                Confirm Password {isEditMode ? '' : '*'}
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`w-full rounded-lg border px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder={
-                  isEditMode ? 'Confirm new password' : 'Confirm password'
-                }
-              />
-              {errors.confirmPassword && (
-                <p className="mt-2 text-sm text-red-600">
-                  {errors.confirmPassword}
-                </p>
-              )}
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-navy-700">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <MdInfoOutline className="h-5 w-5 text-blue-400 dark:text-blue-300" />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Password Requirements
+              </h3>
+              <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                <ul className="list-inside list-disc space-y-1">
+                  <li>Minimum 8 characters long</li>
+                  <li>Should include uppercase and lowercase letters</li>
+                  <li>Should include numbers and special characters</li>
+                </ul>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end space-x-4 pt-4">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="rounded-lg border border-gray-300 px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`rounded-lg px-6 py-3 font-medium text-white transition-colors ${
-                isSubmitting
-                  ? 'cursor-not-allowed bg-gray-400'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {isSubmitting
+        <div className="flex justify-end space-x-4 pt-4">
+          <Button
+            type="button"
+            onClick={onCancel}
+            text="Cancel"
+            icon={MdClose}
+            size="md"
+            color="bg-gray-200"
+            // textColor="text-gray-700"
+            hoverColor="hover:bg-gray-300"
+          />
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            text={
+              isSubmitting
                 ? isEditMode
                   ? 'Updating...'
                   : 'Creating...'
                 : isEditMode
                 ? 'Update Admin'
-                : 'Create Admin'}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Info Card */}
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg
-              className="h-5 w-5 text-blue-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-blue-800">
-              Password Requirements
-            </h3>
-            <div className="mt-2 text-sm text-blue-700">
-              <ul className="list-inside list-disc space-y-1">
-                <li>Minimum 8 characters long</li>
-                <li>Should include uppercase and lowercase letters</li>
-                <li>Should include numbers and special characters</li>
-              </ul>
-            </div>
-          </div>
+                : 'Create Admin'
+            }
+            icon={isEditMode ? MdSave : MdAdd}
+            size="md"
+            color="bg-brandGreen"
+            hoverColor="hover:bg-brandGreenDark"
+            onClick={undefined}
+          />
         </div>
-      </div>
+      </form>
     </div>
   );
 };
