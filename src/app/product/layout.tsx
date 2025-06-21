@@ -69,9 +69,9 @@ export default function Admin({ children }: { children: React.ReactNode }) {
             <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">
               {children}
             </div>
-            <div className="p-3">
+            {/* <div className="p-3">
               <Footer />
-            </div>
+            </div> */}
           </div>
         </main>
       </div>
