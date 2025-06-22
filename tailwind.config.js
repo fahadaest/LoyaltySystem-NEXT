@@ -146,6 +146,7 @@ module.exports = {
       },
     },
     screens: {
+      xs: '357px',
       sm: '576px',
       'sm-max': { max: '576px' },
       md: '768px',

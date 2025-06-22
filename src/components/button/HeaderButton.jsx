@@ -1,14 +1,14 @@
 import React from "react";
 
 const sizeClasses = {
-    icon: "py-1 px-2 text-xs",
-    xs: "py-1 px-2 text-xs",
-    sm: "py-1 px-3 text-sm",
-    md: "py-2 px-4 text-base",
-    lg: "py-3 px-6 text-lg",
+    icon: "py-1 px-2 sm:text-xs",
+    xs: "py-1 px-2 sm:text-xs",
+    sm: "py-1 px-3 sm:text-sm",
+    md: "py-2 px-4 sm:text-base",
+    lg: " py-1 px-3  xs:py-3 xs:px-3  text-[10px] xs:text-xs sm:text-lg",
 };
 
-const Button = ({
+const HeaderButton = ({
     icon: Icon,
     text,
     color = "bg-brandGreen",
@@ -16,6 +16,7 @@ const Button = ({
     size = "md",
     onClick,
     className = "",
+    variant,
     ...rest
 }) => {
     const borderRadiusClass = size === "xs" || size === "sm" || size === "icon" ? "rounded-md" : "rounded-lg";
@@ -29,8 +30,7 @@ const Button = ({
         >
             {Icon && (
                 <Icon
-                    size={size === "icon" ? 15 : 18}
-                    className="text-white transition-transform duration-300 group-hover:rotate-[360deg]"
+                    className=" text-white w-[15px] h-[15px] sm:w-[18px] sm:h-[18px] transition-transform duration-300 group-hover:rotate-[360deg]"
                 />
             )}
             {text && <span className="leading-none">{text}</span>}
@@ -38,4 +38,4 @@ const Button = ({
     );
 };
 
-export default Button;
+export default HeaderButton;

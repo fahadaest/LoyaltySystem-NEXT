@@ -36,8 +36,8 @@ const Navbar = (props: {
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       <div className="ml-[6px]">
-        <div className="">
-          <p className="flex shrink items-center gap-2 text-[30px] capitalize text-navy-700 dark:text-white">
+        <div className="hidden sm:inline">
+          <p className="flex shrink items-center gap-2 text-[20px] xs:text-[20px] sm:text-[30px] capitalize text-navy-700 dark:text-white">
             <NavLink
               href="#"
               className="font-bold capitalize hover:text-navy-700 dark:hover:text-white"
@@ -56,7 +56,7 @@ const Navbar = (props: {
             <span className="animate-wave text-2xl">👋</span>
           </p>
           <a
-            className="text-sm font-normal text-navy-700 hover:underline dark:text-white dark:hover:text-white"
+            className="hidden sm:inline text-sm font-normal text-navy-700 hover:underline dark:text-white dark:hover:text-white"
             href=" "
           >
             Pages
@@ -66,7 +66,7 @@ const Navbar = (props: {
             </span>
           </a>
           <NavLink
-            className="text-sm font-normal capitalize text-navy-700 hover:underline dark:text-white dark:hover:text-white"
+            className="hidden sm:inline text-sm font-normal capitalize text-navy-700 hover:underline dark:text-white dark:hover:text-white"
             href="#"
           >
             {brandText}

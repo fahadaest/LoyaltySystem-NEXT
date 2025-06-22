@@ -11,7 +11,7 @@ const ProductCard = ({ title, author, price, image, extra }) => {
         console.log('Delete clicked');
     }
     return (
-        <Card extra={`flex flex-col w-full !p-0 bg-white shadow-xl hover:shadow-brandGreenHighlight shadow-gray-100 transition-transform duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden ${extra}`} >
+        <Card extra={`flex flex-col w-full !p-0 bg-white shadow-lg transition-transform duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden ${extra}`} >
             <div className="relative w-full aspect-[4/3]">
                 <img
                     src={image}
@@ -34,12 +34,14 @@ const ProductCard = ({ title, author, price, image, extra }) => {
                 <div className=" flex flex-col gap-2">
                     <Button
                         icon={IoCreateOutline}
+                        text="Edit"
                         size="icon"
                         color="bg-brandGreen"
                         onClick={handleEdit}
                     />
                     <Button
                         icon={IoTrashOutline}
+                        text="Delete"
                         size="icon"
                         color="bg-brandRed"
                         onClick={handleEdit}

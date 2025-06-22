@@ -5,18 +5,15 @@ import InputField from 'components/fields/InputField';
 import Default from 'components/auth/variants/DefaultAuthLayout';
 import Checkbox from 'components/checkbox';
 import Button from 'components/button/Button';
-import {
-  ADMIN_EMAIL,
-  ADMIN_PASSWORD,
-  SUPER_ADMIN_EMAIL,
-  SUPER_ADMIN_PASSWORD,
-} from 'utils/data';
+import { Eye, EyeOff } from 'lucide-react';
+import { ADMIN_EMAIL, ADMIN_PASSWORD, SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD, } from 'utils/data';
 
 function SignInDefault() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignIn = () => {
     if (email === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASSWORD) {
@@ -30,6 +27,10 @@ function SignInDefault() {
     } else {
       setError('Invalid email or password. Please try again.');
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   useEffect(() => {
@@ -53,14 +54,9 @@ function SignInDefault() {
             <h3 className="mb-2.5 text-4xl font-bold text-navy-700 dark:text-white">
               Sign In
             </h3>
-            <p className="mb-9 ml-1 text-base text-gray-600">
+            <p className="mb-12 ml-1 text-base text-gray-600">
               Enter your email and password to sign in!
             </p>
-            <div className="mb-6 flex items-center  gap-3">
-              <div className="h-px w-full bg-gray-200 dark:!bg-navy-700" />
-              <p className="text-base text-gray-600"> or </p>
-              <div className="h-px w-full bg-gray-200 dark:!bg-navy-700" />
-            </div>
 
             <InputField
               variant="auth"
@@ -73,16 +69,29 @@ function SignInDefault() {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Password*"
-              placeholder="Min. 8 characters"
-              id="password"
-              type="password"
-              state={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative mb-3">
+              <InputField
+                variant="auth"
+                extra=""
+                label="Password*"
+                placeholder="Min. 8 characters"
+                id="password"
+                type={showPassword ? "text" : "password"}
+                state={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-3 top-12 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {showPassword ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+            </div>
 
             {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
@@ -90,15 +99,9 @@ function SignInDefault() {
               <div className="mt-2 flex items-center">
                 <Checkbox />
                 <p className="ml-2 text-sm font-medium text-navy-700 dark:text-white">
-                  Keep me logged In
+                  Remember Password
                 </p>
               </div>
-              <a
-                className="text-sm font-medium text-brandGreen hover:text-brand-600 dark:text-white"
-                href=" "
-              >
-                Forgot Password?
-              </a>
             </div>
 
             <Button
