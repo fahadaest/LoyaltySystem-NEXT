@@ -7,6 +7,8 @@ import Checkbox from 'components/checkbox';
 import Button from 'components/button/Button';
 import { Eye, EyeOff } from 'lucide-react';
 import { ADMIN_EMAIL, ADMIN_PASSWORD, SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD, } from 'utils/data';
+import { useLoginMutation } from 'store/authApi';
+import Cookies from 'js-cookie';
 
 function SignInDefault() {
   const router = useRouter();
@@ -14,19 +16,35 @@ function SignInDefault() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [login, { isLoading: loginLoading, error: loginError, data: loginData }] = useLoginMutation();
 
-  const handleSignIn = () => {
-    if (email === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASSWORD) {
+  const handleSignIn = async () => {
+    const response = await login({ email, password });
+    Cookies.set('token', response?.data?.token, { expires: 7 });
+    console.log('Login response:', response);
+    if (response?.data.role === 'superadmin' && response?.data?.token) {
       setError('');
       localStorage.setItem('superadmin_session', 'true');
       router.push('/superadmin/manage-admin/list');
-    } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    } else if (response?.data.role === 'admin' && response?.data?.token) {
       setError('');
       localStorage.setItem('admin_session', 'true');
       router.push('/admin/default');
     } else {
       setError('Invalid email or password. Please try again.');
     }
+
+    // if (email === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASSWORD) {
+    //   setError('');
+    //   localStorage.setItem('superadmin_session', 'true');
+    //   router.push('/superadmin/manage-admin/list');
+    // } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    //   setError('');
+    //   localStorage.setItem('admin_session', 'true');
+    //   router.push('/admin/default');
+    // } else {
+    //   setError('Invalid email or password. Please try again.');
+    // }
   };
 
   const togglePasswordVisibility = () => {

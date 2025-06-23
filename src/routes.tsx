@@ -37,18 +37,18 @@ const routes = [
   {
     name: 'Loyalty',
     icon: <MdLoyalty className="h-6 w-6" />,
-    layout: '/loyalty',
+    layout: '/admin/loyalty',
     path: '',
     submenu: [
       {
         name: 'Product Loyalty',
-        layout: '/loyalty',
+        layout: '/admin/loyalty',
         path: 'product',
         icon: <MdHome className="h-6 w-6" />,
       },
       {
         name: 'Point Loyalty',
-        layout: '/loyalty',
+        layout: '/admin/loyalty',
         path: 'point',
         icon: <MdHome className="h-6 w-6" />,
       },

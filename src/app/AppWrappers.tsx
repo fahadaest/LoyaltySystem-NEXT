@@ -6,6 +6,8 @@ import 'styles/Contact.css';
 // import 'styles/Plugins.css';
 import 'styles/MiniCalendar.css';
 import 'styles/index.css';
+import { Provider } from 'react-redux';
+import { store } from 'store/store';
 
 import dynamic from 'next/dynamic';
 
@@ -16,5 +18,11 @@ const NoSSR = dynamic(() => Promise.resolve(_NoSSR), {
 });
 
 export default function AppWrappers({ children }: { children: ReactNode }) {
-  return <NoSSR>{children}</NoSSR>;
+  return (
+    <NoSSR>
+      <Provider store={store}>
+        {children}
+      </Provider>
+    </NoSSR>
+  );
 }

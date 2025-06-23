@@ -5,6 +5,11 @@ import React, { useState, useEffect } from 'react';
 import CustomModal from 'components/modal/CustomModal';
 import Card from 'components/card';
 import Button from 'components/button/Button';
+import HeadingCard from 'components/card/HeadingCard';
+import HeaderButton from 'components/button/HeaderButton';
+import { IoPeopleOutline } from 'react-icons/io5';
+import DataTable from 'components/admin/default/AdminListTable';
+import { useListAdminsQuery } from 'store/adminApi';
 
 import {
   createColumnHelper,
@@ -24,6 +29,52 @@ import {
 import { MdAdd } from 'react-icons/md';
 import { useDisclosure } from '@chakra-ui/react';
 
+type AdminData = {
+  name: string;
+  spendingAmount: number;
+  rewardPoints: number;
+  admin?: string;
+};
+
+const mockData: AdminData[] = [
+  { name: "John Doe", spendingAmount: 150.5, rewardPoints: 120, admin: "Yes" },
+  { name: "Jane Smith", spendingAmount: 220.9, rewardPoints: 90, admin: "No" },
+];
+
+const columnHelper = createColumnHelper<AdminData>();
+
+const mockDataColumns = [
+  columnHelper.accessor("name", {
+    header: () => <span>Name</span>,
+    cell: (info) => <span>{info.getValue()}</span>,
+  }),
+  columnHelper.accessor("spendingAmount", {
+    header: () => <span>Spending</span>,
+    cell: (info) => (
+      <span>
+        {info.getValue().toFixed(2)} <span className="text-brandGreen">AED</span>
+      </span>
+    ),
+  }),
+  columnHelper.accessor("rewardPoints", {
+    header: () => <span>Points</span>,
+    cell: (info) => (
+      <span className="bg-brandGreen text-white px-2 py-1 rounded-md text-xs">
+        {info.getValue()}
+      </span>
+    ),
+  }),
+];
+
+const extraColumns = [
+  columnHelper.accessor("admin", {
+    header: () => <span>Admin</span>,
+    cell: (info) => <span>{info.getValue()}</span>,
+  }),
+];
+
+
+
 type AdminRowObj = {
   id: number;
   email: string;
@@ -41,6 +92,8 @@ type AdminRowObj = {
 };
 
 const AdminListPage = () => {
+  const { data: admin, error, isLoading } = useListAdminsQuery();
+  console.log(admin)
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -271,201 +324,60 @@ const AdminListPage = () => {
     }),
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true,
-  });
 
   return (
     <div className="mt-5 grid grid-cols-1 gap-5">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-        <Card extra="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Total Admins
-              </p>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {admins.length}
-              </h3>
-            </div>
-            <div className="rounded-lg bg-blue-50 p-3 dark:bg-navy-600">
-              <svg
-                className="h-6 w-6 text-blue-600 dark:text-blue-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 0 014.5 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </Card>
-
-        <Card extra="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Active Admins
-              </p>
-              <h3 className="text-2xl font-bold text-green-600">
-                {admins.filter((admin) => admin.status === 'Active').length}
-              </h3>
-            </div>
-            <div className="rounded-lg bg-green-50 p-3 dark:bg-navy-600">
-              <svg
-                className="h-6 w-6 text-green-500 dark:text-green-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </Card>
-
-        <Card extra="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Super Admins
-              </p>
-              <h3 className="text-2xl font-bold text-purple-600">
-                {admins.filter((admin) => admin.role === 'Super Admin').length}
-              </h3>
-            </div>
-            <div className="rounded-lg bg-purple-50 p-3 dark:bg-navy-600">
-              <svg
-                className="h-6 w-6 text-purple-500 dark:text-purple-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                />
-              </svg>
-            </div>
-          </div>
-        </Card>
-
-        <Card extra="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Inactive Admins
-              </p>
-              <h3 className="text-2xl font-bold text-red-600">
-                {admins.filter((admin) => admin.status === 'Inactive').length}
-              </h3>
-            </div>
-            <div className="rounded-lg bg-red-50 p-3 dark:bg-navy-600">
-              <svg
-                className="h-6 w-6 text-red-500 dark:text-red-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <Card extra="w-full h-full px-6 pb-6 sm:overflow-x-auto">
-        <div className="flex items-center justify-between pt-4">
-          <h2 className="text-xl font-bold text-navy-700 dark:text-white">
-            Admin List
-          </h2>
-          <Button
+      <div className="mt-3">
+        <HeadingCard subtitle="Admin List" icon={<IoPeopleOutline className="text-3xl text-brandGreen dark:text-white" />}>
+          <HeaderButton
             icon={MdAdd}
             text="Add New Admin"
             size="md"
             color="bg-brandGreen"
-            hoverColor="hover:bg-brandGreenDark"
-            onClick={() => router.push('/superadmin/manage-admin/create')}
+            onClick={onOpen}
+            variant={undefined}
           />
-        </div>
+        </HeadingCard>
+      </div>
 
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full table-auto border-collapse overflow-hidden rounded-xl">
-            <thead className="bg-gray-100 dark:bg-navy-700">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className={`cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 ${
-                        header.column.id === 'actions' ? 'text-right' : ''
-                      }`}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={`transition-all duration-200 ${
-                    index % 2 === 0
-                      ? 'bg-white dark:bg-navy-700'
-                      : 'bg-gray-50 dark:bg-navy-800'
-                  } hover:bg-gray-100 dark:hover:bg-navy-600`}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className={`px-4 py-3 text-sm ${
-                        cell.column.id === 'actions' ? 'text-right' : ''
-                      }`}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      <div className="grid grid-cols-1 gap-5">
+        <DataTable
+          data={mockData}
+          columns={mockDataColumns}
+          extraColumns={extraColumns}
+          onAddClick={() => console.log("Add clicked")}
+          actions={[
+            {
+              type: "view",
+              label: "View",
+              icon: IoEyeOutline,
+              color: "bg-brandBlue",
+              onClick: (row) => console.log("View", row),
+            },
+            {
+              type: "edit",
+              label: "Edit",
+              icon: IoCreateOutline,
+              color: "bg-brandGreen",
+              onClick: (row) => console.log("Edit", row),
+            },
+            {
+              type: "delete",
+              label: "Delete",
+              icon: IoTrashOutline,
+              color: "bg-brandRed",
+              onClick: (row) => console.log("Delete", row),
+            },
+            {
+              type: "copy",
+              label: "Copy",
+              icon: IoCopyOutline,
+              color: "bg-brandYellow",
+              onClick: (row) => console.log("Copy", row),
+            },
+          ]}
+        />
+      </div>
 
       <CustomModal
         isOpen={isDeleteModalOpen}
@@ -524,3 +436,4 @@ const AdminListPage = () => {
 };
 
 export default AdminListPage;
+
