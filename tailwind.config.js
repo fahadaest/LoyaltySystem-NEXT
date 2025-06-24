@@ -173,6 +173,7 @@ module.exports = {
       lightPrimary: '#F4F7FE',
       blueSecondary: '#4318FF',
       brandLinear: '#868CFF',
+      black: '#000000',
       gray: {
         50: '#F5F6FA',
         100: '#EEF0F6',

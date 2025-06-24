@@ -122,22 +122,8 @@ const superAdminroutes = [
   {
     name: 'Manage Admin',
     icon: <MdInventory2 className="h-6 w-6" />,
-    layout: '/superadmin/manage-admin',
+    layout: '/superadmin',
     path: 'manage-admin',
-    submenu: [
-      {
-        name: 'Create Admin',
-        layout: '/superadmin/manage-admin',
-        path: 'create',
-        icon: <MdOutlineCreate className="h-6 w-6" />,
-      },
-      {
-        name: 'Admin List',
-        layout: '/superadmin/manage-admin',
-        path: 'list',
-        icon: <MdHome className="h-6 w-6" />,
-      },
-    ],
   },
   {
     name: 'Manage Subscription',

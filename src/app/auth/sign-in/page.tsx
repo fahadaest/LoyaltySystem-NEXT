@@ -25,7 +25,7 @@ function SignInDefault() {
     if (response?.data.role === 'superadmin' && response?.data?.token) {
       setError('');
       localStorage.setItem('superadmin_session', 'true');
-      router.push('/superadmin/manage-admin/list');
+      router.push('/superadmin/manage-admin');
     } else if (response?.data.role === 'admin' && response?.data?.token) {
       setError('');
       localStorage.setItem('admin_session', 'true');

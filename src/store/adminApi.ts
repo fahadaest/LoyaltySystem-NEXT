@@ -19,6 +19,12 @@ export interface CreateAdminRequest {
     lastName: string;
     email: string;
     password: string;
+    phoneNumber: string;
+    loyaltyAccess?: {
+        pointBased?: boolean;
+        productBased?: boolean;
+    };
+    subscriptionId: number;
 }
 
 export interface UpdateAdminRequest {
@@ -26,6 +32,11 @@ export interface UpdateAdminRequest {
     lastName?: string;
     email?: string;
     password?: string;
+    phoneNumber: string;
+    loyaltyAccess?: {
+        pointBased?: boolean;
+        productBased?: boolean;
+    };
 }
 
 export const adminApi = createApi({
@@ -64,7 +75,20 @@ export const adminApi = createApi({
                 method: 'PUT',
                 body: data,
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: 'Admins', id }],
+            invalidatesTags: (result, error, { id }) => [
+                { type: 'Admins', id },
+                { type: 'Admins' }
+            ],
+        }),
+        deleteAdmin: builder.mutation<{ message: string }, string>({
+            query: (id) => ({
+                url: `/api/admins/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: (result, error, id) => [
+                { type: 'Admins', id },
+                { type: 'Admins' },
+            ],
         }),
     }),
 });
@@ -74,4 +98,5 @@ export const {
     useListAdminsQuery,
     useGetAdminByIdQuery,
     useUpdateAdminMutation,
+    useDeleteAdminMutation
 } = adminApi;

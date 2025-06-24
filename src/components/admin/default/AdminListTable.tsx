@@ -1,8 +1,5 @@
-// components/table/DataTable.tsx
-
 import React from "react";
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -11,10 +8,9 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import Button from "components/button/Button";
-import { IoEyeOutline, IoCreateOutline, IoTrashOutline, IoCopyOutline } from "react-icons/io5";
 import Card from "components/card";
 
-type ActionType = "view" | "edit" | "delete" | "copy";
+export type ActionType = "view" | "edit" | "delete" | "copy";
 
 interface Action {
   type: ActionType;
@@ -24,40 +20,30 @@ interface Action {
   color: string;
 }
 
-interface DataTableProps<T> {
+interface AdminListTableProps<T> {
   data: T[];
   columns: ColumnDef<T, any>[];
-  title?: string;
-  onAddClick?: () => void;
-  addButtonLabel?: string;
   actions?: Action[];
-  extraColumns?: ColumnDef<T, any>[]; // e.g. for role-based or dynamic display like Admin
 }
 
-export default function DataTable<T extends object>({
+export default function AdminListTable<T extends object>({
   data,
   columns,
-  title,
-  onAddClick,
-  addButtonLabel = "Add New",
-  actions,
-  extraColumns = [],
-}: DataTableProps<T>) {
+  actions = [],
+}: AdminListTableProps<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const table = useReactTable({
     data,
     columns: [
       ...columns,
-      ...extraColumns,
-      ...(actions?.length
+      ...(actions.length
         ? [
           {
             id: "actions",
-            header: () => (
-              <p className="text-sm font-semibold text-gray-700 dark:text-white">Actions</p>
-            ),
+            header: () => <span>Actions</span>,
             cell: (info: any) => (
-              <div className="flex items-center gap-2 justify-end">
+              <div className="flex justify-end gap-2">
                 {actions.map((action) => (
                   <Button
                     key={action.type}
@@ -82,67 +68,47 @@ export default function DataTable<T extends object>({
 
   return (
     <Card>
-      <div className=" w-full h-full px-6 pb-6 sm:overflow-x-auto">
-        {title && (
-          <div className="flex items-center justify-between pt-4">
-            <h2 className="text-xl font-bold text-navy-700 dark:text-white">{title}</h2>
-            {onAddClick && (
-              <Button
-                icon={IoCreateOutline}
-                text={addButtonLabel}
-                size="md"
-                color="bg-brandGreen"
-                hoverColor="hover:bg-brandGreenDark"
-                onClick={onAddClick}
-              />
-            )}
-          </div>
-        )}
-
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full table-auto border-collapse rounded-xl overflow-hidden">
-            <thead className="bg-gray-100 dark:bg-navy-700">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className={`py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300 cursor-pointer ${header.column.id === "actions" ? "text-right" : ""
-                        }`}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className={`transition-all duration-200 ${index % 2 === 0
-                    ? "bg-white dark:bg-navy-700"
-                    : "bg-gray-50 dark:bg-navy-800"
-                    } hover:bg-gray-100 dark:hover:bg-navy-600`}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className={`py-3 px-4 text-sm ${cell.column.id === "actions" ? "text-right" : ""
-                        }`}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="overflow-x-auto rounded-2xl">
+        <table className="w-full table-auto">
+          <thead className="bg-gray-100 dark:bg-navy-700">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    className={`px-4 py-3 text-left text-xs font-semibold uppercase cursor-pointer ${header.column.id === "actions" ? "text-right" : ""
+                      }`}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row, idx) => (
+              <tr
+                key={row.id}
+                className={`transition-all ${idx % 2 === 0
+                  ? "bg-white dark:bg-navy-700"
+                  : "bg-gray-50 dark:bg-navy-800"
+                  } hover:bg-gray-100 dark:hover:bg-navy-600`}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className={`px-4 py-3 text-sm ${cell.column.id === "actions" ? "text-right" : ""
+                      }`}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </Card>
-
   );
 }
