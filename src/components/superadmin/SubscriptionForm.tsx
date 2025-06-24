@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Subscription } from 'utils/types';
 import Button from 'components/button/Button';
 import { MdSave, MdCancel, MdAdd } from 'react-icons/md';
+import { useCreateSubscriptionMutation } from 'store/subscriptionApi';
 
 type SubscriptionFormProps = {
   mode: 'create' | 'edit' | 'view';
@@ -16,13 +17,14 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   subscription,
   onSuccess,
 }) => {
+  const [createSubscription, { isLoading }] = useCreateSubscriptionMutation();
   const isReadOnly = mode === 'view';
   const title =
     mode === 'create'
       ? 'Create New Subscription'
       : mode === 'edit'
-      ? 'Edit Subscription'
-      : 'Subscription Details';
+        ? 'Edit Subscription'
+        : 'Subscription Details';
 
   const [formData, setFormData] = useState<any>(
     subscription || {
@@ -70,16 +72,23 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      console.log('Form submitted:', formData);
+    if (!validate()) {
+      console.log('Form has errors');
+      return;
+    }
+    try {
+      if (mode === 'create') {
+        await createSubscription(formData).unwrap();
+        console.log('Subscription created:', formData);
+      }
 
       if (onSuccess) {
         onSuccess();
       }
-    } else {
-      console.log('Form has errors');
+    } catch (error) {
+      console.error('Failed to create subscription:', error);
     }
   };
 
@@ -103,11 +112,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             value={formData.name}
             onChange={handleInputChange}
             disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
-              errors.name ? 'border-red-500' : 'border-gray-200'
-            } dark:!border-white/10 dark:text-white ${
-              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-            }`}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${errors.name ? 'border-red-500' : 'border-gray-200'
+              } dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+              }`}
             placeholder="Enter subscription name"
           />
           {errors.name && (
@@ -129,11 +136,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             value={formData.price}
             onChange={handleInputChange}
             disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
-              errors.price ? 'border-red-500' : 'border-gray-200'
-            } dark:!border-white/10 dark:text-white ${
-              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-            }`}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${errors.price ? 'border-red-500' : 'border-gray-200'
+              } dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+              }`}
             placeholder="0.00"
             step="0.01"
           />
@@ -155,9 +160,8 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             value={formData.billingCycle}
             onChange={handleInputChange}
             disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${
-              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-            }`}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+              }`}
           >
             <option value="monthly">Monthly</option>
             <option value="annually">Annually</option>
@@ -178,9 +182,8 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             value={formData.status}
             onChange={handleInputChange}
             disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${
-              isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-            }`}
+            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
+              }`}
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -190,23 +193,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
       </div>
 
       <div className="col-span-8">
-        <label
-          htmlFor="description"
-          className="text-sm font-bold text-navy-700 dark:text-white"
-        >
+        <label htmlFor="description" className="text-sm font-bold text-navy-700 dark:text-white"  >
           Description
         </label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description || ''}
-          onChange={handleInputChange}
-          disabled={isReadOnly}
-          className={`mt-2 flex min-h-[100px] w-full resize-y items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${
-            isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-          }`}
-          placeholder="Enter subscription description"
-        />
+        <textarea id="description" name="description" value={formData.description || ''} onChange={handleInputChange} disabled={isReadOnly} className={`mt-2 flex min-h-[100px] w-full resize-y items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''}`} placeholder="Enter subscription description" />
       </div>
 
       {!isReadOnly && (
@@ -217,19 +207,23 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             text="Cancel"
             size="md"
             color="bg-gray-200"
-            // textColor="text-gray-700"
             hoverColor="hover:bg-gray-300"
             onClick={onSuccess}
           />
           <Button
             type="submit"
             icon={mode === 'create' ? MdAdd : MdSave}
-            text={mode === 'create' ? 'Create Subscription' : 'Save Changes'}
+            text={
+              isLoading
+                ? 'Saving...'
+                : mode === 'create'
+                  ? 'Create Subscription'
+                  : 'Save Changes'
+            }
             size="md"
             color="bg-brandGreen"
             hoverColor="hover:bg-brandGreenDark"
-            disabled={Object.keys(errors).length > 0}
-            onClick={onSuccess}
+            onClick={() => { }}
           />
         </div>
       )}

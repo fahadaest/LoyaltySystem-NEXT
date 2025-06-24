@@ -2,7 +2,7 @@ import React from 'react';
 import { Subscription } from 'utils/types';
 import Button from 'components/button/Button';
 import { MdEdit, MdDelete, MdInfoOutline } from 'react-icons/md';
-import Card from '.';
+import Card from 'components/card';
 
 type SubscriptionCardProps = {
   subscription: Subscription;
@@ -33,9 +33,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   };
 
   return (
-    <Card
-      extra={`flex flex-col w-full !p-0 bg-white shadow-xl hover:shadow-brandGreenHighlight shadow-gray-100 transition-transform duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden ${extra}`}
-    >
+    <Card extra={`flex flex-col w-full !p-0 bg-white shadow-lg transition-transform duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden ${extra}`} >
       <div className="flex h-fit w-full items-center justify-center rounded-t-2xl bg-lightPrimary p-3 dark:!bg-navy-700">
         <p className="text-xl font-bold text-navy-700 dark:text-white">
           {subscription.name}

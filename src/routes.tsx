@@ -128,7 +128,7 @@ const superAdminroutes = [
   {
     name: 'Manage Subscription',
     layout: '/superadmin',
-    path: 'subscriptions/list',
+    path: 'subscriptions',
     icon: <MdOutlineSubscriptions className="h-6 w-6" />,
   },
 ];
