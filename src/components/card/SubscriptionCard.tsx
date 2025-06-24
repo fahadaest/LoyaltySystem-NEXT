@@ -41,7 +41,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       </div>
       <div className="flex w-full flex-col items-center px-4 pb-4">
         <h5 className="mb-2 mt-4 text-xl font-bold text-navy-700 dark:text-white">
-          ${subscription.price?.toFixed(2)} / {subscription.billingCycle}
+          ${Number(subscription.price).toFixed(2)} / {subscription.billingCycle}
         </h5>
         <div className="mb-3 flex items-center justify-center">
           <span

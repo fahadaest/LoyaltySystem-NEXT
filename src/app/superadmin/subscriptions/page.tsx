@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Subscription } from 'utils/types';
-import { subscriptionsData } from 'utils/data';
 import CustomModal from 'components/modal/CustomModal';
 import Card from 'components/card';
 import Button from 'components/button/Button';
@@ -15,31 +13,16 @@ import SubscriptionForm from 'components/superadmin/SubscriptionForm';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
+import { useListSubscriptionsQuery } from 'store/subscriptionApi';
+import { useState } from 'react';
 
 export default function SubscriptionsPage() {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { data: subscriptions = [], isLoading, isError, refetch } = useListSubscriptionsQuery();
 
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
-
-  useEffect(() => {
-    fetchSubscriptions();
-  }, []);
-
-  const fetchSubscriptions = async () => {
-    try {
-      setSubscriptions(subscriptionsData); // replace with API call if needed
-    } catch (err) {
-      setError('Failed to load subscriptions');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDeleteClick = (subscription: Subscription) => {
     setSelectedSubscription(subscription);
@@ -48,9 +31,7 @@ export default function SubscriptionsPage() {
   };
 
   const handleDeleteConfirm = () => {
-    setSubscriptions(prev =>
-      prev.filter(sub => sub.id !== selectedSubscription?.id)
-    );
+    // In real case, call delete API and refetch()
     onClose();
     setSelectedSubscription(null);
     setIsDeleteMode(false);
@@ -62,7 +43,7 @@ export default function SubscriptionsPage() {
     onOpen();
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Card extra="mt-3 h-full px-4 py-5 flex items-center justify-center min-h-[300px]">
         <p className="text-xl font-medium text-gray-700 dark:text-white">
@@ -72,16 +53,16 @@ export default function SubscriptionsPage() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Card extra="mt-3 h-full px-4 py-5 flex items-center justify-center min-h-[300px] bg-red-100 border border-red-200">
-        <p className="text-red-600 dark:text-red-300">{error}</p>
+        <p className="text-red-600 dark:text-red-300">Failed to load subscriptions</p>
         <Button
           text="Try again"
           size="sm"
           color="bg-red-500"
           hoverColor="hover:bg-red-600"
-          onClick={fetchSubscriptions}
+          onClick={() => refetch()}
           extra="ml-4"
           icon={null}
         />
@@ -141,16 +122,19 @@ export default function SubscriptionsPage() {
             {subscriptions.map((subscription) => (
               <SubscriptionCard
                 key={subscription.id}
-                subscription={subscription}
+                subscription={{
+                  ...subscription,
+                  price: typeof subscription.price === 'string' ? parseFloat(subscription.price) : subscription.price,
+                  createdAt: subscription.createdAt,
+                  updatedAt: subscription.updatedAt,
+                }}
                 onEdit={() => {
                   setSelectedSubscription(subscription);
                   setIsDeleteMode(false);
                   onOpen();
                 }}
                 onDelete={() => handleDeleteClick(subscription)}
-                onView={() =>
-                  router.push(`/superadmin/subscriptions/view/${subscription.id}`)
-                }
+                onView={() => router.push(`/superadmin/subscriptions/view/${subscription.id}`)}
               />
             ))}
           </div>

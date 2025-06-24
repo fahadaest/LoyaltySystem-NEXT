@@ -1,12 +1,12 @@
 export interface Subscription {
-  id: string;
+  id: number;
   name: string;
-  status: 'active' | 'inactive' | 'cancelled';
+  price: number | string;
+  billingCycle: string;
+  status: string;
   description?: string;
-  price?: number;
-  billingCycle?: 'monthly' | 'yearly';
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateSubscriptionData {
