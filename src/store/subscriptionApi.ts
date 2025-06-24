@@ -7,6 +7,8 @@ function getCookie(name: string): string | null {
 }
 
 export interface Subscription {
+    createdAt: string;
+    updatedAt: string;
     id: number;
     name: string;
     price: string;

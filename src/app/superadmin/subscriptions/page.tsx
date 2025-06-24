@@ -13,13 +13,14 @@ import SubscriptionForm from 'components/superadmin/SubscriptionForm';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
-import { useListSubscriptionsQuery } from 'store/subscriptionApi';
+import { useListSubscriptionsQuery, useDeleteSubscriptionMutation } from 'store/subscriptionApi';
 import { useState } from 'react';
 
 export default function SubscriptionsPage() {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: subscriptions = [], isLoading, isError, refetch } = useListSubscriptionsQuery();
+  const [deleteSubscription, { isLoading: isDeleting }] = useDeleteSubscriptionMutation();
 
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
@@ -30,11 +31,19 @@ export default function SubscriptionsPage() {
     onOpen();
   };
 
-  const handleDeleteConfirm = () => {
-    // In real case, call delete API and refetch()
-    onClose();
-    setSelectedSubscription(null);
-    setIsDeleteMode(false);
+  const handleDeleteConfirm = async () => {
+    if (!selectedSubscription) return;
+
+    try {
+      await deleteSubscription(selectedSubscription.id).unwrap();
+      setSelectedSubscription(null);
+      setIsDeleteMode(false);
+      onClose();
+      refetch(); // Refresh the subscription list
+    } catch (error) {
+      console.error('Failed to delete subscription:', error);
+      // Optionally show a toast or error message
+    }
   };
 
   const handleCreateClick = () => {

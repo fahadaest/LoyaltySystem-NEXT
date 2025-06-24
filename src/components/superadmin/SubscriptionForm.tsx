@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Subscription } from 'utils/types';
 import Button from 'components/button/Button';
 import { MdSave, MdCancel, MdAdd } from 'react-icons/md';
-import { useCreateSubscriptionMutation } from 'store/subscriptionApi';
+import { useCreateSubscriptionMutation, useUpdateSubscriptionMutation } from 'store/subscriptionApi';
 
 type SubscriptionFormProps = {
   mode: 'create' | 'edit' | 'view';
@@ -18,6 +18,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   onSuccess,
 }) => {
   const [createSubscription, { isLoading }] = useCreateSubscriptionMutation();
+  const [updateSubscription, { isLoading: isUpdating }] = useUpdateSubscriptionMutation();
   const isReadOnly = mode === 'view';
   const title =
     mode === 'create'
@@ -78,17 +79,30 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
       console.log('Form has errors');
       return;
     }
+
     try {
       if (mode === 'create') {
         await createSubscription(formData).unwrap();
         console.log('Subscription created:', formData);
+      } else if (mode === 'edit' && subscription?.id) {
+        await updateSubscription({
+          id: subscription.id,
+          data: {
+            name: formData.name,
+            price: String(formData.price),
+            billingCycle: formData.billingCycle,
+            status: formData.status,
+            description: formData.description,
+          },
+        }).unwrap();
+        console.log('Subscription updated:', formData);
       }
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
-      console.error('Failed to create subscription:', error);
+      console.error('Failed to submit subscription form:', error);
     }
   };
 
