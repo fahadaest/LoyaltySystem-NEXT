@@ -15,10 +15,12 @@ import HeaderButton from 'components/button/HeaderButton';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useListSubscriptionsQuery, useDeleteSubscriptionMutation } from 'store/subscriptionApi';
 import { useState } from 'react';
+import SubscriptionDetails from 'components/superadmin/SubscriptionDetails';
 
 export default function SubscriptionsPage() {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [mode, setMode] = useState<'create' | 'edit' | 'view'>('create');
   const { data: subscriptions = [], isLoading, isError, refetch } = useListSubscriptionsQuery();
   const [deleteSubscription, { isLoading: isDeleting }] = useDeleteSubscriptionMutation();
 
@@ -49,6 +51,7 @@ export default function SubscriptionsPage() {
   const handleCreateClick = () => {
     setSelectedSubscription(null);
     setIsDeleteMode(false);
+    setMode('create');
     onOpen();
   };
 
@@ -140,10 +143,16 @@ export default function SubscriptionsPage() {
                 onEdit={() => {
                   setSelectedSubscription(subscription);
                   setIsDeleteMode(false);
+                  setMode('edit');
                   onOpen();
                 }}
                 onDelete={() => handleDeleteClick(subscription)}
-                onView={() => router.push(`/superadmin/subscriptions/view/${subscription.id}`)}
+                onView={() => {
+                  setSelectedSubscription(subscription);
+                  setIsDeleteMode(false);
+                  setMode('view');
+                  onOpen();
+                }}
               />
             ))}
           </div>
@@ -157,15 +166,24 @@ export default function SubscriptionsPage() {
             itemName={selectedSubscription?.name || 'this subscription'}
             title="Delete Subscription"
           />
+        ) : selectedSubscription && mode === 'view' ? (
+          <CustomModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Subscription Details"
+            size="2xl"
+          >
+            <SubscriptionDetails subscription={selectedSubscription} />
+          </CustomModal>
         ) : (
           <CustomModal
             isOpen={isOpen}
             onClose={onClose}
-            title={selectedSubscription ? "Edit Subscription" : "Create New Subscription"}
+            title={selectedSubscription ? 'Edit Subscription' : 'Create New Subscription'}
             size="2xl"
           >
             <SubscriptionForm
-              mode={selectedSubscription ? "edit" : "create"}
+              mode={selectedSubscription ? 'edit' : 'create'}
               subscription={selectedSubscription}
               onSuccess={onClose}
             />

@@ -178,7 +178,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
               }`}
           >
             <option value="monthly">Monthly</option>
-            <option value="annually">Annually</option>
+            <option value="yearly">Annually</option>
             <option value="quarterly">Quarterly</option>
           </select>
         </div>
