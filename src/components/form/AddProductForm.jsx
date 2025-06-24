@@ -2,10 +2,17 @@ import React, { useState, useRef, useCallback } from "react";
 import { MdFileUpload, MdClose, MdCrop, MdCheck, MdAdd } from "react-icons/md";
 import { FiPlus } from 'react-icons/fi';
 import Button from "components/button/Button";
+import { useCreateProductMutation } from "store/productsApi";
 
 const AddProductForm = () => {
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const [productName, setProductName] = useState('');
+  const [description, setDescription] = useState('');
+  const [size, setSize] = useState('');
   const [previewImage, setPreviewImage] = useState(null);
+  const [imageBlob, setImageBlob] = useState(null);
+  const [createProduct, { isLoading }] = useCreateProductMutation();
+
+  const [selectedCountry, setSelectedCountry] = useState("");
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [currentImageToCrop, setCurrentImageToCrop] = useState(null);
   const [crop, setCrop] = useState({ unit: '%', width: 40, height: 30, x: 30, y: 35 }); // 4:3 ratio
@@ -53,23 +60,34 @@ const AddProductForm = () => {
 
     canvas.width = cropWidth * scaleX;
     canvas.height = cropHeight * scaleY;
-    ctx.drawImage(image, cropX * scaleX, cropY * scaleY, cropWidth * scaleX, cropHeight * scaleY, 0, 0, cropWidth * scaleX, cropHeight * scaleY);
+    ctx.drawImage(
+      image,
+      cropX * scaleX,
+      cropY * scaleY,
+      cropWidth * scaleX,
+      cropHeight * scaleY,
+      0,
+      0,
+      cropWidth * scaleX,
+      cropHeight * scaleY
+    );
 
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => blob && resolve(URL.createObjectURL(blob)), 'image/jpeg', 0.95);
+      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.95);
     });
   };
 
   const handleCropComplete = async () => {
     if (cropImageRef && crop.width && crop.height) {
       try {
-        previewImage && URL.revokeObjectURL(previewImage);
-        const croppedImageUrl = await getCroppedImg(cropImageRef, crop);
-        croppedImageUrl && setPreviewImage(croppedImageUrl);
+        const blob = await getCroppedImg(cropImageRef, crop);
+        setImageBlob(blob);
+        setPreviewImage(URL.createObjectURL(blob));
       } catch (error) {
         console.error('Error cropping image:', error);
       }
     }
+
     setCropModalOpen(false);
     setCurrentImageToCrop(null);
     setCrop({ unit: '%', width: 40, height: 30, x: 30, y: 35 });
@@ -210,6 +228,29 @@ const AddProductForm = () => {
     setIsResizing(false);
   };
 
+  const handleAddProduct = async () => {
+    console.log("product adding")
+    if (!productName || !description || !size || !imageBlob) {
+      alert('Please fill out all fields and upload an image.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', productName);
+    formData.append('description', description);
+    formData.append('sizeId', size);
+    formData.append('image', imageBlob, 'product.jpg');
+
+    try {
+      const res = await createProduct(formData).unwrap();
+      alert('Product created successfully!');
+      // Clear form here if needed
+    } catch (err) {
+      console.error(err);
+      alert('Product creation failed!');
+    }
+  };
+
   React.useEffect(() => {
     if (isDragging || isResizing) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -223,15 +264,25 @@ const AddProductForm = () => {
   }, [isDragging, isResizing, crop, dragStart]);
 
   return (
-    <div className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-11">
+    <div className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-6 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-11">
       <div className="col-span-8 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
         <div className="mb-3">
           <label className="text-sm font-bold text-navy-700 dark:text-white">Product Name</label>
-          <input className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200 dark:!border-white/10 dark:text-white" placeholder="Your Product Name Here" id="product-name" type="text" />
+          <input
+            className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200 dark:!border-white/10 dark:text-white"
+            placeholder="Your Product Name Here"
+            id="product-name"
+            type="text"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
+          />
         </div>
         <div className="mb-3">
           <label className="text-sm font-bold text-navy-700 dark:text-white">Sizes</label>
-          <select className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200 dark:!border-white/10 dark:text-white" value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)}>
+          <select className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200 dark:!border-white/10 dark:text-white"
+            value={size}
+            onChange={(e) => setSize(e.target.value)}
+          >
             <option value="">Select product size</option>
             {sizeOptions.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
@@ -262,15 +313,22 @@ const AddProductForm = () => {
 
       <div className="col-span-11">
         <label className="text-sm font-bold text-navy-700 dark:text-white">Product Description</label>
-        <textarea className="mt-2 flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200 dark:!border-white/10 dark:text-white min-h-[100px] resize-vertical" placeholder="Your Product Description Here" id="product-description" />
+        <textarea
+          className="mt-2 flex w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none border-gray-200 dark:!border-white/10 dark:text-white min-h-[100px] resize-vertical"
+          placeholder="Your Product Description Here"
+          id="product-description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
       </div>
 
       <Button
         icon={MdAdd}
-        text="Add Product"
+        text={isLoading ? 'Adding...' : 'Add Product'}
         size="sm"
         color="bg-brandGreen"
         className="col-span-11 w-full"
+        onClick={handleAddProduct}
       />
 
       {cropModalOpen && currentImageToCrop && (

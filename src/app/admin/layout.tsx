@@ -12,7 +12,6 @@ import React from 'react';
 import { Portal } from '@chakra-ui/portal';
 import Navbar from 'components/navbar';
 import Sidebar from 'components/sidebar';
-import Footer from 'components/footer/Footer';
 
 export default function Admin({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);

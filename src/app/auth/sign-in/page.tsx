@@ -6,7 +6,6 @@ import Default from 'components/auth/variants/DefaultAuthLayout';
 import Checkbox from 'components/checkbox';
 import Button from 'components/button/Button';
 import { Eye, EyeOff } from 'lucide-react';
-import { ADMIN_EMAIL, ADMIN_PASSWORD, SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD, } from 'utils/data';
 import { useLoginMutation } from 'store/authApi';
 import Cookies from 'js-cookie';
 
@@ -33,18 +32,6 @@ function SignInDefault() {
     } else {
       setError('Invalid email or password. Please try again.');
     }
-
-    // if (email === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASSWORD) {
-    //   setError('');
-    //   localStorage.setItem('superadmin_session', 'true');
-    //   router.push('/superadmin/manage-admin/list');
-    // } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-    //   setError('');
-    //   localStorage.setItem('admin_session', 'true');
-    //   router.push('/admin/default');
-    // } else {
-    //   setError('Invalid email or password. Please try again.');
-    // }
   };
 
   const togglePasswordVisibility = () => {
