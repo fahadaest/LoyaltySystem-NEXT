@@ -1,29 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import InputField from "components/fields/InputField";
 import Button from "components/button/Button";
-import { MdAdd, MdFilterList } from "react-icons/md";
-import { useCreateProductSizeMutation } from "store/productSizesApi";
+import { MdAdd, MdEdit } from "react-icons/md";
+import { useCreateProductSizeMutation, useUpdateProductSizeMutation } from "store/productSizesApi";
 
-const AddProductSizeComponent = () => {
+const AddProductSizeComponent = ({ productSize, onClose }) => {
   const [size, setSize] = useState("");
-  const [createProductSize, { isLoading, isError, error, isSuccess }] = useCreateProductSizeMutation();
+  const [createProductSize, { isLoading: isCreating, isSuccess: isCreateSuccess }] = useCreateProductSizeMutation();
+  const [updateProductSize, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] = useUpdateProductSizeMutation();
 
-  const handleAddProductSize = async () => {
+  useEffect(() => {
+    if (productSize) {
+      setSize(productSize.size);
+    }
+  }, [productSize]);
+
+  const handleAddOrEditProductSize = async () => {
     if (!size) {
       alert("Please enter a size.");
       return;
     }
 
     try {
-      await createProductSize({ size });
-      if (isSuccess) {
-        alert("Product size added successfully!");
-        setSize("");
+      if (productSize) {
+        const formData = { size };
+        await updateProductSize({ id: productSize.id, formData });
+
+        if (isUpdateSuccess) {
+          alert("Product size updated successfully!");
+          onClose();
+        }
+      } else {
+        const formData = { size };
+        await createProductSize(formData);
+
+        if (isCreateSuccess) {
+          alert("Product size added successfully!");
+          setSize("");
+        }
       }
     } catch (error) {
-      console.error("Error adding product size:", error);
-      alert("Failed to add product size.");
+      console.error("Error handling product size:", error);
+      alert("Failed to process product size.");
     }
   };
 
@@ -43,13 +62,13 @@ const AddProductSizeComponent = () => {
       </div>
 
       <Button
-        icon={MdAdd}
-        text={isLoading ? "Adding..." : "Add Product Size"}
+        icon={productSize ? MdEdit : MdAdd}
+        text={productSize ? (isUpdating ? "Updating..." : "Save Changes") : (isCreating ? "Adding..." : "Add Product Size")}
         size="sm"
         color="bg-brandGreen"
         className="col-span-11 w-full"
-        onClick={handleAddProductSize}
-        disabled={isLoading}
+        onClick={handleAddOrEditProductSize}
+        disabled={isCreating || isUpdating}
       />
     </Card>
   );

@@ -65,7 +65,7 @@ const Dashboard = () => {
                 title={product.name}
                 price={product.price}
                 image={product.image}
-                size={product.size.size}
+                size={product.size ? product.size.size : null}
                 product={product}
                 onEdit={() => handleEdit(product)}
                 onDelete={() => handleDelete(product.id)}

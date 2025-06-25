@@ -12,13 +12,9 @@ type RowObj = {
 
 const columnHelper = createColumnHelper<RowObj>();
 
-export default function ProductSizeTable(props: { tableData: RowObj[]; onAddClick: () => void; onDeleteClick: (id: string) => void; }) {
-  const { tableData, onAddClick, onDeleteClick } = props;
+export default function ProductSizeTable(props: { tableData: RowObj[]; onAddClick: () => void; onDeleteClick: (id: string) => void; onEditClick: (row: RowObj) => void; }) {
+  const { tableData, onAddClick, onDeleteClick, onEditClick } = props;
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
-  React.useEffect(() => {
-    console.log(tableData);
-  }, [tableData]);
 
   const getSizeIcon = (size: string) => {
     const normalizedSize = size ? size.toLowerCase() : "unknown";
@@ -37,13 +33,13 @@ export default function ProductSizeTable(props: { tableData: RowObj[]; onAddClic
     }
   };
 
-
   const handleDelete = (rowData: RowObj) => {
     console.log(rowData)
     onDeleteClick(rowData.id);
   };
 
   const handleEdit = (rowData: RowObj) => {
+    onEditClick(rowData);
   };
 
   const columns = [
@@ -95,20 +91,8 @@ export default function ProductSizeTable(props: { tableData: RowObj[]; onAddClic
   });
 
   return (
-    <Card extra="w-full h-full px-6 pb-6 sm:overflow-x-auto">
-      <div className="flex items-center justify-between pt-4">
-        <h2 className="text-xl font-bold text-navy-700 dark:text-white">Size Listing</h2>
-        <Button
-          icon={MdAdd}
-          text="Add Size"
-          size="md"
-          color="bg-brandGreen"
-          hoverColor="hover:bg-brandGreenDark"
-          onClick={onAddClick}
-        />
-      </div>
-
-      <div className="mt-6 overflow-x-auto">
+    <Card extra="w-full h-full sm:overflow-x-auto">
+      <div className="overflow-x-auto">
         <table className="w-full table-auto border-collapse rounded-xl overflow-hidden">
           <thead className="bg-gray-100 dark:bg-navy-700">
             {table.getHeaderGroups().map((headerGroup) => (
