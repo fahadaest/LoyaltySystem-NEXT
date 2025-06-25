@@ -1,33 +1,47 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { MdFileUpload, MdClose, MdCrop, MdCheck, MdAdd } from "react-icons/md";
-import { FiPlus } from 'react-icons/fi';
 import Button from "components/button/Button";
-import { useCreateProductMutation } from "store/productsApi";
+import { useCreateProductMutation, useUpdateProductMutation } from "store/productsApi";
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const AddProductForm = () => {
+const AddProductForm = ({ product }) => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [size, setSize] = useState('');
   const [previewImage, setPreviewImage] = useState(null);
   const [imageBlob, setImageBlob] = useState(null);
   const [createProduct, { isLoading }] = useCreateProductMutation();
-
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const [updateProduct, { isLoading: updatingProduct }] = useUpdateProductMutation();
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [currentImageToCrop, setCurrentImageToCrop] = useState(null);
-  const [crop, setCrop] = useState({ unit: '%', width: 40, height: 30, x: 30, y: 35 }); // 4:3 ratio
+  const [crop, setCrop] = useState({ unit: '%', width: 40, height: 30, x: 30, y: 35 });
   const [cropImageRef, setCropImageRef] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const fileInputRef = useRef(null);
   const canvasRef = useRef(null);
+  const fullImageUrl = baseUrl + product?.image;
 
   const sizeOptions = [
-    { value: "sm", label: "Small" },
-    { value: "md", label: "Medium" },
-    { value: "lg", label: "Large" },
+    { value: "1", label: "Large" },
+    { value: "2", label: "Medium" },
+    { value: "3", label: "Small" },
   ];
+
+  useEffect(() => {
+    if (product) {
+      setProductName(product.name);
+      setDescription(product.description);
+      setSize(product.size.id);
+      setPreviewImage(fullImageUrl || null);
+    } else {
+      setProductName('');
+      setDescription('');
+      setSize('');
+      setPreviewImage(null);
+    }
+  }, [product]);
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
@@ -229,7 +243,6 @@ const AddProductForm = () => {
   };
 
   const handleAddProduct = async () => {
-    console.log("product adding")
     if (!productName || !description || !size || !imageBlob) {
       alert('Please fill out all fields and upload an image.');
       return;
@@ -242,12 +255,46 @@ const AddProductForm = () => {
     formData.append('image', imageBlob, 'product.jpg');
 
     try {
-      const res = await createProduct(formData).unwrap();
+      await createProduct(formData).unwrap();
       alert('Product created successfully!');
-      // Clear form here if needed
+      setProductName('');
+      setDescription('');
+      setSize('');
+      setPreviewImage(null);
     } catch (err) {
       console.error(err);
       alert('Product creation failed!');
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    if (!productName || !description || !size) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', productName);
+    formData.append('description', description);
+    formData.append('sizeId', size);
+
+    if (imageBlob) {
+      formData.append('image', imageBlob, 'product.jpg');
+    } else {
+      if (product && product.image) {
+        formData.append('image', product.image);
+      }
+    }
+
+    if (product && product.id) {
+      try {
+        await updateProduct({
+          id: product.id,
+          formData,
+        }).unwrap();
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
     }
   };
 
@@ -324,11 +371,10 @@ const AddProductForm = () => {
 
       <Button
         icon={MdAdd}
-        text={isLoading ? 'Adding...' : 'Add Product'}
+        text={product ? (isLoading ? 'Updating...' : 'Update Product') : (isLoading ? 'Creating...' : 'Add Product')}
         size="sm"
         color="bg-brandGreen"
-        className="col-span-11 w-full"
-        onClick={handleAddProduct}
+        onClick={product ? handleUpdateProduct : handleAddProduct}
       />
 
       {cropModalOpen && currentImageToCrop && (
