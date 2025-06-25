@@ -1,85 +1,79 @@
-'use client';
 import React, { useState, useEffect } from 'react';
 import Button from 'components/button/Button';
-import { MdOutlineArrowBack, MdSave, MdAdd, MdInfoOutline, MdClose, MdCheckCircle, MdAutorenew, } from 'react-icons/md';
+import { MdOutlineArrowBack, MdSave, MdAdd, MdCheckCircle, MdAutorenew, MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import CircularProgress from '@mui/material/CircularProgress';
+import { CheckCircle } from '@mui/icons-material';
 import { useCreateAdminMutation, useUpdateAdminMutation } from 'store/adminApi';
+import { useListSubscriptionsQuery } from 'store/subscriptionApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'store/store';
+import { showAlert } from 'store/alertSlice';
 
 const countryCodes = [
-  { code: '+1', country: 'US/CA', flag: '🇺🇸' }, { code: '+44', country: 'UK', flag: '🇬🇧' },
-  { code: '+33', country: 'FR', flag: '🇫🇷' }, { code: '+49', country: 'DE', flag: '🇩🇪' },
-  { code: '+91', country: 'IN', flag: '🇮🇳' }, { code: '+86', country: 'CN', flag: '🇨🇳' },
-  { code: '+81', country: 'JP', flag: '🇯🇵' }, { code: '+92', country: 'PK', flag: '🇵🇰' },
-  { code: '+61', country: 'AU', flag: '🇦🇺' }, { code: '+82', country: 'KR', flag: '🇰🇷' },
+  { code: '+971', country: 'UAE', flag: '🇦🇪' },
+  { code: '+1', country: 'US/CA', flag: '🇺🇸' },
+  { code: '+44', country: 'UK', flag: '🇬🇧' },
+  { code: '+33', country: 'FR', flag: '🇫🇷' },
 ];
 
-const subscriptionOptions = [
-  { id: '1', name: 'Basic Plan' },
-  { id: '2', name: 'Pro Plan' },
-  { id: '3', name: 'Enterprise Plan' },
-];
-
-interface InputFieldProps {
-  label: string; name: string; type?: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; error?: string; placeholder?: string;
-}
-
-const InputField = ({ label, name, type = "text", value, onChange, error, placeholder }: InputFieldProps) => (
+const InputField = ({ label, name, type = "text", value, onChange, error, placeholder, onToggleVisibility, isPassword }: any) => (
   <div>
-    <label htmlFor={name} className="mb-2 block text-sm font-bold text-navy-700 dark:text-white">
-      {label}
-    </label>
-    <input
-      type={type}
-      id={name}
-      name={name}
-      value={value}
-      onChange={onChange}
-      className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none 
-        ${error ? 'border-red-500' : 'border-gray-200'} dark:!border-white/10 dark:text-white`}
-      placeholder={placeholder}
-      aria-invalid={!!error}
-      aria-describedby={error ? `${name}-error` : undefined}
-    />
-    {error && <p id={`${name}-error`} className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
+    <label htmlFor={name} className="mb-2 block text-sm font-bold">{label}</label>
+    <div className="relative">
+      <input
+        type={type}
+        id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
+        className={`mt-2 w-full h-12 p-3 rounded-xl text-sm outline-none border ${error ? 'border-red-500' : 'border-gray-300'}`}
+        placeholder={placeholder}
+        aria-invalid={!!error}
+      />
+      {isPassword && (
+        <button
+          type="button"
+          onClick={onToggleVisibility}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+        >
+          {type === "password" ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
+        </button>
+      )}
+    </div>
+    {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
   </div>
 );
 
-
-const AdminForm = ({ initialData = {}, onSubmit, onCancel, isEditMode = false }: any) => {
+const AdminForm = ({ initialData = {}, onSubmit, isEditMode = false, handleCloseModal }: any) => {
   const [createAdmin, { isLoading: isCreating, isSuccess: isCreateSuccess }] = useCreateAdminMutation();
   const [updateAdmin, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] = useUpdateAdminMutation();
+  const { data: subscriptions = [] } = useListSubscriptionsQuery();
+  const dispatch = useDispatch();
+
+  const alertState = useSelector((state: RootState) => state.alert);
+  console.log(alertState)
+
   const [formData, setFormData] = useState({
-    email: '', password: '', confirmPassword: '', name: '',
-    role: 'Admin', status: 'Active', countryCode: '+1', phoneNumber: '',
-    loyaltyAccess: { pointBased: false, productBased: false },
-    subscriptionId: '',
-    ...initialData,
+    email: '', password: '', confirmPassword: '', name: '', role: 'Admin', status: 'Active',
+    countryCode: '+971', phoneNumber: '', loyaltyAccess: { pointBased: false, productBased: false },
+    subscriptionId: '', ...initialData
   });
   const [errors, setErrors] = useState<any>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log(formData)
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length) {
+    if (initialData) {
       const phoneMatch = initialData.phoneNumber?.match(/^(\+\d{1,4})(\d{10,15})$/);
-      const countryCode = phoneMatch?.[1] || '+1';
+      const countryCode = phoneMatch?.[1] || '+971';
       const phoneNumber = phoneMatch?.[2] || initialData.phoneNumber || '';
-
       setFormData((prev) => ({
-        ...prev,
-        name: [initialData.firstName, initialData.lastName].filter(Boolean).join(' '),
-        email: initialData.email || '',
-        role: initialData.role || 'Admin',
-        status: initialData.status || 'Active',
-        countryCode,
-        phoneNumber,
-        loyaltyAccess: {
-          pointBased: initialData.pointBasedLoyalty ?? false,
-          productBased: initialData.productBasedLoyalty ?? false,
-        },
-        password: '',
-        confirmPassword: '',
-        subscriptionId: initialData.subscriptionId || '',
+        ...prev, name: [initialData.firstName, initialData.lastName].join(' '),
+        email: initialData.email, role: initialData.role, status: initialData.status,
+        countryCode, phoneNumber, loyaltyAccess: { pointBased: initialData.pointBasedLoyalty, productBased: initialData.productBasedLoyalty },
+        subscriptionId: initialData.subscriptionId || ''
       }));
     }
     setErrors({});
@@ -93,7 +87,18 @@ const AdminForm = ({ initialData = {}, onSubmit, onCancel, isEditMode = false }:
 
   const handleCheckboxChange = (e: any) => {
     const { name, checked } = e.target;
-    setFormData((p) => ({ ...p, loyaltyAccess: { ...p.loyaltyAccess, [name]: checked } }));
+    setFormData((p) => ({
+      ...p,
+      loyaltyAccess: { ...p.loyaltyAccess, [name]: checked }
+    }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible((prev) => !prev);
   };
 
   const validateForm = () => {
@@ -102,21 +107,17 @@ const AdminForm = ({ initialData = {}, onSubmit, onCancel, isEditMode = false }:
     if (!formData.email.trim()) errs.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Email is invalid';
     if (!formData.phoneNumber.trim()) errs.phoneNumber = 'Phone number is required';
-    else if (!/^\d{10,15}$/.test(formData.phoneNumber.replace(/\D/g, '')))
-      errs.phoneNumber = 'Phone number must be 10-15 digits';
+    else if (!/^\d{10,15}$/.test(formData.phoneNumber.replace(/\D/g, ''))) errs.phoneNumber = 'Phone number must be 10-15 digits';
     if (!isEditMode || formData.password || formData.confirmPassword) {
       if (!formData.password) errs.password = 'Password is required';
       else if (formData.password.length < 8) errs.password = 'Password must be at least 8 characters';
       if (!formData.confirmPassword) errs.confirmPassword = 'Please confirm your password';
-      else if (formData.password !== formData.confirmPassword)
-        errs.confirmPassword = 'Passwords do not match';
+      else if (formData.password !== formData.confirmPassword) errs.confirmPassword = 'Passwords do not match';
     }
-    if (!formData.subscriptionId) {
-      errs.subscriptionId = 'Subscription plan is required';
-    }
-    if (!formData.loyaltyAccess.pointBased && !formData.loyaltyAccess.productBased)
+    if (!formData.subscriptionId) errs.subscriptionId = 'Subscription plan is required';
+    if (!formData.loyaltyAccess.pointBased && !formData.loyaltyAccess.productBased) {
       errs.loyaltyAccess = 'Please select at least one loyalty access option';
-
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -129,45 +130,45 @@ const AdminForm = ({ initialData = {}, onSubmit, onCancel, isEditMode = false }:
 
     try {
       const payload = {
-        firstName,
-        lastName,
-        email: formData.email,
-        password: formData.password || undefined,
+        firstName, lastName, email: formData.email, password: formData.password || undefined,
         phoneNumber: formData.countryCode + formData.phoneNumber.replace(/\D/g, ''),
-        role: formData.role.toLowerCase(),
-        status: formData.status.toLowerCase(),
-        subscriptionId: Number(formData.subscriptionId),
-        pointBasedLoyalty: formData.loyaltyAccess.pointBased,
-        productBasedLoyalty: formData.loyaltyAccess.productBased,
+        role: formData.role.toLowerCase(), status: formData.status.toLowerCase(), subscriptionId: Number(formData.subscriptionId),
+        pointBasedLoyalty: formData.loyaltyAccess.pointBased, productBasedLoyalty: formData.loyaltyAccess.productBased
       };
 
-      console.log(payload)
-
       if (isEditMode) {
+        // Update admin
         await updateAdmin({ id: initialData.id, data: payload }).unwrap();
+        dispatch(showAlert({ message: 'Admin updated successfully!', severity: 'success', duration: 2000 }));
       } else {
+        // Create admin
         await createAdmin(payload).unwrap();
+        dispatch(showAlert({ message: 'Admin created successfully!', severity: 'success', duration: 2000 }));
       }
 
       onSubmit && onSubmit(formData);
+      setTimeout(() => {
+        handleCloseModal();
+      }, 2000);
+
     } catch (err) {
       console.error('Failed to submit form:', err);
+      dispatch(showAlert({ message: 'Something went wrong!', severity: 'error', duration: 2000 }));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="h-full w-full px-4 py-6">
+    <div className="h-full w-full px-6 py-8">
       {(isCreating || isUpdating) ? (
-        <div className="flex justify-center items-center space-x-2 text-gray-600 dark:text-gray-300">
-          <MdAutorenew className="animate-spin" size={18} />
-          <span className="text-sm">Loading...</span>
+        <div className="flex flex-col mt-10 mb-10 justify-center items-center space-x-2 text-gray-600">
+          <CircularProgress size={104} style={{ color: '#36a18f' }} />
         </div>
       ) : (isCreateSuccess || isUpdateSuccess) ? (
-        <div className="flex justify-center items-center space-x-2 text-green-600 dark:text-green-400 font-semibold text-center">
-          <MdCheckCircle size={18} />
-          <span>{isEditMode ? 'Admin updated successfully!' : 'Admin created successfully!'}</span>
+        <div className="flex flex-col justify-center items-center space-x-2 text-green-600 font-semibold text-center">
+          <CheckCircle sx={{ fontSize: 40, color: '#36a18f' }} />
+          <span className='text-brandGreen'>{isEditMode ? 'Admin updated successfully!' : 'Admin created successfully!'}</span>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6 px-4">
@@ -177,95 +178,80 @@ const AdminForm = ({ initialData = {}, onSubmit, onCancel, isEditMode = false }:
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <InputField label={`Password ${isEditMode ? '(Leave blank to keep current)' : '*'}`} name="password" type="password" value={formData.password} onChange={handleChange} error={errors.password} placeholder={isEditMode ? 'Enter new password' : 'Enter password'} />
-            <InputField label={`Confirm Password ${isEditMode ? '' : '*'}`} name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} placeholder={isEditMode ? 'Confirm new password' : 'Confirm password'} />
+            <InputField
+              label={`Password ${isEditMode ? '(Leave blank to keep current)' : '*'}`}
+              name="password"
+              type={passwordVisible ? 'text' : 'password'}
+              value={formData.password}
+              onChange={handleChange}
+              error={errors.password}
+              placeholder={isEditMode ? 'Enter new password' : 'Enter password'}
+              onToggleVisibility={togglePasswordVisibility}
+              isPassword
+            />
+            <InputField
+              label={`Confirm Password ${isEditMode ? '' : '*'}`}
+              name="confirmPassword"
+              type={confirmPasswordVisible ? 'text' : 'password'}
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={errors.confirmPassword}
+              placeholder={isEditMode ? 'Confirm new password' : 'Confirm password'}
+              onToggleVisibility={toggleConfirmPasswordVisibility}
+              isPassword
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div>
-              <label htmlFor="phoneNumber" className="mb-2 block text-sm font-bold text-navy-700 dark:text-white">Phone Number *</label>
-              <div className="flex rounded-xl border border-gray-200 dark:!border-white/10">
-                <select name="countryCode" value={formData.countryCode} onChange={handleChange} className="rounded-l-xl bg-white/0 px-3 py-3 text-sm outline-none dark:text-white">
+              <label htmlFor="phoneNumber" className="mb-2 block text-sm font-bold">Phone Number *</label>
+              <div className="flex rounded-xl border">
+                <select name="countryCode" value={formData.countryCode} onChange={handleChange} className="rounded-l-xl px-3 py-3 text-sm outline-none border">
                   {countryCodes.map(({ code, flag }) => (
                     <option key={code} value={code}>{flag} {code}</option>
                   ))}
                 </select>
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  className={`flex-1 rounded-r-xl bg-white/0 px-4 py-3 text-sm outline-none dark:text-white ${errors.phoneNumber ? 'border-red-500' : ''}`}
-                  placeholder="Enter phone number"
-                />
+                <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} className={`flex-1 rounded-r-xl px-4 py-3 text-sm outline-none ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`} placeholder="Enter phone number" />
               </div>
-              {errors.phoneNumber && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.phoneNumber}</p>
-              )}
+              {errors.phoneNumber && <p className="mt-2 text-sm text-red-600">{errors.phoneNumber}</p>}
             </div>
 
             <div>
-              <label className="mb-3 block text-sm font-bold text-navy-700 dark:text-white">Loyalty Access *</label>
-              <div className="flex flex-wrap gap-6">
-                {['pointBased', 'productBased'].map((type) => (
-                  <div key={type} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={type}
-                      name={type}
-                      checked={formData.loyaltyAccess[type]}
-                      onChange={handleCheckboxChange}
-                      className="h-4 w-4 rounded border-gray-300 text-brandLinear focus:ring-brandLinear dark:border-white/10"
-                    />
-                    <label htmlFor={type} className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                      {type === 'pointBased' ? 'Point-Based Loyalty' : 'Product-Based Loyalty'}
-                    </label>
-                  </div>
+              <label htmlFor="subscriptionId" className="mb-2 block text-sm font-bold">Subscription Plan *</label>
+              <select id="subscriptionId" name="subscriptionId" value={formData.subscriptionId || ""} onChange={handleChange} className={`mt-2 h-12 w-full p-3 rounded-xl text-sm outline-none border ${errors.subscriptionId ? 'border-red-500' : 'border-gray-300'}`}>
+                <option value="">Select a subscription plan</option>
+                {subscriptions.map(subscription => (
+                  <option key={subscription.id} value={subscription.id}>{subscription.name}</option>
                 ))}
-              </div>
-              {errors.loyaltyAccess && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.loyaltyAccess}</p>
-              )}
+              </select>
+              {errors.subscriptionId && <p className="mt-2 text-sm text-red-600">{errors.subscriptionId}</p>}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {/* Subscription Plan Dropdown */}
-            <div>
-              <label htmlFor="subscriptionId" className="mb-2 block text-sm font-bold text-navy-700 dark:text-white">
-                Subscription Plan *
-              </label>
-              <select
-                id="subscriptionId"
-                name="subscriptionId"
-                value={formData.subscriptionId}
-                onChange={handleChange}
-                className={`mt-2 flex h-12 w-full rounded-xl border bg-white/0 p-3 text-sm outline-none 
-                  ${errors.subscriptionId ? 'border-red-500' : 'border-gray-200'} dark:!border-white/10 dark:text-white`}
-              >
-                <option value="">Select a subscription plan</option>
-                {subscriptionOptions.map(({ id, name }) => (
-                  <option key={id} value={id}>{name}</option>
-                ))}
-              </select>
-              {errors.subscriptionId && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.subscriptionId}</p>
-              )}
+          <div>
+            <label className="mb-3 block text-sm font-bold">Loyalty Access *</label>
+            <div className="flex flex-wrap gap-6">
+              {['pointBased', 'productBased'].map((type) => (
+                <div key={type} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={type}
+                    name={type}
+                    checked={formData.loyaltyAccess[type]}
+                    onChange={handleCheckboxChange}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  <label htmlFor={type} className="ml-2 text-sm">
+                    {type === 'pointBased' ? 'Point-Based Loyalty' : 'Product-Based Loyalty'}
+                  </label>
+                </div>
+              ))}
             </div>
+            {errors.loyaltyAccess && <p className="mt-2 text-sm text-red-600">{errors.loyaltyAccess}</p>}
           </div>
 
           <div className="pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              text={isSubmitting ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Admin' : 'Create Admin')}
-              icon={isEditMode ? MdSave : MdAdd}
-              size="md"
-              color="bg-brandGreen"
-              hoverColor="hover:bg-brandGreenDark"
-              className="w-full"
-              onClick={() => { }}
-            />
+            <Button onClick={() => { }} type="submit" disabled={isSubmitting} text={isSubmitting ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Admin' : 'Create Admin')} icon={isEditMode ? MdSave : MdAdd} size="lg" color="bg-brandGreen" hoverColor="hover:bg-brandGreenDark" className="w-full" />
           </div>
         </form>
       )}

@@ -1,16 +1,10 @@
 import React, { useState } from "react";
-import {
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-  ColumnDef,
-} from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable, ColumnDef } from "@tanstack/react-table";
 import Button from "components/button/Button";
 import Card from "components/card";
-
 import { IoEyeOutline, IoCreateOutline, IoTrashOutline } from "react-icons/io5";
+import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { IoArrowDown, IoArrowUp, IoSwapVertical } from "react-icons/io5";
 
 interface Admin {
   id: string;
@@ -29,6 +23,31 @@ interface AdminListTableProps {
   onView: (admin: Admin) => void;
 }
 
+const StatusBadge = ({ status }: { status: string }) => {
+  const statusClasses: Record<string, string> = {
+    active: "bg-green-100 text-green-800",
+    inactive: "bg-gray-100 text-gray-800",
+    pending: "bg-yellow-100 text-yellow-800",
+    cancelled: "bg-red-100 text-red-800",
+  };
+
+  const statusIcons: Record<string, JSX.Element> = {
+    active: <CheckCircle className="mr-1 h-4 w-4 text-green-800" />,
+    inactive: <XCircle className="mr-1 h-4 w-4 text-gray-800" />,
+    pending: <Clock className="mr-1 h-4 w-4 text-yellow-800" />,
+    cancelled: <XCircle className="mr-1 h-4 w-4 text-red-800" />,
+  };
+
+  return (
+    <span
+      className={`px-3 py-1 text-xs font-medium tracking-wider rounded-full ${statusClasses[status.toLowerCase()] || "bg-gray-200 text-gray-700"} inline-flex items-center`}
+    >
+      {statusIcons[status.toLowerCase()] || <div className="mr-1 h-4 w-4"></div>}
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </span>
+  );
+};
+
 export default function AdminListTable({
   data,
   onEdit,
@@ -41,12 +60,13 @@ export default function AdminListTable({
     {
       id: "nameEmail",
       header: "Name & Email",
+      accessorFn: (admin) => `${admin.firstName.toLowerCase()} ${admin.lastName?.toLowerCase() || ""}`,
       cell: ({ row }) => {
         const admin = row.original;
         const initials = admin.firstName[0] + (admin.lastName?.[0] || "");
         return (
           <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-navy-500 flex items-center justify-center text-white font-bold text-sm">
+            <div className="h-10 w-10 rounded-full bg-brandGreenHighlight dark:bg-navy-500 flex items-center justify-center text-white font-bold text-sm">
               {initials.toUpperCase()}
             </div>
             <div className="flex flex-col">
@@ -74,7 +94,7 @@ export default function AdminListTable({
     {
       accessorKey: "status",
       header: "Status",
-      cell: (info) => info.getValue(),
+      cell: (info) => <StatusBadge status={info.getValue() || "inactive"} />,
     },
     {
       id: "actions",
@@ -110,7 +130,6 @@ export default function AdminListTable({
     },
   ];
 
-
   const table = useReactTable({
     data,
     columns,
@@ -131,10 +150,22 @@ export default function AdminListTable({
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className={`px-4 py-3 text-left text-xs font-semibold uppercase cursor-pointer ${header.column.id === "actions" ? "text-right" : ""
-                      }`}
+                    className={`px-4 py-3 text-left text-xs font-semibold uppercase cursor-pointer ${header.column.id === "actions" ? "text-right" : ""}`}
                   >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    <div className="flex items-center">
+                      <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>
+                      {header.column.getCanSort() && (
+                        <div className="ml-2 flex items-center">
+                          {header.column.getIsSorted() === "asc" ? (
+                            <IoArrowUp className="h-4 w-4 text-gray-600" />
+                          ) : header.column.getIsSorted() === "desc" ? (
+                            <IoArrowDown className="h-4 w-4 text-gray-600" />
+                          ) : (
+                            <IoSwapVertical className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -152,8 +183,7 @@ export default function AdminListTable({
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className={`px-4 py-3 text-sm ${cell.column.id === "actions" ? "text-right" : ""
-                      }`}
+                    className={`px-4 py-3 text-sm ${cell.column.id === "actions" ? "text-right" : ""}`}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

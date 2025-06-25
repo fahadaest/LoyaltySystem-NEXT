@@ -1,3 +1,13 @@
+export interface Admin {
+  firstName: string;
+  lastName: string;
+  subscriptionId: number;
+  subscription: any;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Subscription {
   id: number;
   name: string;

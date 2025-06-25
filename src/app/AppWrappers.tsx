@@ -2,12 +2,11 @@
 import React, { ReactNode } from 'react';
 import 'styles/App.css';
 import 'styles/Contact.css';
-// import '@asseinfo/react-kanban/dist/styles.css';
-// import 'styles/Plugins.css';
 import 'styles/MiniCalendar.css';
 import 'styles/index.css';
 import { Provider } from 'react-redux';
 import { store } from 'store/store';
+import CustomAlert from 'components/customAlert/CustomAlert';
 
 import dynamic from 'next/dynamic';
 
@@ -21,6 +20,7 @@ export default function AppWrappers({ children }: { children: ReactNode }) {
   return (
     <NoSSR>
       <Provider store={store}>
+        <CustomAlert />
         {children}
       </Provider>
     </NoSSR>

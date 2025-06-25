@@ -3,6 +3,7 @@ import { authApi } from './authApi';
 import { adminApi } from './adminApi';
 import { subscriptionApi } from './subscriptionApi';
 import { productsApi } from './productsApi';
+import alertReducer from './alertSlice';
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         [adminApi.reducerPath]: adminApi.reducer,
         [subscriptionApi.reducerPath]: subscriptionApi.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
+        alert: alertReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(authApi.middleware).concat(adminApi.middleware).concat(subscriptionApi.middleware).concat(productsApi.middleware),

@@ -21,7 +21,7 @@ function SignInDefault() {
     const response = await login({ email, password });
     Cookies.set('token', response?.data?.token, { expires: 7 });
     console.log('Login response:', response);
-    if (response?.data.role === 'superadmin' && response?.data?.token) {
+    if (response?.data?.role === 'superadmin' && response?.data?.token) {
       setError('');
       localStorage.setItem('superadmin_session', 'true');
       router.push('/superadmin/manage-admin');
