@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { MdFileUpload } from "react-icons/md";
 import Card from "components/card";
 import InputField from "components/fields/InputField";
 import Button from "components/button/Button";
@@ -7,12 +6,6 @@ import { MdAdd, MdFilterList } from "react-icons/md";
 import { useCreateProductSizeMutation } from "store/productSizesApi";
 
 const AddProductSizeComponent = () => {
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const countryOptions = [
-    { value: 'us', label: 'United States' },
-    { value: 'ca', label: 'Canada' },
-    { value: 'uk', label: 'United Kingdom' },
-  ];
   const [size, setSize] = useState("");
   const [createProductSize, { isLoading, isError, error, isSuccess }] = useCreateProductSizeMutation();
 
