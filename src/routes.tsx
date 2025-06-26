@@ -9,16 +9,19 @@ import {
 
 const routes = [
   {
+    heading: 'Dashboard',
     name: 'Main Dashboard',
     layout: '/admin',
     path: 'default',
     icon: <MdHome className="h-6 w-6" />,
   },
   {
+    heading: 'Product & Loyalties',
     name: 'Products',
     icon: <MdInventory2 className="h-6 w-6" />,
     layout: '/admin/product',
     path: '',
+    showDivider: false,
     submenu: [
       {
         name: 'Product Listing',
@@ -55,77 +58,81 @@ const routes = [
     ],
   },
   {
+    heading: 'Customer Management',
     name: 'Customers',
     layout: '/customer',
     path: 'all',
     icon: <MdPeopleAlt className="h-6 w-6" />,
   },
-  {
-    name: 'Sales Person',
-    layout: '/customer',
-    path: 'default',
-    icon: <MdSupervisorAccount className="h-6 w-6" />,
-  },
-  {
-    name: 'Managers',
-    layout: '/customer',
-    path: 'default',
-    icon: <MdPerson className="h-6 w-6" />,
-  },
-  {
-    name: 'Report',
-    layout: '/customer',
-    path: 'default',
-    icon: <MdReport className="h-6 w-6" />,
-  },
-  {
-    name: 'Settings',
-    icon: <MdSettings className="h-6 w-6" />,
-    layout: '/loyalty',
-    path: '',
-    submenu: [
-      {
-        name: 'Wallet Address',
-        layout: '/loyalty',
-        path: 'product',
-        icon: <MdHome className="h-6 w-6" />,
-      },
-      {
-        name: 'Wallet Social Links',
-        layout: '/loyalty',
-        path: 'point',
-        icon: <MdHome className="h-6 w-6" />,
-      },
-      {
-        name: 'Wallet Beacons',
-        layout: '/loyalty',
-        path: 'point',
-        icon: <MdHome className="h-6 w-6" />,
-      },
-      {
-        name: 'Wallet Support',
-        layout: '/loyalty',
-        path: 'point',
-        icon: <MdHome className="h-6 w-6" />,
-      },
-      {
-        name: 'Terms & Conditions',
-        layout: '/loyalty',
-        path: 'point',
-        icon: <MdHome className="h-6 w-6" />,
-      },
-    ],
-  },
+  // {
+  //   name: 'Sales Person',
+  //   layout: '/customer',
+  //   path: 'default',
+  //   icon: <MdSupervisorAccount className="h-6 w-6" />,
+  // },
+  // {
+  //   name: 'Managers',
+  //   layout: '/customer',
+  //   path: 'default',
+  //   icon: <MdPerson className="h-6 w-6" />,
+  // },
+  // {
+  //   name: 'Report',
+  //   layout: '/customer',
+  //   path: 'default',
+  //   icon: <MdReport className="h-6 w-6" />,
+  // },
+  // {
+  //   name: 'Settings',
+  //   icon: <MdSettings className="h-6 w-6" />,
+  //   layout: '/loyalty',
+  //   path: '',
+  //   submenu: [
+  //     {
+  //       name: 'Wallet Address',
+  //       layout: '/loyalty',
+  //       path: 'product',
+  //       icon: <MdHome className="h-6 w-6" />,
+  //     },
+  //     {
+  //       name: 'Wallet Social Links',
+  //       layout: '/loyalty',
+  //       path: 'point',
+  //       icon: <MdHome className="h-6 w-6" />,
+  //     },
+  //     {
+  //       name: 'Wallet Beacons',
+  //       layout: '/loyalty',
+  //       path: 'point',
+  //       icon: <MdHome className="h-6 w-6" />,
+  //     },
+  //     {
+  //       name: 'Wallet Support',
+  //       layout: '/loyalty',
+  //       path: 'point',
+  //       icon: <MdHome className="h-6 w-6" />,
+  //     },
+  //     {
+  //       name: 'Terms & Conditions',
+  //       layout: '/loyalty',
+  //       path: 'point',
+  //       icon: <MdHome className="h-6 w-6" />,
+  //     },
+  //   ],
+  // },
 ];
 
 const superAdminroutes = [
   {
+    heading: 'Admin',
     name: 'Manage Admin',
     icon: <MdInventory2 className="h-6 w-6" />,
     layout: '/superadmin',
     path: 'manage-admin',
   },
   {
+    showDivider: false,
+    heading: 'Subscriptions',
     name: 'Manage Subscription',
     layout: '/superadmin',
     path: 'subscriptions',

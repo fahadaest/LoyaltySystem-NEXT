@@ -1,6 +1,7 @@
 import { ComponentType, Element } from 'react';
 
 export interface IRoute {
+  showDivider?: boolean;
   name: string;
   layout: string;
   icon: JSX.Element | string;
@@ -9,6 +10,8 @@ export interface IRoute {
   secondary?: boolean | undefined;
 }
 interface RoutesType {
+  showDivider?: boolean;
+  heading?: string;
   name: string;
   layout: string;
   icon: JSX.Element | string;

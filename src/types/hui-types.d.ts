@@ -7,6 +7,8 @@ declare global {
    */
 
   interface RoutesType {
+    showDivider?: boolean;
+    heading?: string;
     submenu: any;
     name: string;
     layout: string;

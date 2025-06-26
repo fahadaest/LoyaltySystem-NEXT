@@ -16,7 +16,7 @@ function SidebarHorizon(props: { routes: IRoute[];[x: string]: any }) {
           className="h-9 w-auto object-contain" />
       </div>
 
-      <div className="mb-7 mt-[38px] h-px bg-gray-300 dark:bg-white/30" />
+      <div className="mb-0 mt-[38px] h-px bg-gray-300 dark:bg-white/30" />
 
       <ul className="mb-auto pt-1">
         <Links routes={routes} />

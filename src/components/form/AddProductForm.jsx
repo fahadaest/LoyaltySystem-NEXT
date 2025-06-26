@@ -4,8 +4,10 @@ import Button from "components/button/Button";
 import { useCreateProductMutation, useUpdateProductMutation } from "store/productsApi";
 import { useGetAllProductSizesQuery } from "store/productSizesApi";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { useDispatch } from 'react-redux';
+import { showAlert } from "store/alertSlice";
 
-const AddProductForm = ({ product }) => {
+const AddProductForm = ({ product, onClose }) => {
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [size, setSize] = useState('');
@@ -24,6 +26,7 @@ const AddProductForm = ({ product }) => {
   const canvasRef = useRef(null);
   const fullImageUrl = baseUrl + product?.image;
   const { data: productSizes, error: productSizesError, isLoading: productSizesLoading } = useGetAllProductSizesQuery(undefined);
+  const dispatch = useDispatch();
 
   const sizeOptions = productSizes ? productSizes.map((option) => ({
     value: option.id,
@@ -245,7 +248,7 @@ const AddProductForm = ({ product }) => {
 
   const handleAddProduct = async () => {
     if (!productName || !description || !size || !imageBlob) {
-      alert('Please fill out all fields and upload an image.');
+      dispatch(showAlert({ message: 'Please fill out all fields and upload an image.', severity: 'error', duration: 2000 }));
       return;
     }
 
@@ -257,19 +260,20 @@ const AddProductForm = ({ product }) => {
 
     try {
       await createProduct(formData).unwrap();
-      alert('Product created successfully!');
+      dispatch(showAlert({ message: 'Product created successfully!', severity: 'success', duration: 2000 }));
       setProductName('');
       setDescription('');
       setSize('');
       setPreviewImage(null);
+      onClose();
     } catch (err) {
-      console.error(err);
-      alert('Product creation failed!');
+      dispatch(showAlert({ message: 'Product creation failed!', severity: 'error', duration: 2000 }));
     }
   };
 
   const handleUpdateProduct = async () => {
     if (!productName || !description || !size) {
+      dispatch(showAlert({ message: 'Please fill out all fields.', severity: 'error', duration: 2000 }));
       return;
     }
 
@@ -292,10 +296,13 @@ const AddProductForm = ({ product }) => {
           id: product.id,
           formData,
         }).unwrap();
+        dispatch(showAlert({ message: 'Product updated successfully!', severity: 'success', duration: 2000 }));
+        onClose();
       } catch (err) {
-        console.error(err);
+        dispatch(showAlert({ message: 'Product update failed!', severity: 'error', duration: 2000 }));
       }
     } else {
+      dispatch(showAlert({ message: 'Product not found for update.', severity: 'error', duration: 2000 }));
     }
   };
 
@@ -370,13 +377,16 @@ const AddProductForm = ({ product }) => {
         />
       </div>
 
-      <Button
-        icon={MdAdd}
-        text={product ? (isLoading ? 'Updating...' : 'Update Product') : (isLoading ? 'Creating...' : 'Add Product')}
-        size="sm"
-        color="bg-brandGreen"
-        onClick={product ? handleUpdateProduct : handleAddProduct}
-      />
+      <div className="col-span-11">
+        <Button
+          icon={MdAdd}
+          text={product ? (isLoading ? 'Updating...' : 'Update Product') : (isLoading ? 'Creating...' : 'Add Product')}
+          size="sm"
+          color="bg-brandGreen"
+          className="w-full"
+          onClick={product ? handleUpdateProduct : handleAddProduct}
+        />
+      </div>
 
       {cropModalOpen && currentImageToCrop && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center h-full z-50 p-4">
@@ -446,7 +456,7 @@ const AddProductForm = ({ product }) => {
                   text="Apply Crop"
                   size="sm"
                   color="bg-brandGreen"
-                  className="col-span-11 w-full"
+                  className="col-span-11 w-full whitespace-nowrap"
                   onClick={handleCropComplete}
                 />
               </div>

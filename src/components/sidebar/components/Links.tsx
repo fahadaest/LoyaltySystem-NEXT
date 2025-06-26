@@ -69,16 +69,21 @@ export const SidebarLinks = ({
 
       return (
         <div key={index} className="relative mb-2">
+          {route.heading && (
+            <div className="text-white font-semibold uppercase text-md mt-4 mb-2 ml-4">
+              {route.heading}
+            </div>
+          )}
+
           {isSubmenu ? (
             <>
               <div
                 onClick={() => toggleMenu(route.name)}
                 className={`relative flex cursor-pointer items-center rounded-lg px-6 py-3 transition-all duration-200 
-                ${
-                  isActive
+              ${isActive
                     ? 'bg-white/10 font-semibold text-white'
                     : 'text-white hover:bg-white/10'
-                }`}
+                  }`}
               >
                 <span className="flex h-5 w-5 items-center justify-center text-lg">
                   {route.icon || <DashIcon />}
@@ -107,9 +112,8 @@ export const SidebarLinks = ({
 
               <div
                 ref={submenuRef}
-                className={`ml-6 mt-2 overflow-hidden transition-all duration-300 ease-in-out ${
-                  isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                }`}
+                className={`ml-6 mt-2 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}
               >
                 {route.submenu.map((sub, subIndex) => (
                   <div key={subIndex} className="relative">
@@ -141,11 +145,10 @@ export const SidebarLinks = ({
                     <NavLink href={`${sub.layout}/${sub.path}`}>
                       <li
                         className={`relative z-10 my-2 ml-4 flex cursor-pointer items-center rounded-md py-2 transition-colors
-                        ${
-                          activeRoute(`${sub.layout}/${sub.path}`)
+                      ${activeRoute(`${sub.layout}/${sub.path}`)
                             ? 'bg-white/10 px-4 font-semibold text-white'
                             : 'px-4 text-white hover:bg-white/10'
-                        }`}
+                          }`}
                       >
                         <p className="ml-3">{sub.name}</p>
                       </li>
@@ -159,11 +162,10 @@ export const SidebarLinks = ({
               <div className="relative mb-1">
                 <li
                   className={`flex cursor-pointer items-center rounded-lg px-6 py-3 transition-colors 
-                  ${
-                    activeRoute(`${route.layout}/${route.path}`)
+                ${activeRoute(`${route.layout}/${route.path}`)
                       ? 'bg-white/10 font-semibold text-white'
                       : 'text-white hover:bg-white/10'
-                  }`}
+                    }`}
                 >
                   {route.icon || <DashIcon />}
                   <p className="ml-4">{route.name}</p>
@@ -171,6 +173,8 @@ export const SidebarLinks = ({
               </div>
             </NavLink>
           )}
+
+          {route.showDivider !== false && <hr className="border-t-2 border-white/20 my-2" />}
         </div>
       );
     });

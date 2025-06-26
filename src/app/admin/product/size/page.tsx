@@ -9,6 +9,8 @@ import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd } from "react-icons/md";
+import { useDispatch } from 'react-redux';
+import { showAlert } from 'store/alertSlice';
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -17,17 +19,24 @@ const Dashboard = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [selectedProductSize, setSelectedProductSize] = useState(null);
+  const dispatch = useDispatch();
 
   const handleDeleteClick = (id: string) => {
     setDeleteId(id);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (deleteId) {
-      deleteProductSize(deleteId);
+      try {
+        await deleteProductSize(deleteId).unwrap();
+        dispatch(showAlert({ message: "Product size deleted successfully!", severity: "success", duration: 2000 }));
+        setIsDeleteModalOpen(false);
+      } catch (error) {
+        console.error("Error deleting product size:", error);
+        dispatch(showAlert({ message: "Failed to delete product size.", severity: "error", duration: 2000 }));
+      }
     }
-    setIsDeleteModalOpen(false);
   };
 
   const handleDeleteCancel = () => {
@@ -40,6 +49,7 @@ const Dashboard = () => {
   };
 
   const handleAddProduct = () => {
+    setSelectedProductSize(null);
     onOpen();
   };
 

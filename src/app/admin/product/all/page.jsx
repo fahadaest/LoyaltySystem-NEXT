@@ -9,9 +9,12 @@ import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd } from "react-icons/md";
 import { useGetAllProductsQuery, useDeleteProductMutation } from 'store/productsApi';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
+import { useDispatch } from 'react-redux';
+import { showAlert } from 'store/alertSlice';
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const dispatch = useDispatch();
   const { data: products, error, isLoading } = useGetAllProductsQuery();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
@@ -29,10 +32,13 @@ const Dashboard = () => {
   const handleConfirmDelete = async () => {
     if (deleteItemId !== null) {
       try {
-        await deleteProduct(deleteItemId);
+        await deleteProduct(deleteItemId).unwrap();
+        dispatch(showAlert({ message: "Product deleted successfully!", severity: "success", duration: 2000 }));
+        setDeleteItemId(null);
         onClose();
       } catch (error) {
         console.error('Error deleting product:', error);
+        dispatch(showAlert({ message: "Product deletion failed!", severity: "error", duration: 2000 }));
       }
     }
   };
@@ -79,7 +85,7 @@ const Dashboard = () => {
       </div>
 
       <CustomModal isOpen={isOpen} onClose={onClose} title={selectedProduct ? "Edit Product" : "Add Product"} size="xl">
-        <AddProductForm product={selectedProduct} />
+        <AddProductForm product={selectedProduct} onClose={onClose} />
       </CustomModal>
 
       <DeleteConfirmationModal

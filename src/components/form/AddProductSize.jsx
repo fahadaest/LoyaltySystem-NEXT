@@ -4,9 +4,12 @@ import InputField from "components/fields/InputField";
 import Button from "components/button/Button";
 import { MdAdd, MdEdit } from "react-icons/md";
 import { useCreateProductSizeMutation, useUpdateProductSizeMutation } from "store/productSizesApi";
+import { useDispatch } from "react-redux";
+import { showAlert } from "store/alertSlice";
 
 const AddProductSizeComponent = ({ productSize, onClose }) => {
   const [size, setSize] = useState("");
+  const dispatch = useDispatch();
   const [createProductSize, { isLoading: isCreating, isSuccess: isCreateSuccess }] = useCreateProductSizeMutation();
   const [updateProductSize, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] = useUpdateProductSizeMutation();
 
@@ -18,7 +21,7 @@ const AddProductSizeComponent = ({ productSize, onClose }) => {
 
   const handleAddOrEditProductSize = async () => {
     if (!size) {
-      alert("Please enter a size.");
+      dispatch(showAlert({ message: "Please enter a size.", severity: "error", duration: 2000 }));
       return;
     }
 
@@ -26,28 +29,23 @@ const AddProductSizeComponent = ({ productSize, onClose }) => {
       if (productSize) {
         const formData = { size };
         await updateProductSize({ id: productSize.id, formData });
-
-        if (isUpdateSuccess) {
-          alert("Product size updated successfully!");
-          onClose();
-        }
+        dispatch(showAlert({ message: "Product size updated successfully!", severity: "success", duration: 2000 }));
+        onClose();
       } else {
         const formData = { size };
         await createProductSize(formData);
-
-        if (isCreateSuccess) {
-          alert("Product size added successfully!");
-          setSize("");
-        }
+        dispatch(showAlert({ message: "Product size added successfully!", severity: "success", duration: 2000 }));
+        setSize("");
+        onClose();
       }
     } catch (error) {
       console.error("Error handling product size:", error);
-      alert("Failed to process product size.");
+      dispatch(showAlert({ message: "Failed to process product size.", severity: "error", duration: 2000 }));
     }
   };
 
   return (
-    <Card className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-11">
+    <Card className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-6 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-11">
       <div className="col-span-11 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
         <InputField
           variant="auth"
