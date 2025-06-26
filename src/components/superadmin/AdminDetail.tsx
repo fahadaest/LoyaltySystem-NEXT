@@ -38,9 +38,8 @@ type Props = {
 };
 
 const AdminDetail: React.FC<Props> = ({ admin }) => {
-    console.log(admin);
     return (
-        <div className="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-navy-800">
+        <div className="overflow-hidden rounded-lg bg-white shadow-lg dark:bg-navy-800 p-5">
             <div className="p-6">
                 <div className="flex flex-col justify-between md:flex-row">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{admin.firstName} {admin.lastName}</h1>

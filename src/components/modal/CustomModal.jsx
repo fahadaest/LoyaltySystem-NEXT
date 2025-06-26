@@ -23,7 +23,7 @@ const CustomModal = ({ isOpen, onClose, title = "", size = "xl", children }) => 
             />
             <div className={`relative bg-white rounded-xl shadow-2xl w-full ${modalWidth} max-h-[90vh] overflow-hidden transform transition-all duration-300 scale-100`}>
                 {title && (
-                    <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between p-4 px-8 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
                             {title}
                         </h2>

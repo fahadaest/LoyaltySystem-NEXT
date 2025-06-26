@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { MdFileUpload, MdClose, MdCrop, MdCheck, MdAdd } from "react-icons/md";
 import Button from "components/button/Button";
 import { useCreateProductMutation, useUpdateProductMutation } from "store/productsApi";
+import { useGetAllProductSizesQuery } from "store/productSizesApi";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const AddProductForm = ({ product }) => {
@@ -22,18 +23,18 @@ const AddProductForm = ({ product }) => {
   const fileInputRef = useRef(null);
   const canvasRef = useRef(null);
   const fullImageUrl = baseUrl + product?.image;
+  const { data: productSizes, error: productSizesError, isLoading: productSizesLoading } = useGetAllProductSizesQuery(undefined);
 
-  const sizeOptions = [
-    { value: "1", label: "Large" },
-    { value: "2", label: "Medium" },
-    { value: "3", label: "Small" },
-  ];
+  const sizeOptions = productSizes ? productSizes.map((option) => ({
+    value: option.id,
+    label: option.size,
+  })) : [];
 
   useEffect(() => {
     if (product) {
       setProductName(product.name);
       setDescription(product.description);
-      setSize(product.size.id);
+      setSize(product.size ? product.size.id : '');
       setPreviewImage(fullImageUrl || null);
     } else {
       setProductName('');

@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from 'components/button/Button';
 import CustomModal from 'components/modal/CustomModal';
+import { IoTrashOutline, IoCloseOutline } from "react-icons/io5";
 
 type DeleteConfirmationModalProps = {
     isOpen: boolean;
@@ -19,7 +20,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 }) => {
     return (
         <CustomModal isOpen={isOpen} onClose={onClose} title={title} size="md">
-            <div className="text-center mt-5">
+            <div className="text-center mt-8">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
                     <svg
                         className="h-6 w-6 text-red-600 dark:text-red-300"
@@ -43,7 +44,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                     <strong>{itemName}</strong>? This action cannot be undone.
                 </p>
             </div>
-            <div className="mb-5 flex justify-center space-x-3">
+            <div className="mb-8 flex justify-center space-x-3">
                 <Button
                     text="Cancel"
                     size="md"
@@ -51,7 +52,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                     hoverColor="hover:bg-gray-300"
                     onClick={onClose}
                     extra="flex-1"
-                    icon={null}
+                    icon={IoCloseOutline}
                 />
                 <Button
                     text="Delete"
@@ -60,7 +61,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                     hoverColor="hover:bg-red-700"
                     onClick={onConfirm}
                     extra="flex-1"
-                    icon={null}
+                    icon={IoTrashOutline}
                 />
             </div>
         </CustomModal>

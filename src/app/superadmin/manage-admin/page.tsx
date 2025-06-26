@@ -39,7 +39,7 @@ const AdminListPage = () => {
           <HeaderButton
             icon={MdAdd}
             text="Add Admin"
-            size="md"
+            size="lg"
             color="bg-brandGreen"
             onClick={onOpen}
             variant={undefined}
