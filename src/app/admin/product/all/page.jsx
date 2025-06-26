@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from 'components/card/ProductCard';
 import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
@@ -11,14 +11,19 @@ import { useGetAllProductsQuery, useDeleteProductMutation } from 'store/products
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
-  const { data: products, error, isLoading } = useGetAllProductsQuery();
+  const { data: products, error, isLoading, refetch } = useGetAllProductsQuery();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [deleteItemId, setDeleteItemId] = useState(null);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const handleEdit = (product) => {
     setSelectedProduct(product);
@@ -64,7 +69,11 @@ const Dashboard = () => {
 
       <div className="">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 z-20">
-          {products && products.length > 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center items-center min-h-screen">
+              <CircularProgress style={{ color: "#36a18f" }} />
+            </div>
+          ) : products && products.length > 0 ? (
             products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -79,7 +88,22 @@ const Dashboard = () => {
               />
             ))
           ) : (
-            <div>No products available.</div>
+            <div className="col-span-full text-center flex flex-col items-center justify-center">
+              <div className="text-lg font-semibold text-gray-700 mb-4">
+                No products available yet
+              </div>
+              <p className="text-sm text-gray-500 mb-4">
+                It looks like you haven't added any products. Click the button below to add your first product.
+              </p>
+              <HeaderButton
+                icon={MdAdd}
+                text="Add Your First Product"
+                size="md"
+                color="bg-brandGreen"
+                onClick={handleAddProduct}
+                className="mt-4"
+              />
+            </div>
           )}
         </div>
       </div>

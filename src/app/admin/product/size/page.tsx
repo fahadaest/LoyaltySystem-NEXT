@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductSizeTable from 'components/admin/default/ProductSizeTable';
 import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
@@ -11,15 +11,21 @@ import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd } from "react-icons/md";
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
+import Button from 'components/button/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [deleteProductSize] = useDeleteProductSizeMutation();
-  const { data, error, isLoading } = useGetAllProductSizesQuery(undefined);
+  const { data, error, isLoading, refetch } = useGetAllProductSizesQuery(undefined);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [selectedProductSize, setSelectedProductSize] = useState(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const handleDeleteClick = (id: string) => {
     setDeleteId(id);
@@ -73,7 +79,36 @@ const Dashboard = () => {
             variant={undefined}
           />
         </HeadingCard>
-        <ProductSizeTable tableData={tableData} onAddClick={onOpen} onDeleteClick={handleDeleteClick} onEditClick={handleEditClick} />
+
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-screen">
+            <CircularProgress style={{ color: "#36a18f" }} />
+          </div>
+        ) : tableData.length > 0 ? (
+          <ProductSizeTable
+            tableData={tableData}
+            onAddClick={onOpen}
+            onDeleteClick={handleDeleteClick}
+            onEditClick={handleEditClick}
+          />
+        ) : (
+          <div className="col-span-full text-center flex flex-col items-center justify-center">
+            <div className="text-lg font-semibold text-gray-700 mb-4">
+              No product sizes available yet
+            </div>
+            <p className="text-sm text-gray-500 mb-4">
+              It looks like you haven't added any product sizes. Click the button below to add your first product size.
+            </p>
+            <Button
+              icon={MdAdd}
+              text="Add Your First Product Size"
+              size="md"
+              color="bg-brandGreen"
+              onClick={handleAddProduct}
+              className="mt-4"
+            />
+          </div>
+        )}
       </div>
 
       <CustomModal

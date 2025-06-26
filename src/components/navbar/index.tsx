@@ -14,6 +14,7 @@ import avatar from '/public/img/avatars/avatar4.png';
 import Image from 'next/image';
 import { Typewriter } from 'react-simple-typewriter';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -30,6 +31,7 @@ const Navbar = (props: {
   const handleLogout = () => {
     localStorage.removeItem('superadmin_session');
     localStorage.removeItem('admin_session');
+    Cookies.remove('token');
     router.push('/auth/sign-in');
   };
 
