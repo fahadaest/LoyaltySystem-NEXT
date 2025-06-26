@@ -6,7 +6,6 @@ import { CheckCircle } from '@mui/icons-material';
 import { useCreateAdminMutation, useUpdateAdminMutation } from 'store/adminApi';
 import { useListSubscriptionsQuery } from 'store/subscriptionApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store/store';
 import { showAlert } from 'store/alertSlice';
 
 const countryCodes = [
@@ -49,9 +48,6 @@ const AdminForm = ({ initialData = {}, onSubmit, isEditMode = false, handleClose
   const [updateAdmin, { isLoading: isUpdating, isSuccess: isUpdateSuccess }] = useUpdateAdminMutation();
   const { data: subscriptions = [] } = useListSubscriptionsQuery();
   const dispatch = useDispatch();
-
-  const alertState = useSelector((state: RootState) => state.alert);
-  console.log(alertState)
 
   const [formData, setFormData] = useState({
     email: '', password: '', confirmPassword: '', name: '', role: 'Admin', status: 'Active',

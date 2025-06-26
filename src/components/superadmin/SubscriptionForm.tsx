@@ -5,6 +5,9 @@ import { Subscription } from 'utils/types';
 import Button from 'components/button/Button';
 import { MdSave, MdCancel, MdAdd } from 'react-icons/md';
 import { useCreateSubscriptionMutation, useUpdateSubscriptionMutation } from 'store/subscriptionApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'store/store';
+import { showAlert } from 'store/alertSlice';
 
 type SubscriptionFormProps = {
   mode: 'create' | 'edit' | 'view';
@@ -19,6 +22,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 }) => {
   const [createSubscription, { isLoading }] = useCreateSubscriptionMutation();
   const [updateSubscription, { isLoading: isUpdating }] = useUpdateSubscriptionMutation();
+  const dispatch = useDispatch();
   const isReadOnly = mode === 'view';
   const title =
     mode === 'create'
@@ -31,7 +35,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     subscription || {
       id: 0,
       name: '',
-      price: 0,
+      price: null,
       billingCycle: 'monthly',
       status: 'active',
       description: '',
@@ -83,7 +87,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     try {
       if (mode === 'create') {
         await createSubscription(formData).unwrap();
-        console.log('Subscription created:', formData);
+        dispatch(showAlert({ message: 'Subscription created successfully!', severity: 'success', duration: 2000 }));
       } else if (mode === 'edit' && subscription?.id) {
         await updateSubscription({
           id: subscription.id,
@@ -95,7 +99,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             description: formData.description,
           },
         }).unwrap();
-        console.log('Subscription updated:', formData);
+        dispatch(showAlert({ message: 'Subscription Updated successfully!', severity: 'success', duration: 2000 }));
       }
 
       if (onSuccess) {
@@ -109,7 +113,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none"
+      className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-6 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none"
     >
       <div className="col-span-8 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
         <div className="mb-3">
@@ -147,7 +151,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             type="number"
             id="price"
             name="price"
-            value={formData.price}
+            value={formData.price || ""}
             onChange={handleInputChange}
             disabled={isReadOnly}
             className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${errors.price ? 'border-red-500' : 'border-gray-200'
@@ -178,8 +182,8 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
               }`}
           >
             <option value="monthly">Monthly</option>
-            <option value="yearly">Annually</option>
             <option value="quarterly">Quarterly</option>
+            <option value="yearly">Annually</option>
           </select>
         </div>
 
@@ -201,7 +205,6 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
-            <option value="cancelled">Cancelled</option>
           </select>
         </div>
       </div>

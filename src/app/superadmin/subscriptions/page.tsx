@@ -7,6 +7,7 @@ import Card from 'components/card';
 import Button from 'components/button/Button';
 import { useDisclosure } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
+import { FaCogs } from 'react-icons/fa';
 import { IoPeopleOutline } from 'react-icons/io5';
 import SubscriptionCard from 'components/card/SubscriptionCard';
 import SubscriptionForm from 'components/superadmin/SubscriptionForm';
@@ -16,6 +17,8 @@ import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useListSubscriptionsQuery, useDeleteSubscriptionMutation } from 'store/subscriptionApi';
 import { useState } from 'react';
 import SubscriptionDetails from 'components/superadmin/SubscriptionDetails';
+import { useDispatch, useSelector } from 'react-redux';
+import { showAlert } from 'store/alertSlice';
 
 export default function SubscriptionsPage() {
   const router = useRouter();
@@ -23,7 +26,7 @@ export default function SubscriptionsPage() {
   const [mode, setMode] = useState<'create' | 'edit' | 'view'>('create');
   const { data: subscriptions = [], isLoading, isError, refetch } = useListSubscriptionsQuery();
   const [deleteSubscription, { isLoading: isDeleting }] = useDeleteSubscriptionMutation();
-
+  const dispatch = useDispatch();
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
 
@@ -41,12 +44,13 @@ export default function SubscriptionsPage() {
       setSelectedSubscription(null);
       setIsDeleteMode(false);
       onClose();
-      refetch(); // Refresh the subscription list
+      refetch();
+      dispatch(showAlert({ message: 'Subscription deleted successfully!', severity: 'success', duration: 2000 }));
     } catch (error) {
-      console.error('Failed to delete subscription:', error);
-      // Optionally show a toast or error message
+      dispatch(showAlert({ message: 'Failed to delete subscription. Please try again.', severity: 'error', duration: 2000 }));
     }
   };
+
 
   const handleCreateClick = () => {
     setSelectedSubscription(null);
@@ -87,12 +91,12 @@ export default function SubscriptionsPage() {
       <div className="mt-3">
         <HeadingCard
           subtitle="Manage Subscriptions"
-          icon={<IoPeopleOutline className="text-3xl text-brandGreen dark:text-white" />}
+          icon={<FaCogs className="text-3xl text-brandGreen dark:text-white" />}
         >
           <HeaderButton
             icon={MdAdd}
             text="Add Subscription"
-            size="md"
+            size="lg"
             color="bg-brandGreen"
             onClick={handleCreateClick}
             variant={undefined}
@@ -116,7 +120,7 @@ export default function SubscriptionsPage() {
             <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
               No subscriptions yet
             </h3>
-            <p className="mt-2 text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-gray-500 dark:text-gray-400 mb-5">
               Get started by creating your first subscription.
             </p>
             <Button
@@ -126,7 +130,7 @@ export default function SubscriptionsPage() {
               hoverColor="hover:bg-brandGreenDark"
               onClick={handleCreateClick}
               extra="mt-4"
-              icon={null}
+              icon={MdAdd}
             />
           </div>
         ) : (
