@@ -84,7 +84,7 @@ const Dashboard = () => {
       </div>
 
       <CustomModal isOpen={isOpen} onClose={onClose} title="Reward Information" size="3xl">
-        <AddLoyalty />
+        <AddLoyalty onClose={onClose} />
       </CustomModal>
     </div>
   );

@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { MdFileUpload } from "react-icons/md";
+import { MdFileUpload, MdAdd } from "react-icons/md";
 import Card from "components/card";
 import InputField from "components/fields/InputField";
 import InputDropdown from "components/fields/InputDropDown";
 import LoyaltyAdditionalDetails from "./LoyaltyAdditionalDetails";
+import { useCreateProductLoyaltyCampaignMutation } from "store/productLoyalty";
+import Button from "components/button/Button";
+import { useDispatch } from 'react-redux';
+import { showAlert } from "store/alertSlice";
 
-const AddLoyalty = () => {
+const AddLoyalty = ({ onClose }) => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [rewardTitle, setRewardTitle] = useState("");
+  const [rewardDescription, setRewardDescription] = useState("");
+  const [purchaseQuantity, setPurchaseQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedRewardProduct, setSelectedRewardProduct] = useState("");
   const [templateImage, setTemplateImage] = useState(null);
@@ -14,6 +21,8 @@ const AddLoyalty = () => {
   const [icon2, setIcon2] = useState(null);
   const [icon3, setIcon3] = useState(null);
   const [color, setColor] = useState('#4A90E2');
+  const dispatch = useDispatch();
+  const [createProductLoyaltyCampaign, { isLoading, isSuccess, isError, error }] = useCreateProductLoyaltyCampaignMutation();
 
   const loyaltyTemplate = [
     { value: 'general', label: 'General Loyalty' },
@@ -56,6 +65,43 @@ const AddLoyalty = () => {
     setColor(selectedColor);
   };
 
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!rewardTitle || !purchaseQuantity) {
+      dispatch(showAlert({
+        message: 'Please fill out all fields.',
+        severity: 'error',
+        duration: 2000
+      }));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("rewardTitle", rewardTitle);
+    formData.append("rewardDescription", rewardDescription);
+    formData.append("purchaseQuantity", purchaseQuantity);
+    formData.append("product", selectedProduct);
+    formData.append("rewardProduct", selectedRewardProduct);
+    formData.append("templateImage", templateImage);
+    formData.append("icon1", icon1);
+    formData.append("icon2", icon2);
+    formData.append("icon3", icon3);
+    formData.append("color", color);
+
+    try {
+      const response = await createProductLoyaltyCampaign(formData);
+      dispatch(showAlert({
+        message: 'Product Loyalty Added Successfully',
+        severity: 'success',
+        duration: 2000
+      }));
+      onClose();
+    } catch (error) {
+      console.error('Error creating loyalty campaign:', error);
+    }
+  };
+
   return (
     <Card className="grid h-full w-full grid-cols-1 gap-3 p-6 rounded-[20px] bg-white bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-12">
       <div className="col-span-12 flex h-full w-full flex-col justify-center rounded-xl bg-white dark:!bg-navy-800">
@@ -72,7 +118,6 @@ const AddLoyalty = () => {
 
       {selectedTemplate === 'general' && (
         <>
-          {/* Reward Title - Full Width */}
           <div className="col-span-12 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
             <InputField
               variant="auth"
@@ -81,6 +126,8 @@ const AddLoyalty = () => {
               placeholder="Enter Loyalty Name"
               id="reward-title"
               type="text"
+              value={rewardTitle}
+              onChange={(e) => setRewardTitle(e.target.value)}
             />
           </div>
 
@@ -92,6 +139,8 @@ const AddLoyalty = () => {
               placeholder="Enter quantity to purchase"
               id="purchase-quantity"
               type="text"
+              value={purchaseQuantity}
+              onChange={(e) => setPurchaseQuantity(e.target.value)}
             />
           </div>
 
@@ -103,6 +152,8 @@ const AddLoyalty = () => {
               placeholder="Enter reward description"
               id="reward-description"
               type="text"
+              value={rewardDescription}
+              onChange={(e) => setRewardDescription(e.target.value)}
             />
           </div>
 
@@ -150,9 +201,14 @@ const AddLoyalty = () => {
         color={color}
       />
 
-      <button className="col-span-12 linear mt-4 flex items-center justify-center rounded-xl bg-brandGreen px-2 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200">
-        Add Product
-      </button>
+      <Button
+        icon={MdAdd}
+        text={'Add Product Loyalty'}
+        size="sm"
+        color="bg-brandGreen"
+        className="w-full"
+        onClick={handleFormSubmit}
+      />
     </Card>
   );
 };
