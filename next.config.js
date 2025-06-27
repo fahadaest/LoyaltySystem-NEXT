@@ -19,6 +19,7 @@ const nextConfig = {
     // Make ENV
     unoptimized: true,
   },
+  output: 'export',
 };
 
 module.exports = nextConfig;

@@ -29,7 +29,7 @@ const Button = ({
         >
             {Icon && (
                 <Icon
-                    size={size === "icon" ? 15 : 18}
+                    size={size === "xs" ? 13 : size === "icon" ? 15 : 18}
                     className="text-white transition-transform duration-300 group-hover:rotate-[360deg]"
                 />
             )}

@@ -33,7 +33,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   };
 
   return (
-    <Card extra={`flex flex-col w-full !p-0 bg-white shadow-lg transition-transform duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden ${extra}`} >
+    <Card extra={`flex flex-col w-full !p-0 bg-white shadow-lg transition-transform duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden max-w-full ${extra}`} >
       <div className="flex h-fit w-full items-center justify-center rounded-t-2xl bg-lightPrimary p-3 dark:!bg-navy-700">
         <p className="text-xl font-bold text-navy-700 dark:text-white">
           {subscription.name}
@@ -55,33 +55,33 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <p className="mb-3 line-clamp-2 text-center text-sm font-normal text-gray-600 dark:text-white">
           {subscription.description || 'No description provided.'}
         </p>
-        <div className="flex w-full items-center justify-center gap-2">
+        <div className="flex w-full items-center justify-center gap-1 flex-wrap max-w-full">
           <Button
             icon={MdInfoOutline}
             text="View"
-            size="sm"
+            size="xs"
             color="bg-brandBlue"
             hoverColor="hover:bg-brandBlueDark"
             onClick={onView}
-            extra="flex-1"
+            extra="flex-1 flex-shrink"
           />
           <Button
             icon={MdEdit}
             text="Edit"
-            size="sm"
+            size="xs"
             color="bg-brandGreen"
             hoverColor="hover:bg-brandGreenDark"
             onClick={onEdit}
-            extra="flex-1"
+            extra="flex-1 flex-shrink"
           />
           <Button
             icon={MdDelete}
             text="Delete"
-            size="sm"
+            size="xs"
             color="bg-brandRed"
             hoverColor="hover:bg-red-700"
             onClick={onDelete}
-            extra="flex-1"
+            extra="flex-1 flex-shrink"
           />
         </div>
       </div>

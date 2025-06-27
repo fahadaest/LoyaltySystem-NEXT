@@ -4,6 +4,7 @@ import { adminApi } from './adminApi';
 import { subscriptionApi } from './subscriptionApi';
 import { productsApi } from './productsApi';
 import { productSizesApi } from './productSizesApi';
+import { productLoyaltyApi } from './productLoyalty';
 import alertReducer from './alertSlice';
 
 export const store = configureStore({
@@ -13,10 +14,17 @@ export const store = configureStore({
         [subscriptionApi.reducerPath]: subscriptionApi.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
         [productSizesApi.reducerPath]: productSizesApi.reducer,
+        [productLoyaltyApi.reducerPath]: productLoyaltyApi.reducer,
         alert: alertReducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware).concat(adminApi.middleware).concat(subscriptionApi.middleware).concat(productsApi.middleware).concat(productSizesApi.middleware),
+        getDefaultMiddleware()
+            .concat(authApi.middleware)
+            .concat(adminApi.middleware)
+            .concat(subscriptionApi.middleware)
+            .concat(productsApi.middleware)
+            .concat(productSizesApi.middleware)
+            .concat(productLoyaltyApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
