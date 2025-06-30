@@ -45,6 +45,11 @@ const Dashboard = () => {
     openAddModal();
   };
 
+  const handleOpenAddModal = () => {
+    setSelectedLoyaltyData(null);
+    openAddModal();
+  };
+
   return (
     <div className="mt-3 grid h-full grid-cols-1 gap-5">
       <div className="col-span-1 h-fit w-full">
@@ -55,7 +60,7 @@ const Dashboard = () => {
               text="Add New Loyalty"
               size="lg"
               color="bg-brandGreen"
-              onClick={openAddModal}
+              onClick={handleOpenAddModal}
             />
           </HeadingCard>
         </div>

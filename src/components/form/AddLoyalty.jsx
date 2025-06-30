@@ -8,44 +8,57 @@ import { useCreateProductLoyaltyCampaignMutation, useUpdateProductLoyaltyCampaig
 import Button from "components/button/Button";
 import { useDispatch } from 'react-redux';
 import { showAlert } from "store/alertSlice";
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [rewardTitle, setRewardTitle] = useState("");
-  const [rewardDescription, setRewardDescription] = useState("");
   const [purchaseQuantity, setPurchaseQuantity] = useState("");
+  const [rewardDescription, setRewardDescription] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const [rewardProduct, setRewardProduct] = useState("");
-  const [selectedRewardProduct, setSelectedRewardProduct] = useState("");
+  const [bannnerTitle, setBannnerTitle] = useState("");
+  const [color, setColor] = useState('#4a5568');
+  const [logoSize, setLogoSize] = useState(60);
+  const [qrSize, setQrSize] = useState(80);
+  const [logo, setLogo] = useState(null);
+  const [logoBlob, setLogoBlob] = useState(null);
   const [templateImage, setTemplateImage] = useState(null);
-  const [icon1, setIcon1] = useState(null);
-  const [icon2, setIcon2] = useState(null);
-  const [icon3, setIcon3] = useState(null);
+  const [templateImageBlob, setTemplateImageBlob] = useState(null);
   const [icon1Text, setIcon1Text] = useState('Scan Qr with your mobile phone');
   const [icon2Text, setIcon2Text] = useState('Download the Point Pass into your mobile');
   const [icon3Text, setIcon3Text] = useState('Enter Your promotion');
-  const [color, setColor] = useState('#4a5568');
+  const [icon1TextSize, setIcon1TextSize] = useState(12);
+  const [icon2TextSize, setIcon2TextSize] = useState(12);
+  const [icon3TextSize, setIcon3TextSize] = useState(12);
+  const [icon1, setIcon1] = useState(null);
+  const [icon2, setIcon2] = useState(null);
+  const [icon3, setIcon3] = useState(null);
+  const [icon1Blob, setIcon1Blob] = useState(null);
+  const [icon2Blob, setIcon2Blob] = useState(null);
+  const [icon3Blob, setIcon3Blob] = useState(null);
   const dispatch = useDispatch();
   const [createProductLoyaltyCampaign, { isLoading, isSuccess, isError, error }] = useCreateProductLoyaltyCampaignMutation();
   const [updateProductLoyaltyCampaign] = useUpdateProductLoyaltyCampaignMutation();
 
-  console.log("icon1Text", icon1Text)
-  console.log("icon2Text", icon2Text)
-  console.log("icon3Text", icon3Text)
-
   useEffect(() => {
     if (selectedLoyaltyData) {
-      setSelectedTemplate(selectedLoyaltyData.template || '');
+      setSelectedTemplate(selectedLoyaltyData.loyaltyTemplates || '');
       setRewardTitle(selectedLoyaltyData.rewardTitle || '');
       setRewardDescription(selectedLoyaltyData.rewardDescription || '');
       setPurchaseQuantity(selectedLoyaltyData.purchaseQuantity || '');
       setSelectedProduct(selectedLoyaltyData.productId || '');
-      setSelectedRewardProduct(selectedLoyaltyData.rewardProductId || '');
+      setRewardProduct(selectedLoyaltyData.rewardProductId || '');
+      setColor(selectedLoyaltyData.templateColor || '#4a5568');
+      setLogo(null);
+      setLogoBlob(null);
       setTemplateImage(selectedLoyaltyData.templateImage || null);
-      setIcon1(selectedLoyaltyData.icon1 || null);
-      setIcon2(selectedLoyaltyData.icon2 || null);
-      setIcon3(selectedLoyaltyData.icon3 || null);
-      setColor(selectedLoyaltyData.color || '#4A90E2');
+      setIcon1Text(selectedLoyaltyData.icon1Text || 'Scan QR with your mobile phone');
+      setIcon2Text(selectedLoyaltyData.icon2Text || 'Download the Point Pass into your mobile');
+      setIcon3Text(selectedLoyaltyData.icon3Text || 'Enter Your promotion');
+      setIcon1(null);
+      setIcon2(null);
+      setIcon3(null);
     }
   }, [selectedLoyaltyData]);
 
@@ -59,43 +72,6 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
     value: product.id,
   }));
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setTemplateImage(imageUrl);
-    }
-  };
-
-  const handleIcon1Change = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setIcon1(imageUrl);
-    }
-  };
-
-  const handleIcon2Change = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setIcon2(imageUrl);
-    }
-  };
-
-  const handleIcon3Change = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setIcon3(imageUrl);
-    }
-  };
-
-  const handleColorChange = (selectedColor) => {
-    setColor(selectedColor);
-  };
-
-  console.log("selectedRewardProduct", selectedRewardProduct)
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -111,15 +87,33 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
     const formData = new FormData();
     formData.append("loyaltyTemplates", selectedTemplate);
     formData.append("rewardTitle", rewardTitle);
-    formData.append("rewardDescription", rewardDescription);
     formData.append("purchaseQuantity", purchaseQuantity);
+    formData.append("rewardDescription", rewardDescription);
     formData.append("productId", selectedProduct);
-    formData.append("rewardProductId", selectedRewardProduct);
-    formData.append("templateImage", templateImage);
-    formData.append("icon1", icon1);
-    formData.append("icon2", icon2);
-    formData.append("icon3", icon3);
+    formData.append("templateColor", color);
+    formData.append("rewardProductId", rewardProduct);
+    formData.append("icon1Text", icon1Text);
+    formData.append("icon2Text", icon2Text);
+    formData.append("icon3Text", icon3Text);
     formData.append("color", color);
+
+    // if (logoBlob) {
+    //   formData.append("logo", logoBlob, "logo.png");
+    // }
+    if (templateImageBlob) {
+      formData.append("templateImage", templateImageBlob, "templateImage.png");
+    } else {
+      formData.append("templateImage", null);
+    }
+    if (icon1Blob) {
+      formData.append("icon1", icon1Blob, "icon1.png");
+    }
+    if (icon2Blob) {
+      formData.append("icon2", icon2Blob, "icon2.png");
+    }
+    if (icon3Blob) {
+      formData.append("icon3", icon3Blob, "icon3.png");
+    }
 
     if (selectedLoyaltyData) {
       try {
@@ -221,8 +215,8 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
               id="reward-product"
               placeholder="Select a Reward Product"
               options={productOptions}
-              value={selectedRewardProduct}
-              onChange={(option) => setSelectedRewardProduct(option.value)}
+              value={rewardProduct}
+              onChange={(option) => setRewardProduct(option.value)}
               variant="auth"
             />
           </div>
@@ -230,31 +224,47 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
       )}
 
       <LoyaltyAdditionalDetails
-        loyaltyTemplate={loyaltyTemplate}
-        selectedProduct={selectedProduct}
-        setSelectedProduct={setSelectedProduct}
-        selectedRewardProduct={selectedRewardProduct}
-        setSelectedRewardProduct={setSelectedRewardProduct}
-        handleImageChange={handleImageChange}
-        handleIcon1Change={handleIcon1Change}
-        handleIcon2Change={handleIcon2Change}
-        handleIcon3Change={handleIcon3Change}
-        handleColorChange={handleColorChange}
+        bannnerTitle={bannnerTitle}
+        setBannnerTitle={setBannnerTitle}
+        color={color}
+        setColor={setColor}
+        logoSize={logoSize}
+        setLogoSize={setLogoSize}
+        qrSize={qrSize}
+        setQrSize={setQrSize}
+        logo={logo}
+        setLogo={setLogo}
+        logoBlob={logoBlob}
+        setLogoBlob={setLogoBlob}
         templateImage={templateImage}
         setTemplateImage={setTemplateImage}
-        icon1={icon1}
-        icon2={icon2}
-        icon3={icon3}
-        setIcon1={setIcon1}
-        setIcon2={setIcon2}
-        setIcon3={setIcon3}
+        templateImageBlob={templateImageBlob}
+        setTemplateImageBlob={setTemplateImageBlob}
         icon1Text={icon1Text}
-        icon2Text={icon2Text}
-        icon3Text={icon3Text}
         setIcon1Text={setIcon1Text}
+        icon2Text={icon2Text}
         setIcon2Text={setIcon2Text}
+        icon3Text={icon3Text}
         setIcon3Text={setIcon3Text}
-        color={color}
+        icon1TextSize={icon1TextSize}
+        setIcon1TextSize={setIcon1TextSize}
+        icon2TextSize={icon2TextSize}
+        setIcon2TextSize={setIcon2TextSize}
+        icon3TextSize={icon3TextSize}
+        setIcon3TextSize={setIcon3TextSize}
+        icon1={icon1}
+        setIcon1={setIcon1}
+        icon2={icon2}
+        setIcon2={setIcon2}
+        icon3={icon3}
+        setIcon3={setIcon3}
+        icon1Blob={icon1Blob}
+        setIcon1Blob={setIcon1Blob}
+        icon2Blob={icon2Blob}
+        setIcon2Blob={setIcon2Blob}
+        icon3Blob={icon3Blob}
+        setIcon3Blob={setIcon3Blob}
+        selectedLoyaltyData={selectedLoyaltyData}
       />
 
       <div className="col-span-12">

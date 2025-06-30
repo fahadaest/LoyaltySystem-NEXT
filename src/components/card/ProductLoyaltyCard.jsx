@@ -6,7 +6,6 @@ import Button from "components/button/Button";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit }) => {
-  console.log(product)
   const [heart, setHeart] = useState(true);
   const fullImageUrl = baseUrl + product?.product?.image;
 

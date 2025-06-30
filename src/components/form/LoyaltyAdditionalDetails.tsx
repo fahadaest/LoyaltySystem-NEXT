@@ -1,49 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputField from 'components/fields/InputField';
-import InputDropdown from 'components/fields/InputDropDown';
 import ImageUploaderAndCropper from 'components/imageUploader/ImageUploaderAndCropper';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const LoyaltyAdditionalDetails = ({
-    loyaltyTemplate,
-    selectedProduct,
-    setSelectedProduct,
-    selectedRewardProduct,
-    setSelectedRewardProduct,
-    handleImageChange,
-    handleIcon1Change,
-    handleIcon2Change,
-    handleIcon3Change,
-    handleColorChange,
-    templateImage,
-    setTemplateImage,
-    icon1,
-    icon2,
-    icon3,
-    setIcon1,
-    setIcon2,
-    setIcon3,
-    icon1Text,
-    icon2Text,
-    icon3Text,
-    setIcon1Text,
-    setIcon2Text,
-    setIcon3Text,
-    color = '#4a5568',
-}) => {
-    const [templateImageBlob, setTemplateImageBlob] = useState(null);
-    const [icon1Blob, setIcon1Blob] = useState(null);
-    const [icon2Blob, setIcon2Blob] = useState(null);
-    const [icon3Blob, setIcon3Blob] = useState(null);
-    const [icon1TextSize, setIcon1TextSize] = useState(12);
-    const [icon2TextSize, setIcon2TextSize] = useState(12);
-    const [icon3TextSize, setIcon3TextSize] = useState(12);
-    const [qrSize, setQrSize] = useState(80);
-
-    const [title, setTitle] = useState("Loyalty Program");
-    const [logo, setLogo] = useState(null);
-    const [logoBlob, setLogoBlob] = useState(null);
-    const [logoSize, setLogoSize] = useState(60);
-
+const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setColor, logoSize, setLogoSize, qrSize, setQrSize, logo, setLogo, logoBlob, setLogoBlob, templateImage, setTemplateImage, templateImageBlob, setTemplateImageBlob, icon1Text, setIcon1Text, icon2Text, setIcon2Text, icon3Text, setIcon3Text, icon1TextSize, setIcon1TextSize, icon2TextSize, setIcon2TextSize, icon3TextSize, setIcon3TextSize, icon1, setIcon1, icon2, setIcon2, icon3, setIcon3, icon1Blob, setIcon1Blob, icon2Blob, setIcon2Blob, icon3Blob, setIcon3Blob, selectedLoyaltyData }) => {
     useEffect(() => {
         if (templateImageBlob) {
             const objectUrl = URL.createObjectURL(templateImageBlob);
@@ -53,24 +13,31 @@ const LoyaltyAdditionalDetails = ({
     }, [templateImageBlob]);
 
     useEffect(() => {
-        if (icon1Blob) handleIcon1Change({ target: { files: [icon1Blob] } });
-    }, [icon1Blob]);
-
-    useEffect(() => {
-        if (icon2Blob) handleIcon2Change({ target: { files: [icon2Blob] } });
-    }, [icon2Blob]);
-
-    useEffect(() => {
-        if (icon3Blob) handleIcon3Change({ target: { files: [icon3Blob] } });
-    }, [icon3Blob]);
-
-    useEffect(() => {
         if (logoBlob) {
             const objectUrl = URL.createObjectURL(logoBlob);
             setLogo(objectUrl);
             return () => URL.revokeObjectURL(objectUrl);
         }
     }, [logoBlob]);
+
+    useEffect(() => {
+        if (icon1Blob) setIcon1(URL.createObjectURL(icon1Blob));
+    }, [icon1Blob]);
+
+    useEffect(() => {
+        if (icon2Blob) setIcon2(URL.createObjectURL(icon2Blob));
+    }, [icon2Blob]);
+
+    useEffect(() => {
+        if (icon3Blob) setIcon3(URL.createObjectURL(icon3Blob));
+    }, [icon3Blob]);
+
+    useEffect(() => {
+        if (selectedLoyaltyData) {
+            setTemplateImage(baseUrl + selectedLoyaltyData.templateImage || null);
+        }
+    }, [selectedLoyaltyData]);
+
 
     return (
         <div className="w-full col-span-12 flex flex-col gap-6">
@@ -80,11 +47,9 @@ const LoyaltyAdditionalDetails = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left section */}
                 <div className="flex flex-col space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col space-y-4">
-                            {/* Color Picker */}
                             <div>
                                 <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Title</label>
                                 <InputField
@@ -93,15 +58,15 @@ const LoyaltyAdditionalDetails = ({
                                     placeholder="Enter title"
                                     id="banner-title"
                                     type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)} label={''} />
+                                    value={bannnerTitle}
+                                    onChange={(e) => setBannnerTitle(e.target.value)} label={''} />
                             </div>
                             <div>
                                 <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Select Color</label>
                                 <input
                                     type="color"
                                     value={color}
-                                    onChange={(e) => handleColorChange(e.target.value)}
+                                    onChange={(e) => setColor(e.target.value)}
                                     className="h-10 w-full cursor-pointer rounded border border-gray-300 px-2 dark:border-gray-600 dark:bg-navy-900"
                                 />
                                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -125,7 +90,6 @@ const LoyaltyAdditionalDetails = ({
                                 </span>
                             </div>
 
-                            {/* QR Code Size */}
                             <div>
                                 <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">QR Code Size</label>
                                 <input
@@ -144,7 +108,6 @@ const LoyaltyAdditionalDetails = ({
 
                         </div>
 
-                        {/* Template and Logo Upload */}
                         <div className="flex flex-col space-y-4">
                             <div >
                                 <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Upload Logo</label>
@@ -167,7 +130,6 @@ const LoyaltyAdditionalDetails = ({
                         </div>
                     </div>
 
-                    {/* Icon Text Fields */}
                     <div className="grid grid-cols-3 gap-4">
                         {[icon1Text, icon2Text, icon3Text].map((value, i) => (
                             <div className="flex flex-col space-y-2" key={i}>
@@ -199,7 +161,6 @@ const LoyaltyAdditionalDetails = ({
                         ))}
                     </div>
 
-                    {/* Icon Uploaders */}
                     <div className="grid grid-cols-3 gap-4">
                         {[icon1, icon2, icon3].map((icon, i) => (
                             <div className="flex flex-col" key={i}>
@@ -217,7 +178,6 @@ const LoyaltyAdditionalDetails = ({
                     </div>
                 </div>
 
-                {/* Right Section: Banner Preview */}
                 <div className="w-full flex justify-center bg-pink-200">
                     <div
                         className="bg-white dark:bg-navy-900 shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
@@ -231,7 +191,6 @@ const LoyaltyAdditionalDetails = ({
                         </div>
 
                         <div className="flex flex-col h-full relative">
-                            {/* QR Code */}
                             <div className="absolute top-[25%] left-1/2 -translate-x-1/2 z-10">
                                 <img
                                     src="/img/loyaltyBannerIcons/Qrcode.png"
@@ -241,7 +200,6 @@ const LoyaltyAdditionalDetails = ({
                                 />
                             </div>
 
-                            {/* Top Banner with Logo and Title */}
                             <div
                                 className="h-[30%] relative flex flex-col items-center pt-16 text-center px-4 gap-2"
                                 style={{ backgroundColor: color }}
@@ -255,11 +213,10 @@ const LoyaltyAdditionalDetails = ({
                                     />
                                 )}
                                 <h1 className="text-white text-lg font-semibold">
-                                    {title}
+                                    {bannnerTitle}
                                 </h1>
                             </div>
 
-                            {/* Middle: Template Image */}
                             <div className="h-[40%] flex items-center justify-center">
                                 {templateImage ? (
                                     <img
@@ -274,7 +231,6 @@ const LoyaltyAdditionalDetails = ({
                                 )}
                             </div>
 
-                            {/* Bottom: Icons and Texts */}
                             <div className="h-[27%] bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white text-sm font-medium px-2 py-2 flex flex-col">
                                 <div className="flex-1 flex flex-col justify-center gap-2">
                                     <div className="flex justify-around items-center w-full">
@@ -314,7 +270,6 @@ const LoyaltyAdditionalDetails = ({
                                     </div>
                                 </div>
 
-                                {/* Footer */}
                                 <div className="text-xs text-gray-600 dark:text-gray-400 text-center py-2 border-t border-gray-200 dark:border-gray-700">
                                     <p>
                                         Powered by RewardHive{' '}
