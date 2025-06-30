@@ -1,33 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdFileUpload, MdAdd } from "react-icons/md";
 import Card from "components/card";
 import InputField from "components/fields/InputField";
 import InputDropdown from "components/fields/InputDropDown";
 import LoyaltyAdditionalDetails from "./LoyaltyAdditionalDetails";
-import { useCreateProductLoyaltyCampaignMutation } from "store/productLoyalty";
+import { useCreateProductLoyaltyCampaignMutation, useUpdateProductLoyaltyCampaignMutation } from "store/productLoyalty";
 import Button from "components/button/Button";
 import { useDispatch } from 'react-redux';
 import { showAlert } from "store/alertSlice";
 
-const AddLoyalty = ({ onClose }) => {
+const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [rewardTitle, setRewardTitle] = useState("");
   const [rewardDescription, setRewardDescription] = useState("");
   const [purchaseQuantity, setPurchaseQuantity] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
+  const [rewardProduct, setRewardProduct] = useState("");
   const [selectedRewardProduct, setSelectedRewardProduct] = useState("");
   const [templateImage, setTemplateImage] = useState(null);
   const [icon1, setIcon1] = useState(null);
   const [icon2, setIcon2] = useState(null);
   const [icon3, setIcon3] = useState(null);
-  const [color, setColor] = useState('#4A90E2');
+  const [icon1Text, setIcon1Text] = useState('Scan Qr with your mobile phone');
+  const [icon2Text, setIcon2Text] = useState('Download the Point Pass into your mobile');
+  const [icon3Text, setIcon3Text] = useState('Enter Your promotion');
+  const [color, setColor] = useState('#4a5568');
   const dispatch = useDispatch();
   const [createProductLoyaltyCampaign, { isLoading, isSuccess, isError, error }] = useCreateProductLoyaltyCampaignMutation();
+  const [updateProductLoyaltyCampaign] = useUpdateProductLoyaltyCampaignMutation();
+
+  console.log("icon1Text", icon1Text)
+  console.log("icon2Text", icon2Text)
+  console.log("icon3Text", icon3Text)
+
+  useEffect(() => {
+    if (selectedLoyaltyData) {
+      setSelectedTemplate(selectedLoyaltyData.template || '');
+      setRewardTitle(selectedLoyaltyData.rewardTitle || '');
+      setRewardDescription(selectedLoyaltyData.rewardDescription || '');
+      setPurchaseQuantity(selectedLoyaltyData.purchaseQuantity || '');
+      setSelectedProduct(selectedLoyaltyData.productId || '');
+      setSelectedRewardProduct(selectedLoyaltyData.rewardProductId || '');
+      setTemplateImage(selectedLoyaltyData.templateImage || null);
+      setIcon1(selectedLoyaltyData.icon1 || null);
+      setIcon2(selectedLoyaltyData.icon2 || null);
+      setIcon3(selectedLoyaltyData.icon3 || null);
+      setColor(selectedLoyaltyData.color || '#4A90E2');
+    }
+  }, [selectedLoyaltyData]);
 
   const loyaltyTemplate = [
     { value: 'general', label: 'General Loyalty' },
     { value: 'coffee', label: 'Coffee Loyalty' },
   ];
+
+  const productOptions = products.map(product => ({
+    label: product.name,
+    value: product.id,
+  }));
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -65,6 +95,7 @@ const AddLoyalty = ({ onClose }) => {
     setColor(selectedColor);
   };
 
+  console.log("selectedRewardProduct", selectedRewardProduct)
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -78,32 +109,47 @@ const AddLoyalty = ({ onClose }) => {
     }
 
     const formData = new FormData();
+    formData.append("loyaltyTemplates", selectedTemplate);
     formData.append("rewardTitle", rewardTitle);
     formData.append("rewardDescription", rewardDescription);
     formData.append("purchaseQuantity", purchaseQuantity);
-    formData.append("product", selectedProduct);
-    formData.append("rewardProduct", selectedRewardProduct);
+    formData.append("productId", selectedProduct);
+    formData.append("rewardProductId", selectedRewardProduct);
     formData.append("templateImage", templateImage);
     formData.append("icon1", icon1);
     formData.append("icon2", icon2);
     formData.append("icon3", icon3);
     formData.append("color", color);
 
-    try {
-      const response = await createProductLoyaltyCampaign(formData);
-      dispatch(showAlert({
-        message: 'Product Loyalty Added Successfully',
-        severity: 'success',
-        duration: 2000
-      }));
-      onClose();
-    } catch (error) {
-      console.error('Error creating loyalty campaign:', error);
+    if (selectedLoyaltyData) {
+      try {
+        await updateProductLoyaltyCampaign({ id: selectedLoyaltyData.id, formData }).unwrap();
+        dispatch(showAlert({
+          message: 'Product Loyalty Updated Successfully',
+          severity: 'success',
+          duration: 2000
+        }));
+        onClose();
+      } catch (error) {
+        console.error('Error updating loyalty campaign:', error);
+      }
+    } else {
+      try {
+        const response = await createProductLoyaltyCampaign(formData);
+        dispatch(showAlert({
+          message: 'Product Loyalty Added Successfully',
+          severity: 'success',
+          duration: 2000
+        }));
+        onClose();
+      } catch (error) {
+        console.error('Error creating loyalty campaign:', error);
+      }
     }
   };
 
   return (
-    <Card className="grid h-full w-full grid-cols-1 gap-3 p-6 rounded-[20px] bg-white bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-12">
+    <Card className="grid h-full w-full grid-cols-1 gap-3 py-7 px-10 rounded-[20px] bg-white bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-12">
       <div className="col-span-12 flex h-full w-full flex-col justify-center rounded-xl bg-white dark:!bg-navy-800">
         <InputDropdown
           label="Select Loyalty Template"
@@ -162,7 +208,7 @@ const AddLoyalty = ({ onClose }) => {
               label="Select Product"
               id="product"
               placeholder="Select a Product"
-              options={loyaltyTemplate}
+              options={productOptions}
               value={selectedProduct}
               onChange={(option) => setSelectedProduct(option.value)}
               variant="auth"
@@ -174,7 +220,7 @@ const AddLoyalty = ({ onClose }) => {
               label="Select Reward Product"
               id="reward-product"
               placeholder="Select a Reward Product"
-              options={loyaltyTemplate}
+              options={productOptions}
               value={selectedRewardProduct}
               onChange={(option) => setSelectedRewardProduct(option.value)}
               variant="auth"
@@ -195,20 +241,32 @@ const AddLoyalty = ({ onClose }) => {
         handleIcon3Change={handleIcon3Change}
         handleColorChange={handleColorChange}
         templateImage={templateImage}
+        setTemplateImage={setTemplateImage}
         icon1={icon1}
         icon2={icon2}
         icon3={icon3}
+        setIcon1={setIcon1}
+        setIcon2={setIcon2}
+        setIcon3={setIcon3}
+        icon1Text={icon1Text}
+        icon2Text={icon2Text}
+        icon3Text={icon3Text}
+        setIcon1Text={setIcon1Text}
+        setIcon2Text={setIcon2Text}
+        setIcon3Text={setIcon3Text}
         color={color}
       />
 
-      <Button
-        icon={MdAdd}
-        text={'Add Product Loyalty'}
-        size="sm"
-        color="bg-brandGreen"
-        className="w-full"
-        onClick={handleFormSubmit}
-      />
+      <div className="col-span-12">
+        <Button
+          icon={MdAdd}
+          text={selectedLoyaltyData ? 'Edit Product Loyalty' : 'Add Product Loyalty'}
+          size="sm"
+          color="bg-brandGreen"
+          className="w-full"
+          onClick={handleFormSubmit}
+        />
+      </div>
     </Card>
   );
 };

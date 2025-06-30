@@ -42,7 +42,6 @@ const Dashboard = () => {
         setDeleteItemId(null);
         onClose();
       } catch (error) {
-        console.error('Error deleting product:', error);
         dispatch(showAlert({ message: "Product deletion failed!", severity: "error", duration: 2000 }));
       }
     }

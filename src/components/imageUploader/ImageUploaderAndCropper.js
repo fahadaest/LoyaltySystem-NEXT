@@ -8,7 +8,7 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
     const [crop, setCrop] = useState({ unit: '%', width: 40, height: 30, x: 30, y: 35 });
     const [cropImageRef, setCropImageRef] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [isResizing, setIsResizing] = useState(null);  // For resizing corners
+    const [isResizing, setIsResizing] = useState(null);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const fileInputRef = useRef(null);
     const canvasRef = useRef(null);
@@ -129,44 +129,39 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
             }));
         }
 
-        // When resizing
         if (isResizing) {
             const deltaX = mouseX - dragStart.x;
             const deltaY = mouseY - dragStart.y;
-
             let newWidth = crop.width;
             let newHeight = crop.height;
             let newX = crop.x;
             let newY = crop.y;
+            const aspectRatio = 4 / 3;
 
-            const aspectRatio = 4 / 3;  // Fixed aspect ratio
-
-            // Resize logic for all corners (but we will avoid changing the dimension)
             if (isResizing === 'se') {
                 newWidth = Math.max(10, Math.min(crop.width + deltaX, 100 - crop.x));
-                newHeight = newWidth * aspectRatio; // Maintaining aspect ratio
+                newHeight = newWidth * aspectRatio;
             }
 
             if (isResizing === 'sw') {
                 newWidth = Math.max(10, Math.min(crop.width - deltaX, crop.x + crop.width));
-                newHeight = newWidth * aspectRatio; // Maintaining aspect ratio
+                newHeight = newWidth * aspectRatio;
                 newX = crop.x + crop.width - newWidth;
             }
 
             if (isResizing === 'ne') {
                 newWidth = Math.max(10, Math.min(crop.width + deltaX, 100 - crop.x));
-                newHeight = newWidth * aspectRatio; // Maintaining aspect ratio
+                newHeight = newWidth * aspectRatio;
                 newY = crop.y + crop.height - newHeight;
             }
 
             if (isResizing === 'nw') {
                 newWidth = Math.max(10, Math.min(crop.width - deltaX, crop.x + crop.width));
-                newHeight = newWidth * aspectRatio; // Maintaining aspect ratio
+                newHeight = newWidth * aspectRatio;
                 newX = crop.x + crop.width - newWidth;
                 newY = crop.y + crop.height - newHeight;
             }
 
-            // Ensure the crop box stays within the image bounds
             newWidth = Math.max(10, Math.min(newWidth, 100));
             newHeight = Math.max(7.5, Math.min(newHeight, 100));
             newX = Math.max(0, Math.min(newX, 100 - newWidth));
@@ -188,19 +183,17 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
     const handleMouseUp = () => {
         setIsDragging(false);
         setIsResizing(false);
-        document.removeEventListener('mousemove', handleMouseMove); // Clean up mousemove listener
-        document.removeEventListener('mouseup', handleMouseUp);   // Clean up mouseup listener
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
     };
 
     useEffect(() => {
-        // Add global event listeners for mousemove and mouseup
         if (isDragging || isResizing) {
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
         }
 
         return () => {
-            // Clean up the event listeners on component unmount or when dragging/resizing is done
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
@@ -209,7 +202,11 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
     return (
         <div className="flex flex-col items-center justify-center gap-3">
             {!previewImage ? (
-                <button type="button" onClick={handleUploadClick} className="h-full p-5 flex flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 py-3 dark:!border-navy-700 lg:pb-0 w-full hover:bg-gray-100 transition-colors">
+                <button
+                    type="button"
+                    onClick={handleUploadClick}
+                    className="w-full py-10 px-5 flex flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 hover:bg-gray-100 transition-colors"
+                >
                     <MdFileUpload className="text-[50px] text-brandGreen dark:text-white" />
                     <h4 className="text-lg font-bold text-brandGreen dark:text-white">Upload File</h4>
                     <p className="mt-2 text-xs font-medium text-gray-600">PNG, JPG, and GIF files are allowed</p>
