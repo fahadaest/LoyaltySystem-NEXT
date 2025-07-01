@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function InputDropdown(props) {
     const {
@@ -27,6 +27,10 @@ function InputDropdown(props) {
 
     const selectedOption = options.find(opt => opt.value === selectedValue);
     const displayText = selectedOption ? selectedOption.label : placeholder;
+
+    useEffect(() => {
+        setSelectedValue(value);
+    }, [value]);
 
     return (
         <div className={`relative ${extra}`}>

@@ -116,6 +116,7 @@ const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setCol
                                     setPreviewImage={setLogo}
                                     onCropComplete={(blob) => setLogoBlob(blob)}
                                     removeImage={() => setLogo(null)}
+                                    aspectRatio={16 / 9}
                                 />
                             </div>
                             <div>
@@ -178,7 +179,7 @@ const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setCol
                     </div>
                 </div>
 
-                <div className="w-full flex justify-center bg-pink-200">
+                <div className="w-full flex justify-center">
                     <div
                         className="bg-white dark:bg-navy-900 shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
                         style={{

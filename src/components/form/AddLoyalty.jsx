@@ -4,19 +4,22 @@ import Card from "components/card";
 import InputField from "components/fields/InputField";
 import InputDropdown from "components/fields/InputDropDown";
 import LoyaltyAdditionalDetails from "./LoyaltyAdditionalDetails";
-import { useCreateProductLoyaltyCampaignMutation, useUpdateProductLoyaltyCampaignMutation } from "store/productLoyalty";
 import Button from "components/button/Button";
 import { useDispatch } from 'react-redux';
 import { showAlert } from "store/alertSlice";
+
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
+const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePage }) => {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [rewardTitle, setRewardTitle] = useState("");
   const [purchaseQuantity, setPurchaseQuantity] = useState("");
   const [rewardDescription, setRewardDescription] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const [rewardProduct, setRewardProduct] = useState("");
+  const [spendingAmount, setSpendingAmount] = useState("");
+  const [rewardPoints, setRewardPoints] = useState("");
+  const [rewardPointsEquivalent, setRewardPointsEquivalent] = useState("");
   const [bannnerTitle, setBannnerTitle] = useState("");
   const [color, setColor] = useState('#4a5568');
   const [logoSize, setLogoSize] = useState(60);
@@ -38,8 +41,6 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
   const [icon2Blob, setIcon2Blob] = useState(null);
   const [icon3Blob, setIcon3Blob] = useState(null);
   const dispatch = useDispatch();
-  const [createProductLoyaltyCampaign, { isLoading, isSuccess, isError, error }] = useCreateProductLoyaltyCampaignMutation();
-  const [updateProductLoyaltyCampaign] = useUpdateProductLoyaltyCampaignMutation();
 
   useEffect(() => {
     if (selectedLoyaltyData) {
@@ -52,22 +53,29 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
       setColor(selectedLoyaltyData.templateColor || '#4a5568');
       setLogo(null);
       setLogoBlob(null);
-      setTemplateImage(selectedLoyaltyData.templateImage || null);
+      setTemplateImage(baseUrl + selectedLoyaltyData.templateImage || null);
       setIcon1Text(selectedLoyaltyData.icon1Text || 'Scan QR with your mobile phone');
       setIcon2Text(selectedLoyaltyData.icon2Text || 'Download the Point Pass into your mobile');
       setIcon3Text(selectedLoyaltyData.icon3Text || 'Enter Your promotion');
       setIcon1(null);
       setIcon2(null);
       setIcon3(null);
+      setSpendingAmount(selectedLoyaltyData.spendingAmount || '');
+      setRewardPoints(selectedLoyaltyData.rewardPoints || '');
+      setRewardPointsEquivalent(selectedLoyaltyData.rewardPointsEquivalent || '');
     }
   }, [selectedLoyaltyData]);
 
-  const loyaltyTemplate = [
-    { value: 'general', label: 'General Loyalty' },
-    { value: 'coffee', label: 'Coffee Loyalty' },
-  ];
+  const loyaltyTemplate = sourcePage === "products"
+    ? [
+      { value: 'general', label: 'General Loyalty' },
+      { value: 'coffee', label: 'Coffee Loyalty' },
+    ]
+    : [
+      { value: 'point', label: 'Point-Based Loyalty' },
+    ];
 
-  const productOptions = products.map(product => ({
+  const productOptions = (products || []).map(product => ({
     label: product.name,
     value: product.id,
   }));
@@ -75,21 +83,13 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (!rewardTitle || !purchaseQuantity) {
-      dispatch(showAlert({
-        message: 'Please fill out all fields.',
-        severity: 'error',
-        duration: 2000
-      }));
-      return;
-    }
-
     const formData = new FormData();
     formData.append("loyaltyTemplates", selectedTemplate);
     formData.append("rewardTitle", rewardTitle);
     formData.append("purchaseQuantity", purchaseQuantity);
     formData.append("rewardDescription", rewardDescription);
     formData.append("productId", selectedProduct);
+    formData.append("bannnerTitle", bannnerTitle);
     formData.append("templateColor", color);
     formData.append("rewardProductId", rewardProduct);
     formData.append("icon1Text", icon1Text);
@@ -97,13 +97,17 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
     formData.append("icon3Text", icon3Text);
     formData.append("color", color);
 
-    // if (logoBlob) {
-    //   formData.append("logo", logoBlob, "logo.png");
-    // }
+    if (selectedTemplate === 'point') {
+      formData.append("spendingAmount", spendingAmount);
+      formData.append("rewardPoints", rewardPoints);
+      formData.append("rewardPointsEquivalent", rewardPointsEquivalent);
+    }
+
     if (templateImageBlob) {
       formData.append("templateImage", templateImageBlob, "templateImage.png");
-    } else {
-      formData.append("templateImage", null);
+    }
+    if (logoBlob) {
+      formData.append("logoImage", logoBlob, "logo.png");
     }
     if (icon1Blob) {
       formData.append("icon1", icon1Blob, "icon1.png");
@@ -115,31 +119,7 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
       formData.append("icon3", icon3Blob, "icon3.png");
     }
 
-    if (selectedLoyaltyData) {
-      try {
-        await updateProductLoyaltyCampaign({ id: selectedLoyaltyData.id, formData }).unwrap();
-        dispatch(showAlert({
-          message: 'Product Loyalty Updated Successfully',
-          severity: 'success',
-          duration: 2000
-        }));
-        onClose();
-      } catch (error) {
-        console.error('Error updating loyalty campaign:', error);
-      }
-    } else {
-      try {
-        const response = await createProductLoyaltyCampaign(formData);
-        dispatch(showAlert({
-          message: 'Product Loyalty Added Successfully',
-          severity: 'success',
-          duration: 2000
-        }));
-        onClose();
-      } catch (error) {
-        console.error('Error creating loyalty campaign:', error);
-      }
-    }
+    onSubmit(formData);
   };
 
   return (
@@ -218,6 +198,62 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData }) => {
               value={rewardProduct}
               onChange={(option) => setRewardProduct(option.value)}
               variant="auth"
+            />
+          </div>
+        </>
+      )}
+
+      {selectedTemplate === 'point' && (
+        <>
+          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
+            <InputField
+              variant="auth"
+              extra="mb-3"
+              label="Reward Title"
+              placeholder="Enter Loyalty Name"
+              id="reward-title"
+              type="text"
+              value={rewardTitle}
+              onChange={(e) => setRewardTitle(e.target.value)}
+            />
+          </div>
+
+          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
+            <InputField
+              variant="auth"
+              extra="mb-3"
+              label="Spending Amount (AED)"
+              placeholder="Enter spending amount"
+              id="spending-amount"
+              type="text"
+              value={spendingAmount}
+              onChange={(e) => setSpendingAmount(e.target.value)}
+            />
+          </div>
+
+          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
+            <InputField
+              variant="auth"
+              extra="mb-3"
+              label="Reward Points"
+              placeholder="Enter reward points"
+              id="reward-points"
+              type="text"
+              value={rewardPoints}
+              onChange={(e) => setRewardPoints(e.target.value)}
+            />
+          </div>
+
+          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
+            <InputField
+              variant="auth"
+              extra="mb-3"
+              label="Reward Points Equivalent to AED"
+              placeholder="Enter equivalent amount"
+              id="reward-points-equivalent"
+              type="text"
+              value={rewardPointsEquivalent}
+              onChange={(e) => setRewardPointsEquivalent(e.target.value)}
             />
           </div>
         </>

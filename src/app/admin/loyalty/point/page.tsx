@@ -1,85 +1,88 @@
 'use client';
-import CustomModal from 'components/modal/CustomModal';
+import React, { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import AddProductSizeComponent from 'components/form/AddProductSize';
 import PointLoyaltyTable from 'components/admin/default/PointLoyaltyTable';
 import AddLoyalty from 'components/form/AddLoyalty';
-
-type RowObj = {
-  name: string;
-  spendingAmount: number;
-  rewardPoints: number;
-};
-
-const tableDataComplex: RowObj[] = [
-  {
-    name: "Buy 2 get 1 Free",
-    spendingAmount: 500,
-    rewardPoints: 600,
-  },
-  {
-    name: "Holiday Special",
-    spendingAmount: 1200,
-    rewardPoints: 1500,
-  },
-  {
-    name: "Summer Sale",
-    spendingAmount: 300,
-    rewardPoints: 350,
-  },
-  {
-    name: "Clearance Discount",
-    spendingAmount: 700,
-    rewardPoints: 800,
-  },
-  {
-    name: "New User Bonus",
-    spendingAmount: 100,
-    rewardPoints: 200,
-  },
-  {
-    name: "Weekend Offer",
-    spendingAmount: 450,
-    rewardPoints: 500,
-  },
-  {
-    name: "Black Friday Deal",
-    spendingAmount: 2000,
-    rewardPoints: 2500,
-  },
-  {
-    name: "Loyalty Reward",
-    spendingAmount: 900,
-    rewardPoints: 1000,
-  },
-  {
-    name: "Festive Cashback",
-    spendingAmount: 600,
-    rewardPoints: 700,
-  },
-  {
-    name: "Referral Bonus",
-    spendingAmount: 400,
-    rewardPoints: 450,
-  },
-  {
-    name: "Mid-Year Promo",
-    spendingAmount: 800,
-    rewardPoints: 850,
-  },
-];
+import { useCreatePointLoyaltyCampaignMutation, useGetAllPointLoyaltyCampaignsQuery, useGetPointLoyaltyCampaignByIdQuery, useUpdatePointLoyaltyCampaignMutation, useDeletePointLoyaltyCampaignMutation } from 'store/pointLoyalty';
+import CustomModal from 'components/modal/CustomModal';
+import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 
 const Dashboard = () => {
+  const { data: pointLoyaltyCampaigns, error, isLoading } = useGetAllPointLoyaltyCampaignsQuery('');
+  const [createPointLoyaltyCampaign] = useCreatePointLoyaltyCampaignMutation();
+  const [updatePointLoyaltyCampaign] = useUpdatePointLoyaltyCampaignMutation();
+  const [deletePointLoyaltyCampaign] = useDeletePointLoyaltyCampaignMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedLoyaltyData, setSelectedLoyaltyData] = useState(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteCampaignId, setDeleteCampaignId] = useState(null);
+
+  const handleAddLoyalty = async (formData) => {
+    try {
+      await createPointLoyaltyCampaign(formData).unwrap();
+      console.log('Point Loyalty created successfully');
+      onClose();
+    } catch (error) {
+      console.error('Error creating loyalty campaign:', error);
+    }
+  };
+
+  const handleUpdateLoyalty = async (formData) => {
+    if (selectedLoyaltyData) {
+      try {
+        await updatePointLoyaltyCampaign({ id: selectedLoyaltyData.id, formData }).unwrap();
+        onClose();
+      } catch (error) {
+        console.error('Error updating loyalty campaign:', error);
+      }
+    }
+  };
+
+  const handleDeleteConfirmation = (id) => {
+    setDeleteCampaignId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteLoyalty = async () => {
+    if (deleteCampaignId) {
+      try {
+        await deletePointLoyaltyCampaign(deleteCampaignId).unwrap();
+        setDeleteModalOpen(false);
+        console.log('Loyalty campaign deleted successfully');
+      } catch (error) {
+        console.error('Error deleting loyalty campaign:', error);
+      }
+    }
+  };
+
+  const tableDataComplex = pointLoyaltyCampaigns?.map((campaign) => ({
+    id: campaign.id,
+    name: campaign.rewardTitle,
+    spendingAmount: parseFloat(campaign.spendingAmount),
+    rewardPoints: campaign.rewardPoints,
+  })) || [];
+
   return (
     <div>
       <div className="mt-5 grid grid-cols-1 gap-5">
-        <PointLoyaltyTable tableData={tableDataComplex} onAddClick={onOpen} />
+        <PointLoyaltyTable tableData={tableDataComplex} onAddClick={onOpen} onDelete={handleDeleteConfirmation} onEdit={setSelectedLoyaltyData} />
       </div>
 
-      <CustomModal isOpen={isOpen} onClose={onClose} title="Add Product" size="xl">
-        <AddLoyalty />
+      <CustomModal isOpen={isOpen} onClose={onClose} title={selectedLoyaltyData ? 'Edit Point Loyalty' : 'Add Point Loyalty'} size="4xl">
+        <AddLoyalty
+          sourcePage="points"
+          onClose={onClose}
+          selectedLoyaltyData={selectedLoyaltyData}
+          onSubmit={handleAddLoyalty}
+          products={undefined}
+        />
       </CustomModal>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteLoyalty}
+        itemName={''} />
     </div>
   );
 };

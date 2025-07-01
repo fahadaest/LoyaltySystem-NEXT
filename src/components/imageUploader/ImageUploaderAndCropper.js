@@ -2,10 +2,22 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { MdFileUpload, MdClose, MdCrop, MdCheck } from "react-icons/md";
 import Button from "components/button/Button";
 
-const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete, removeImage }) => {
+const ImageUploaderAndCropper = ({
+    previewImage,
+    setPreviewImage,
+    onCropComplete,
+    removeImage,
+    aspectRatio = 4 / 3
+}) => {
     const [cropModalOpen, setCropModalOpen] = useState(false);
     const [currentImageToCrop, setCurrentImageToCrop] = useState(null);
-    const [crop, setCrop] = useState({ unit: '%', width: 40, height: 30, x: 30, y: 35 });
+    const [crop, setCrop] = useState({
+        unit: '%',
+        width: 40,
+        height: 30,
+        x: 30,
+        y: 35
+    });
     const [cropImageRef, setCropImageRef] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(null);
@@ -22,7 +34,6 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
             reader.onload = (e) => {
                 setCurrentImageToCrop({ file, src: e.target.result, name: file.name });
                 setCropModalOpen(true);
-                setCrop({ unit: '%', width: 40, height: 30, x: 30, y: 35 });
             };
             reader.readAsDataURL(file);
         }
@@ -37,6 +48,7 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
         const imageRect = image.getBoundingClientRect();
         const scaleX = image.naturalWidth / imageRect.width;
         const scaleY = image.naturalHeight / imageRect.height;
+
         const cropX = (crop.x / 100) * imageRect.width;
         const cropY = (crop.y / 100) * imageRect.height;
         const cropWidth = (crop.width / 100) * imageRect.width;
@@ -44,6 +56,7 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
 
         canvas.width = cropWidth * scaleX;
         canvas.height = cropHeight * scaleY;
+
         ctx.drawImage(
             image,
             cropX * scaleX,
@@ -66,7 +79,7 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
             try {
                 const blob = await getCroppedImg(cropImageRef, crop);
                 setPreviewImage(URL.createObjectURL(blob));
-                onCropComplete(blob);  // Trigger the parent function
+                onCropComplete(blob);
             } catch (error) {
                 console.error('Error cropping image:', error);
             }
@@ -86,9 +99,6 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
         const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
         const mouseY = ((e.clientY - rect.top) / rect.height) * 100;
 
-        // Debugging log: check the starting drag position
-        console.log("Drag Start - Mouse Position:", mouseX, mouseY);
-
         setDragStart({
             x: mouseX - crop.x,
             y: mouseY - crop.y
@@ -104,9 +114,6 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
         const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
         const mouseY = ((e.clientY - rect.top) / rect.height) * 100;
 
-        // Debugging log: check the starting resize position
-        console.log(`Resizing - Corner: ${corner}, Mouse Position:`, mouseX, mouseY);
-
         setDragStart({ x: mouseX, y: mouseY });
     };
 
@@ -117,7 +124,6 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
         const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
         const mouseY = ((e.clientY - rect.top) / rect.height) * 100;
 
-        // When dragging
         if (isDragging) {
             const newX = Math.max(0, Math.min(mouseX - dragStart.x, 100 - crop.width));
             const newY = Math.max(0, Math.min(mouseY - dragStart.y, 100 - crop.height));
@@ -132,53 +138,43 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
         if (isResizing) {
             const deltaX = mouseX - dragStart.x;
             const deltaY = mouseY - dragStart.y;
-            let newWidth = crop.width;
-            let newHeight = crop.height;
-            let newX = crop.x;
-            let newY = crop.y;
-            const aspectRatio = 4 / 3;
+            let newWidth = crop.width + deltaX;
+            let newHeight = crop.height + deltaY;
 
             if (isResizing === 'se') {
-                newWidth = Math.max(10, Math.min(crop.width + deltaX, 100 - crop.x));
-                newHeight = newWidth * aspectRatio;
+                newWidth = Math.max(10, Math.min(newWidth, 100 - crop.x));
+                newHeight = Math.max(10, Math.min(newHeight, 100 - crop.y));
             }
 
             if (isResizing === 'sw') {
-                newWidth = Math.max(10, Math.min(crop.width - deltaX, crop.x + crop.width));
-                newHeight = newWidth * aspectRatio;
-                newX = crop.x + crop.width - newWidth;
+                newWidth = Math.max(10, Math.min(newWidth, crop.x + crop.width));
+                newHeight = Math.max(10, Math.min(newHeight, 100 - crop.y));
             }
 
             if (isResizing === 'ne') {
-                newWidth = Math.max(10, Math.min(crop.width + deltaX, 100 - crop.x));
-                newHeight = newWidth * aspectRatio;
-                newY = crop.y + crop.height - newHeight;
+                newWidth = Math.max(10, Math.min(newWidth, 100 - crop.x));
+                newHeight = Math.max(10, Math.min(newHeight, crop.y + crop.height));
             }
 
             if (isResizing === 'nw') {
-                newWidth = Math.max(10, Math.min(crop.width - deltaX, crop.x + crop.width));
-                newHeight = newWidth * aspectRatio;
-                newX = crop.x + crop.width - newWidth;
-                newY = crop.y + crop.height - newHeight;
+                newWidth = Math.max(10, Math.min(newWidth, crop.x + crop.width));
+                newHeight = Math.max(10, Math.min(newHeight, crop.y + crop.height));
             }
 
             newWidth = Math.max(10, Math.min(newWidth, 100));
-            newHeight = Math.max(7.5, Math.min(newHeight, 100));
-            newX = Math.max(0, Math.min(newX, 100 - newWidth));
-            newY = Math.max(0, Math.min(newY, 100 - newHeight));
+            newHeight = Math.max(10, Math.min(newHeight, 100));
 
             setCrop(prev => ({
                 ...prev,
                 width: newWidth,
                 height: newHeight,
-                x: newX,
-                y: newY
+                x: crop.x,
+                y: crop.y
             }));
 
             setDragStart({ x: mouseX, y: mouseY });
         }
     };
-
 
     const handleMouseUp = () => {
         setIsDragging(false);
@@ -228,7 +224,7 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold text-navy-700 dark:text-white flex items-center gap-2">
                                 <MdCrop className="text-blue-500" />
-                                Crop Image (4:3 Aspect Ratio)
+                                Crop Image
                             </h3>
                             <button onClick={() => setCropModalOpen(false)} className="text-gray-500 hover:text-red-500 transition-colors">
                                 <MdClose size={24} />
@@ -272,7 +268,7 @@ const ImageUploaderAndCropper = ({ previewImage, setPreviewImage, onCropComplete
                         </div>
                         <div className="flex justify-between items-center mt-6">
                             <div className="text-sm text-gray-600 dark:text-gray-400">
-                                Drag to move • Drag corners to resize • 4:3 aspect ratio maintained
+                                Drag to move • Drag corners to resize
                             </div>
                             <div className="flex gap-3">
                                 <Button

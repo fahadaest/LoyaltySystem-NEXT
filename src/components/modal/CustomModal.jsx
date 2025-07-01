@@ -1,7 +1,7 @@
 import React from "react";
-import { MdClose } from "react-icons/md";
+import { MdClose, MdPrint } from "react-icons/md";
 
-const CustomModal = ({ isOpen, onClose, title = "", size = "xl", children }) => {
+const CustomModal = ({ isOpen, onClose, title = "", size = "xl", children, handlePrint }) => {
     if (!isOpen) return null;
 
     const sizeClasses = {
@@ -20,19 +20,33 @@ const CustomModal = ({ isOpen, onClose, title = "", size = "xl", children }) => 
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
             <div
                 onClick={onClose}
+                className="absolute inset-0 bg-black opacity-50"
             />
             <div className={`relative bg-white rounded-xl shadow-2xl w-full ${modalWidth} max-h-[90vh] overflow-hidden transform transition-all duration-300 scale-100`}>
                 {title && (
                     <div className="flex items-center justify-between p-4 px-8 border-b border-gray-200">
-                        <h2 className="text-xl font-semibold text-gray-900">
-                            {title}
-                        </h2>
-                        <button
-                            onClick={onClose}
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                        >
-                            <MdClose size={20} className="text-gray-500" />
-                        </button>
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-xl font-semibold text-gray-900">
+                                {title}
+                            </h2>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            {handlePrint && (
+                                <button
+                                    onClick={handlePrint}
+                                    className="flex items-center bg-brandGreen text-white p-2 px-5 rounded-md"
+                                >
+                                    <MdPrint className="mr-2" />
+                                    Print
+                                </button>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <MdClose size={20} className="text-gray-500" />
+                            </button>
+                        </div>
                     </div>
                 )}
 
