@@ -20,8 +20,9 @@ export default function PointLoyaltyTable(props: {
   onAddClick: () => void;
   onDelete: (id: number) => void;
   onEdit: (data: RowObj) => void;
+  onView: (data: RowObj) => void;
 }) {
-  const { tableData, onAddClick, onDelete, onEdit } = props;
+  const { tableData, onAddClick, onDelete, onEdit, onView } = props;
   const [sorting, setSorting] = React.useState([]);
 
   const table = useReactTable({
@@ -60,7 +61,7 @@ export default function PointLoyaltyTable(props: {
               text="View"
               size="sm"
               color="bg-brandBlue"
-              onClick={() => onEdit(info.row.original)}
+              onClick={() => onView(info.row.original)}
             />
             <Button
               icon={IoCreateOutline}
@@ -97,20 +98,8 @@ export default function PointLoyaltyTable(props: {
   });
 
   return (
-    <Card extra="w-full h-full px-6 pb-6 sm:overflow-x-auto">
-      <div className="flex items-center justify-between pt-4">
-        <h2 className="text-xl font-bold text-navy-700 dark:text-white">Point-Based Loyalties</h2>
-        <Button
-          icon={MdAdd}
-          text="Add New Loyalty"
-          size="md"
-          color="bg-brandGreen"
-          hoverColor="hover:bg-brandGreenDark"
-          onClick={onAddClick}
-        />
-      </div>
-
-      <div className="mt-6 overflow-x-auto">
+    <Card extra="w-full h-full sm:overflow-x-auto">
+      <div className=" overflow-x-auto">
         <table className="w-full table-auto border-collapse rounded-xl overflow-hidden">
           <thead className="bg-gray-100 dark:bg-navy-700">
             {table.getHeaderGroups().map((headerGroup) => (

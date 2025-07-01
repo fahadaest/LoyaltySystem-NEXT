@@ -29,7 +29,6 @@ const Dashboard = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [selectedLoyaltyData, setSelectedLoyaltyData] = useState(null);
 
-  // Reference for the content to be captured and printed
   const printRef = useRef(null);
 
   const handleAddLoyalty = async (formData) => {
@@ -122,7 +121,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Modal for Adding/Editing Loyalty */}
       <CustomModal isOpen={isAddModalOpen} onClose={closeAddModal} title={selectedLoyaltyData ? "Edit Loyalty" : "Add New Loyalty"} size="4xl">
         <AddLoyalty
           sourcePage="products"
@@ -139,7 +137,6 @@ const Dashboard = () => {
         onConfirm={handleConfirmDelete}
       />
 
-      {/* Modal for Viewing the Real-Time Banner */}
       <CustomModal isOpen={isViewModalOpen} onClose={closeViewModal} handlePrint={handlePrint} title="Real-Time Banner Preview" size="lg">
         <div ref={printRef}>
           <LoyaltyBannerPreview

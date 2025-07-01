@@ -86,7 +86,6 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
     const formData = new FormData();
     formData.append("loyaltyTemplates", selectedTemplate);
     formData.append("rewardTitle", rewardTitle);
-    formData.append("purchaseQuantity", purchaseQuantity);
     formData.append("rewardDescription", rewardDescription);
     formData.append("productId", selectedProduct);
     formData.append("bannnerTitle", bannnerTitle);
@@ -96,19 +95,20 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
     formData.append("icon2Text", icon2Text);
     formData.append("icon3Text", icon3Text);
     formData.append("color", color);
-
+    if (selectedTemplate === 'general') {
+      formData.append("purchaseQuantity", purchaseQuantity);
+    }
     if (selectedTemplate === 'point') {
       formData.append("spendingAmount", spendingAmount);
       formData.append("rewardPoints", rewardPoints);
       formData.append("rewardPointsEquivalent", rewardPointsEquivalent);
     }
-
     if (templateImageBlob) {
       formData.append("templateImage", templateImageBlob, "templateImage.png");
     }
-    if (logoBlob) {
-      formData.append("logoImage", logoBlob, "logo.png");
-    }
+    // if (logoBlob) {
+    //   formData.append("logoImage", logoBlob, "logo.png");
+    // }
     if (icon1Blob) {
       formData.append("icon1", icon1Blob, "icon1.png");
     }
@@ -118,7 +118,6 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
     if (icon3Blob) {
       formData.append("icon3", icon3Blob, "icon3.png");
     }
-
     onSubmit(formData);
   };
 

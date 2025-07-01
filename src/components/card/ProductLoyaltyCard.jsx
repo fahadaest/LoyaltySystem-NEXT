@@ -10,6 +10,7 @@ const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit, onView }) => {
   const fullImageUrl = baseUrl + product?.product?.image;
 
   const handleView = () => {
+    console.log("Viewing product:", product);
     onView(product)
   }
   const handleEdit = () => {
