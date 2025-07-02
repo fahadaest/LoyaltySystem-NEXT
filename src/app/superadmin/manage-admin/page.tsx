@@ -75,7 +75,7 @@ const AdminListPage = () => {
         onClose={handleCloseModal}
         title={selectedAdmin ? "Edit Admin" : "Add Admin"}
         size="xl"
-      >
+        handlePrint={undefined}      >
         <AdminForm
           initialData={selectedAdmin}
           isEditMode={!!selectedAdmin}
@@ -88,6 +88,7 @@ const AdminListPage = () => {
         onClose={handleCloseModal}
         title={`Admin Details: ${selectedAdmin?.firstName} ${selectedAdmin?.lastName}`}
         size="xl"
+        handlePrint={undefined}
       >
         <AdminDetail
           admin={selectedAdmin}

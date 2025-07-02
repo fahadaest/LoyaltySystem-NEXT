@@ -43,14 +43,13 @@ const Dashboard = () => {
     }
   };
 
-  const handleUpdateLoyalty = async (formData) => {
-    if (selectedLoyaltyData) {
-      try {
-        await updatePointLoyaltyCampaign({ id: selectedLoyaltyData.id, formData }).unwrap();
-        onClose();
-      } catch (error) {
-        console.error('Error updating loyalty campaign:', error);
-      }
+  const handleUpdateLoyalty = async (formData, id) => {
+    try {
+      await updatePointLoyaltyCampaign({ id, formData }).unwrap();
+      dispatch(showAlert({ message: "Point Loyalty updated successfully", severity: "success", duration: 2000 }));
+      onClose();
+    } catch (error) {
+      dispatch(showAlert({ message: "Error occurred while updating!", severity: "error", duration: 2000 }));
     }
   };
 
@@ -69,8 +68,6 @@ const Dashboard = () => {
     setDeleteCampaignId(id);
     setDeleteModalOpen(true);
   };
-
-  console.log("selectedLoyalty", selectedLoyaltyData)
 
   const handleView = (loyaltyData) => {
     console.log("pointLoyaltyCampaigns", pointLoyaltyCampaigns);
@@ -149,7 +146,7 @@ const Dashboard = () => {
           sourcePage="points"
           onClose={onClose}
           selectedLoyaltyData={selectedLoyaltyData}
-          onSubmit={handleAddLoyalty}
+          onSubmit={selectedLoyaltyData ? handleUpdateLoyalty : handleAddLoyalty}
           products={undefined}
         />
       </CustomModal>

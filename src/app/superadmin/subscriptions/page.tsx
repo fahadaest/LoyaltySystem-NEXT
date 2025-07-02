@@ -176,6 +176,7 @@ export default function SubscriptionsPage() {
             onClose={onClose}
             title="Subscription Details"
             size="2xl"
+            handlePrint={undefined}
           >
             <SubscriptionDetails subscription={selectedSubscription} />
           </CustomModal>
@@ -185,6 +186,7 @@ export default function SubscriptionsPage() {
             onClose={onClose}
             title={selectedSubscription ? 'Edit Subscription' : 'Create New Subscription'}
             size="2xl"
+            handlePrint={undefined}
           >
             <SubscriptionForm
               mode={selectedSubscription ? 'edit' : 'create'}

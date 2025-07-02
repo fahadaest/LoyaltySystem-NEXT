@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { Typewriter } from 'react-simple-typewriter';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { useGetMyProfileQuery } from 'store/userApi';
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -27,7 +28,7 @@ const Navbar = (props: {
     document.body.classList.contains('dark'),
   );
   const router = useRouter();
-
+  const { data, error, isLoading } = useGetMyProfileQuery();
   const handleLogout = () => {
     localStorage.removeItem('superadmin_session');
     localStorage.removeItem('admin_session');
@@ -46,7 +47,7 @@ const Navbar = (props: {
             >
               Welcome{' '}
               <Typewriter
-                words={['Codehive!']}
+                words={[data?.firstName + ' ' + data?.lastName || 'Codehive!']}
                 loop={false}
                 cursor
                 cursorStyle="|"
@@ -218,7 +219,7 @@ const Navbar = (props: {
             <div className="ml-4 mt-3">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-bold text-navy-700 dark:text-white">
-                  👋 Hey, Codehive
+                  👋 Hey, {data?.firstName + " " + data?.lastName}
                 </p>
               </div>
             </div>
@@ -226,7 +227,7 @@ const Navbar = (props: {
 
             <div className="ml-4 mt-3 flex flex-col gap-3">
               <a
-                href=" "
+                href="/admin/profile"
                 className="text-sm text-gray-800 dark:text-white hover:dark:text-white"
               >
                 Profile Settings

@@ -1,41 +1,42 @@
 'use client';
-import Banner from 'components/admin/profile/Banner';
 import General from 'components/admin/profile/General';
-import Notification from 'components/admin/profile/Notification';
-import Project from 'components/admin/profile/Project';
-import Storage from 'components/admin/profile/Storage';
-import Upload from 'components/admin/profile/Upload';
+import ProfileBanner from 'components/admin/profile/ProfileBanner';
+import { useGetMyProfileQuery } from 'store/userApi';
+import CustomModal from 'components/modal/CustomModal';
+import { useState } from 'react';
+import EditProfile from 'components/admin/profile/EditProfile';
 
 const ProfileOverview = () => {
+  const { data, error, isLoading } = useGetMyProfileQuery();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="flex w-full flex-col gap-5 lg:gap-5">
       <div className="w-ful mt-3 flex h-fit flex-col gap-5 lg:grid lg:grid-cols-12">
-        <div className="col-span-4 lg:!mb-0">
-          <Banner />
+        <div className="col-span-12">
+          <ProfileBanner data={data} onEdit={openModal} />
         </div>
-
-        <div className="col-span-3 lg:!mb-0">
-          <Storage />
-        </div>
-
-        <div className="z-0 col-span-5 lg:!mb-0">
-          <Upload />
+        <div className="col-span-12">
+          <General data={data} />
         </div>
       </div>
-      {/* all project & ... */}
 
-      <div className="mb-4 grid h-full grid-cols-1 gap-5 lg:!grid-cols-12">
-        <div className="col-span-5 lg:col-span-6 lg:mb-0 3xl:col-span-4">
-          <Project />
-        </div>
-        <div className="col-span-5 lg:col-span-6 lg:mb-0 3xl:col-span-5">
-          <General />
-        </div>
-
-        <div className="col-span-5 lg:col-span-12 lg:mb-0 3xl:!col-span-3">
-          <Notification />
-        </div>
-      </div>
+      <CustomModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title="Edit Profile"
+        size="lg"
+        handlePrint={undefined}      >
+        <EditProfile data={data} onClose={closeModal} />
+      </CustomModal>
     </div>
   );
 };

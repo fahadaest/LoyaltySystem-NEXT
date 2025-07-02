@@ -19,7 +19,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     title = "Delete Item",
 }) => {
     return (
-        <CustomModal isOpen={isOpen} onClose={onClose} title={title} size="md">
+        <CustomModal handlePrint={undefined} isOpen={isOpen} onClose={onClose} title={title} size="md">
             <div className="text-center mt-8">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
                     <svg
