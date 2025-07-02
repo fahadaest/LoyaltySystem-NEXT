@@ -64,6 +64,45 @@ const routes = [
     path: 'all',
     icon: <MdPeopleAlt className="h-6 w-6" />,
   },
+  {
+    heading: 'Settings',
+    name: 'Settings',
+    icon: <MdLoyalty className="h-6 w-6" />,
+    layout: '/admin/settings',
+    path: '',
+    submenu: [
+      {
+        name: 'Wallet Address',
+        layout: '/admin/settings',
+        path: 'wallet-address',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+      {
+        name: 'Wallet Social Links',
+        layout: '/admin/settings',
+        path: 'product',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+      {
+        name: 'Wallet Beacons',
+        layout: '/admin/settings',
+        path: 'product',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+      {
+        name: 'Wallet Support',
+        layout: '/admin/settings',
+        path: 'product',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+      {
+        name: 'Terms & Conditions',
+        layout: '/admin/settings',
+        path: 'product',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+    ],
+  },
   // {
   //   name: 'Sales Person',
   //   layout: '/customer',
