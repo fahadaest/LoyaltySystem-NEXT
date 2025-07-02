@@ -80,13 +80,13 @@ const routes = [
       {
         name: 'Wallet Social Links',
         layout: '/admin/settings',
-        path: 'product',
+        path: 'wallet-social-links',
         icon: <MdHome className="h-6 w-6" />,
       },
       {
         name: 'Wallet Beacons',
         layout: '/admin/settings',
-        path: 'product',
+        path: 'wallet-beacons',
         icon: <MdHome className="h-6 w-6" />,
       },
       {
