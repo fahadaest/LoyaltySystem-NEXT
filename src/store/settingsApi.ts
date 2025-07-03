@@ -112,65 +112,29 @@ export const settingsApi = createApi({
         }),
 
         // Support Details API endpoints
-        createSupportDetails: builder.mutation({
-            query: (formData) => ({
-                url: '/api/settings/support-details',
-                method: 'POST',
-                body: formData,
-            }),
-            invalidatesTags: ['SupportDetails'],
-        }),
-        getAllSupportDetails: builder.query({
+        getSupportDetails: builder.query({
             query: () => '/api/settings/support-details',
             providesTags: ['SupportDetails'],
         }),
-        getSupportDetailsById: builder.query({
-            query: (id) => `/api/settings/support-details/${id}`,
-        }),
         updateSupportDetails: builder.mutation({
-            query: ({ id, formData }) => ({
-                url: `/api/settings/support-details/${id}`,
-                method: 'PUT',
+            query: ({ formData }) => ({
+                url: `/api/settings/support-details`,
+                method: 'POST',
                 body: formData,
-            }),
-            invalidatesTags: ['SupportDetails'],
-        }),
-        deleteSupportDetails: builder.mutation({
-            query: (id) => ({
-                url: `/api/settings/support-details/${id}`,
-                method: 'DELETE',
             }),
             invalidatesTags: ['SupportDetails'],
         }),
 
         // Terms API endpoints
-        createTerms: builder.mutation({
-            query: (formData) => ({
-                url: '/api/settings/terms',
-                method: 'POST',
-                body: formData,
-            }),
-            invalidatesTags: ['Terms'],
-        }),
         getAllTerms: builder.query({
             query: () => '/api/settings/terms',
             providesTags: ['Terms'],
         }),
-        getTermsById: builder.query({
-            query: (id) => `/api/settings/terms/${id}`,
-        }),
         updateTerms: builder.mutation({
-            query: ({ id, formData }) => ({
-                url: `/api/settings/terms/${id}`,
-                method: 'PUT',
+            query: ({ formData }) => ({
+                url: `/api/settings/terms`,
+                method: 'POST',
                 body: formData,
-            }),
-            invalidatesTags: ['Terms'],
-        }),
-        deleteTerms: builder.mutation({
-            query: (id) => ({
-                url: `/api/settings/terms/${id}`,
-                method: 'DELETE',
             }),
             invalidatesTags: ['Terms'],
         }),
@@ -193,14 +157,8 @@ export const {
     useGetBeaconByIdQuery,
     useUpdateBeaconMutation,
     useDeleteBeaconMutation,
-    useCreateSupportDetailsMutation,
-    useGetAllSupportDetailsQuery,
-    useGetSupportDetailsByIdQuery,
+    useGetSupportDetailsQuery,
     useUpdateSupportDetailsMutation,
-    useDeleteSupportDetailsMutation,
-    useCreateTermsMutation,
     useGetAllTermsQuery,
-    useGetTermsByIdQuery,
     useUpdateTermsMutation,
-    useDeleteTermsMutation,
 } = settingsApi;

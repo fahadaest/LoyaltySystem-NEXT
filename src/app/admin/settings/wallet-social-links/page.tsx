@@ -12,14 +12,11 @@ import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import SocialLinks from 'components/settings/walletSocialLinks/SocialLinks';
+import Support from 'components/settings/walletSupport/Support';
 import EditSocialLinks from 'components/settings/walletSocialLinks/EditSocialLinks';
 
 const Dashboard = () => {
   const { data: socialLinks, error: socialLinksError, isLoading: socialLinksLoading } = useGetAllSocialLinksQuery('');
-
-  console.log("socialLinks", socialLinks)
-
-
 
   const { data: allAddress, error: allAddressError, isLoading: allAddressLoadinng } = useGetAllAddressesQuery('');
   const [updateAddress, { isLoading: isUpdating, error: updateError }] = useUpdateAddressMutation();
@@ -86,7 +83,7 @@ const Dashboard = () => {
         dispatch(showAlert({ message: "Error deleting address. Please try again.", severity: "error", duration: 2000 }));
       }
     }
-  };
+  }; ``
 
   const openDeleteModal = (address: any) => {
     setAddressToDelete(address);

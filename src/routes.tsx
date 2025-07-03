@@ -92,13 +92,13 @@ const routes = [
       {
         name: 'Wallet Support',
         layout: '/admin/settings',
-        path: 'product',
+        path: 'wallet-support',
         icon: <MdHome className="h-6 w-6" />,
       },
       {
         name: 'Terms & Conditions',
         layout: '/admin/settings',
-        path: 'product',
+        path: 'wallet-terms-conditions',
         icon: <MdHome className="h-6 w-6" />,
       },
     ],
