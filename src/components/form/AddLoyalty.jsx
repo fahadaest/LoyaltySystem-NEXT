@@ -51,7 +51,8 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
       setSelectedProduct(selectedLoyaltyData.productId || '');
       setRewardProduct(selectedLoyaltyData.rewardProductId || '');
       setColor(selectedLoyaltyData.templateColor || '#4a5568');
-      setLogo(null);
+      setLogo(baseUrl + selectedLoyaltyData.logo);
+      setBannnerTitle(selectedLoyaltyData.bannerTitle || '');
       setLogoBlob(null);
       setTemplateImage(baseUrl + selectedLoyaltyData.templateImage || null);
       setIcon1Text(selectedLoyaltyData.icon1Text || 'Scan QR with your mobile phone');
@@ -118,6 +119,10 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
     }
     if (icon3Blob) {
       formData.append("icon3", icon3Blob, "icon3.png");
+    }
+
+    if (logoBlob) {
+      formData.append("logo", logoBlob, "logo.png");
     }
 
     if (selectedLoyaltyData) {

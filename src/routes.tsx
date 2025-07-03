@@ -60,8 +60,8 @@ const routes = [
   {
     heading: 'Customer Management',
     name: 'Customers',
-    layout: '/customer',
-    path: 'all',
+    layout: '/admin/customer',
+    path: 'view',
     icon: <MdPeopleAlt className="h-6 w-6" />,
   },
   {

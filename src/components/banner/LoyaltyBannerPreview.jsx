@@ -18,6 +18,7 @@ const LoyaltyBannerPreview = ({
     icon2TextSize,
     icon3TextSize
 }) => {
+    const logoImage = baseUrl + logo;
     const mainImage = baseUrl + templateImage;
     return (
         <div className="w-full flex justify-center bg-black-900">
@@ -48,7 +49,7 @@ const LoyaltyBannerPreview = ({
                     >
                         {logo && (
                             <img
-                                src={logo}
+                                src={logoImage}
                                 alt="Logo"
                                 style={{ height: `${logoSize}px`, width: `${logoSize}px` }}
                                 className="object-contain mb-1"

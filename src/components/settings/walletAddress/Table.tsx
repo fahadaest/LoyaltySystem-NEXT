@@ -11,9 +11,10 @@ interface TableProps {
   onEdit?: (admin: any) => void;
   onDelete?: (admin: any) => void;
   onView?: (admin: any) => void;
+  onDetail?: (admin: any) => void;
 }
 
-export default function Table({ data, columns, onEdit, onDelete, onView }: TableProps) {
+export default function Table({ data, columns, onEdit, onDelete, onView, onDetail }: TableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const actionColumn: ColumnDef<any> = {
@@ -46,6 +47,15 @@ export default function Table({ data, columns, onEdit, onDelete, onView }: Table
             size="sm"
             color="bg-brandBlue"
             onClick={() => onView(row.original)}
+          />
+        )}
+        {onDetail && (
+          <Button
+            icon={IoEyeOutline}
+            text="Detail"
+            size="sm"
+            color="bg-brandBlue"
+            onClick={() => onDetail(row.original)}
           />
         )}
       </div>

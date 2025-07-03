@@ -70,8 +70,6 @@ const Dashboard = () => {
   };
 
   const handleView = (loyaltyData) => {
-    console.log("pointLoyaltyCampaigns", pointLoyaltyCampaigns);
-    console.log("loyaltyData", loyaltyData);
     const selectedLoyalty = pointLoyaltyCampaigns.find(campaign => campaign.id === loyaltyData.id);
     if (selectedLoyalty) {
       setSelectedLoyaltyData(selectedLoyalty);
@@ -116,6 +114,29 @@ const Dashboard = () => {
     rewardPoints: campaign.rewardPoints,
   })) || [];
 
+  const handleCopy = (loyaltyData) => {
+    const selectedLoyalty = pointLoyaltyCampaigns.find(campaign => campaign.id === loyaltyData.id);
+    const adminId = selectedLoyalty?.adminId;
+    const loyalty = selectedLoyalty?.id;
+    const baseUrl = window.location.origin;
+    const generatedUrl = `${baseUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isPoint=true`;
+    navigator.clipboard.writeText(generatedUrl)
+      .then(() => {
+        dispatch(showAlert({
+          message: "Link copied successfully!",
+          severity: "success",
+          duration: 2000
+        }));
+      })
+      .catch((error) => {
+        dispatch(showAlert({
+          message: "Failed to copy the link!",
+          severity: "error",
+          duration: 2000
+        }));
+      });
+  };
+
   return (
     <div>
       <div className="mt-3 mb-5">
@@ -132,7 +153,7 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5">
-        <PointLoyaltyTable tableData={tableDataComplex} onAddClick={onOpen} onDelete={handleDeleteConfirmation} onEdit={handleEditLoyalty} onView={handleView} />
+        <PointLoyaltyTable tableData={tableDataComplex} onAddClick={onOpen} onDelete={handleDeleteConfirmation} onEdit={handleEditLoyalty} onView={handleView} onCopy={handleCopy} />
       </div>
 
       <CustomModal

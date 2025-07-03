@@ -91,6 +91,28 @@ const Dashboard = () => {
     openAddModal();
   };
 
+  const handleCopy = (loyaltyData) => {
+    const adminId = loyaltyData?.adminId;
+    const loyalty = loyaltyData?.id;
+    const baseUrl = window.location.origin;
+    const generatedUrl = `${baseUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isProduct=true`;
+    navigator.clipboard.writeText(generatedUrl)
+      .then(() => {
+        dispatch(showAlert({
+          message: "Link copied successfully!",
+          severity: "success",
+          duration: 2000
+        }));
+      })
+      .catch((error) => {
+        dispatch(showAlert({
+          message: "Failed to copy the link!",
+          severity: "error",
+          duration: 2000
+        }));
+      });
+  };
+
   return (
     <div className="mt-3 grid h-full grid-cols-1 gap-5">
       <div className="col-span-1 h-fit w-full">
@@ -115,6 +137,7 @@ const Dashboard = () => {
                 onDelete={handleDelete}
                 onEdit={handleEdit}
                 onView={handleView}
+                onCopy={handleCopy}
               />
             );
           })}
@@ -140,11 +163,11 @@ const Dashboard = () => {
       <CustomModal isOpen={isViewModalOpen} onClose={closeViewModal} handlePrint={handlePrint} title="Real-Time Banner Preview" size="lg">
         <div ref={printRef}>
           <LoyaltyBannerPreview
-            bannnerTitle={selectedLoyaltyData?.bannnerTitle}
+            bannnerTitle={selectedLoyaltyData?.bannerTitle}
             color={selectedLoyaltyData?.templateColor || '#4a5568'}
             logoSize={selectedLoyaltyData?.logoSize || 60}
             qrSize={selectedLoyaltyData?.qrSize || 80}
-            logo={selectedLoyaltyData?.logoImage}
+            logo={selectedLoyaltyData?.logo}
             templateImage={selectedLoyaltyData?.templateImage}
             icon1Text={selectedLoyaltyData?.icon1Text || 'Scan QR with your mobile phone'}
             icon2Text={selectedLoyaltyData?.icon2Text || 'Download the Point Pass into your mobile'}

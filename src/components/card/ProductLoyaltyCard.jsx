@@ -5,7 +5,7 @@ import { IoEyeOutline, IoCreateOutline, IoTrashOutline, IoCopyOutline } from "re
 import Button from "components/button/Button";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit, onView }) => {
+const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit, onView, onCopy }) => {
   const [heart, setHeart] = useState(true);
   const fullImageUrl = baseUrl + product?.product?.image;
 
@@ -18,6 +18,9 @@ const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit, onView }) => {
   }
   const handleDelete = () => {
     onDelete(product.id);
+  }
+  const handleCopy = () => {
+    onCopy(product);
   }
   return (
     <Card
@@ -78,7 +81,7 @@ const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit, onView }) => {
             icon={IoCopyOutline}
             size="icon"
             color="bg-brandYellow"
-            onClick={handleEdit}
+            onClick={handleCopy}
           />
         </div>
       </div>

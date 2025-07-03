@@ -21,8 +21,9 @@ export default function PointLoyaltyTable(props: {
   onDelete: (id: number) => void;
   onEdit: (data: RowObj) => void;
   onView: (data: RowObj) => void;
+  onCopy: (data: RowObj) => void;
 }) {
-  const { tableData, onAddClick, onDelete, onEdit, onView } = props;
+  const { tableData, onAddClick, onDelete, onEdit, onView, onCopy } = props;
   const [sorting, setSorting] = React.useState([]);
 
   const table = useReactTable({
@@ -82,7 +83,7 @@ export default function PointLoyaltyTable(props: {
               text="Copy"
               size="sm"
               color="bg-brandYellow"
-              onClick={() => onEdit(info.row.original)}
+              onClick={() => onCopy(info.row.original)}
             />
           </div>
         ),
