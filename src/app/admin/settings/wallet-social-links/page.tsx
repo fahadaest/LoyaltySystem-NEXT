@@ -2,129 +2,109 @@
 import React, { useState, useRef } from 'react';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
-import { useDisclosure } from '@chakra-ui/react';
-import { MdAdd } from 'react-icons/md';
-import { useCreateAddressMutation, useGetAllAddressesQuery, useGetAddressByIdQuery, useUpdateAddressMutation, useDeleteAddressMutation } from 'store/settingsApi';
-import { useCreateSocialLinksMutation, useGetAllSocialLinksQuery, useGetSocialLinksByIdQuery, useUpdateSocialLinksMutation, useDeleteSocialLinksMutation } from 'store/settingsApi';
-import AddressSelectionComponent from 'components/settings/walletAddress/AddressSelection';
-import CustomModal from 'components/modal/CustomModal';
-import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
+import { MdEdit } from 'react-icons/md';
+import { useGetAllSocialLinksQuery, useUpdateSocialLinksMutation } from 'store/settingsApi';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import SocialLinks from 'components/settings/walletSocialLinks/SocialLinks';
-import Support from 'components/settings/walletSupport/Support';
-import EditSocialLinks from 'components/settings/walletSocialLinks/EditSocialLinks';
 
 const Dashboard = () => {
   const { data: socialLinks, error: socialLinksError, isLoading: socialLinksLoading } = useGetAllSocialLinksQuery('');
-
-  const { data: allAddress, error: allAddressError, isLoading: allAddressLoadinng } = useGetAllAddressesQuery('');
-  const [updateAddress, { isLoading: isUpdating, error: updateError }] = useUpdateAddressMutation();
-  const [createAddress, { isLoading: isCreating, error: createError }] = useCreateAddressMutation();
-  const [deleteAddress, { isLoading: isDeleting, error: deleteError }] = useDeleteAddressMutation();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [editRowData, setEditRowData] = useState(null);
-  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [addressToDelete, setAddressToDelete] = useState(null);
+  const [updateSocialLinks, { isLoading: socialLinksUpdateLoading, error: socialLinksUpdateError }] = useUpdateSocialLinksMutation();
   const dispatch = useDispatch();
 
-  const columns = [
-    {
-      accessorKey: "address",
-      header: "Address Name",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.address}</p>,
-    },
-  ];
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  const handleAddClick = () => {
-    setEditRowData(null);
-    onOpen();
+  const handleEditClick = () => {
+    setIsEditMode(true); // Enable edit mode
   };
 
-  const handleCreateAddress = async (newAddressData: any) => {
-    if (newAddressData) {
-      try {
-        await createAddress(newAddressData).unwrap();
-        dispatch(showAlert({ message: "Address Created Successfully!", severity: "success", duration: 2000 }));
-        onClose();
-      } catch (error) {
-        dispatch(showAlert({ message: "Error creating address. Please try again.", severity: "error", duration: 2000 }));
-      }
+  const handleCancelEditClick = () => {
+    setIsEditMode(false); // Disable edit mode
+  };
+
+  const handleSocialLinksSave = async (updatedData) => {
+    try {
+      await updateSocialLinks({ formData: updatedData }).unwrap();
+      dispatch(showAlert({
+        message: "Social links updated successfully!",
+        severity: "success",
+        duration: 2000
+      }));
+      setIsEditMode(false);
+    } catch (error) {
+      console.error('Error updating social links:', error);
+      dispatch(showAlert({
+        message: "Error updating social links. Please try again.",
+        severity: "error",
+        duration: 2000
+      }));
     }
   };
 
-  const handleEditClick = (editRowData: any) => {
-    setEditRowData(editRowData);
-    onOpen();
+  const handleSocialLinksEdit = () => {
+    console.log('Social links edit mode activated');
+    setIsEditMode(true);
   };
 
-  const handleUpdateAddress = async (updatedAddressData: any) => {
-    if (updatedAddressData) {
-      try {
-        await updateAddress({
-          id: updatedAddressData.id,
-          formData: updatedAddressData,
-        }).unwrap();
-        dispatch(showAlert({ message: "Address Updated Successfully!", severity: "success", duration: 2000 }));
-        onClose();
-      } catch (error) {
-        dispatch(showAlert({ message: "Error updating address. Please try again.", severity: "error", duration: 2000 }));
-      }
-    }
+  const handleSocialLinksCancel = () => {
+    setIsEditMode(false);
   };
 
-  const handleDelete = async () => {
-    if (addressToDelete) {
-      try {
-        await deleteAddress(addressToDelete.id).unwrap();
-        dispatch(showAlert({ message: "Address Deleted Successfully!", severity: "success", duration: 2000 }));
-        setDeleteModalOpen(false);
-      } catch (error) {
-        dispatch(showAlert({ message: "Error deleting address. Please try again.", severity: "error", duration: 2000 }));
-      }
-    }
-  }; ``
+  if (socialLinksLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-brandGreen"></div>
+      </div>
+    );
+  }
 
-  const openDeleteModal = (address: any) => {
-    setAddressToDelete(address);
-    setDeleteModalOpen(true);
-  };
+  if (socialLinksError) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-red-500 text-center">
+          <p className="text-lg font-semibold">Error loading social links</p>
+          <p className="text-sm">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="mt-3 mb-5">
         <HeadingCard subtitle="Manage Social Links">
           <HeaderButton
-            icon={MdAdd}
-            text="Edit Links"
+            icon={MdEdit}
+            text={isEditMode ? "Cancel Edit" : "Edit Links"}
             size="md"
-            color="bg-brandGreen"
-            onClick={handleAddClick}
+            color={isEditMode ? "bg-gray-500" : "bg-brandGreen"}
+            onClick={isEditMode ? handleCancelEditClick : handleEditClick}
             variant={undefined}
           />
         </HeadingCard>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5">
-        <SocialLinks data={allAddress} />
+        <SocialLinks
+          data={socialLinks}
+          onEdit={handleSocialLinksEdit}
+          onSave={handleSocialLinksSave}
+          onCancel={handleSocialLinksCancel}
+          isEditMode={isEditMode}
+        />
       </div>
 
-      <CustomModal
-        isOpen={isOpen}
-        onClose={onClose}
-        title={editRowData ? "Edit Address" : "Add Address"}
-        handlePrint={null}
-        size="xl"
-      >
-        <EditSocialLinks />
-      </CustomModal>
-
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleDelete}
-        itemName={addressToDelete ? addressToDelete.address : ''}
-      />
+      {socialLinksUpdateLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="flex items-center space-x-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brandGreen"></div>
+              <span className="text-lg font-medium">Updating social links...</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

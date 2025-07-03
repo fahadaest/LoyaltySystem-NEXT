@@ -48,33 +48,15 @@ export const settingsApi = createApi({
         }),
 
         // Social Links API endpoints
-        createSocialLinks: builder.mutation({
-            query: (formData) => ({
-                url: '/api/settings/social-links',
-                method: 'POST',
-                body: formData,
-            }),
-            invalidatesTags: ['SocialLinks'],
-        }),
         getAllSocialLinks: builder.query({
             query: () => '/api/settings/social-links',
             providesTags: ['SocialLinks'],
         }),
-        getSocialLinksById: builder.query({
-            query: (id) => `/api/settings/social-links/${id}`,
-        }),
         updateSocialLinks: builder.mutation({
-            query: ({ id, formData }) => ({
-                url: `/api/settings/social-links/${id}`,
-                method: 'PUT',
+            query: ({ formData }) => ({
+                url: `/api/settings/social-links`,
+                method: 'POST',
                 body: formData,
-            }),
-            invalidatesTags: ['SocialLinks'],
-        }),
-        deleteSocialLinks: builder.mutation({
-            query: (id) => ({
-                url: `/api/settings/social-links/${id}`,
-                method: 'DELETE',
             }),
             invalidatesTags: ['SocialLinks'],
         }),
@@ -147,11 +129,8 @@ export const {
     useGetAddressByIdQuery,
     useUpdateAddressMutation,
     useDeleteAddressMutation,
-    useCreateSocialLinksMutation,
     useGetAllSocialLinksQuery,
-    useGetSocialLinksByIdQuery,
     useUpdateSocialLinksMutation,
-    useDeleteSocialLinksMutation,
     useCreateBeaconMutation,
     useGetAllBeaconsQuery,
     useGetBeaconByIdQuery,

@@ -11,7 +11,6 @@ import TermsAndConditions from 'components/settings/walletTAC/TAC';
 const Dashboard = () => {
   const { data: termsDetail, error: termsError, isLoading: termsLoading } = useGetAllTermsQuery('');
   const [updateTerms, { isLoading: termsUpdateLoading, error: termsUpdatingError }] = useUpdateTermsMutation();
-
   const [isEditingTerms, setIsEditingTerms] = useState(false);
   const dispatch = useDispatch();
 
