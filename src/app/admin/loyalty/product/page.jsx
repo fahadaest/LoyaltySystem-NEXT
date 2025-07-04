@@ -28,8 +28,9 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [selectedLoyaltyData, setSelectedLoyaltyData] = useState(null);
-
   const printRef = useRef(null);
+  const currentUrl = window.location.origin;
+  const [registerCustomerLink, setRegisterCustomerLink] = useState("");
 
   const handleAddLoyalty = async (formData) => {
     try {
@@ -47,6 +48,10 @@ const Dashboard = () => {
   };
 
   const handleView = (loyaltyData) => {
+    const adminId = loyaltyData?.adminId;
+    const loyalty = loyaltyData?.id;
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isProduct=true`;
+    setRegisterCustomerLink(registerCustomerUrl);
     setSelectedLoyaltyData(loyaltyData);
     openViewModal();
   };
@@ -94,9 +99,8 @@ const Dashboard = () => {
   const handleCopy = (loyaltyData) => {
     const adminId = loyaltyData?.adminId;
     const loyalty = loyaltyData?.id;
-    const baseUrl = window.location.origin;
-    const generatedUrl = `${baseUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isProduct=true`;
-    navigator.clipboard.writeText(generatedUrl)
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isProduct=true`;
+    navigator.clipboard.writeText(registerCustomerUrl)
       .then(() => {
         dispatch(showAlert({
           message: "Link copied successfully!",
@@ -163,6 +167,7 @@ const Dashboard = () => {
       <CustomModal isOpen={isViewModalOpen} onClose={closeViewModal} handlePrint={handlePrint} title="Real-Time Banner Preview" size="lg">
         <div ref={printRef}>
           <LoyaltyBannerPreview
+            registerCustomerLink={registerCustomerLink}
             bannnerTitle={selectedLoyaltyData?.bannerTitle}
             color={selectedLoyaltyData?.templateColor || '#4a5568'}
             logoSize={selectedLoyaltyData?.logoSize || 60}

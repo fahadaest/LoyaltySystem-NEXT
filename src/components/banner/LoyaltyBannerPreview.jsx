@@ -1,7 +1,9 @@
 import React from 'react';
+import QRCode from 'react-qr-code';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const LoyaltyBannerPreview = ({
+    registerCustomerLink,
     bannnerTitle,
     color,
     logoSize,
@@ -35,12 +37,7 @@ const LoyaltyBannerPreview = ({
 
                 <div className="flex flex-col h-full relative">
                     <div className="absolute top-[25%] left-1/2 -translate-x-1/2 z-10">
-                        <img
-                            src="/img/loyaltyBannerIcons/Qrcode.png"
-                            alt="QR Code"
-                            style={{ height: `${qrSize}px`, width: `${qrSize}px` }}
-                            className="object-contain"
-                        />
+                        <QRCode value={registerCustomerLink} size={qrSize} />
                     </div>
 
                     <div

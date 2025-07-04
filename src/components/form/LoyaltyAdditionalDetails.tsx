@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import InputField from 'components/fields/InputField';
 import ImageUploaderAndCropper from 'components/imageUploader/ImageUploaderAndCropper';
+import QRCode from 'react-qr-code';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setColor, logoSize, setLogoSize, qrSize, setQrSize, logo, setLogo, logoBlob, setLogoBlob, templateImage, setTemplateImage, templateImageBlob, setTemplateImageBlob, icon1Text, setIcon1Text, icon2Text, setIcon2Text, icon3Text, setIcon3Text, icon1TextSize, setIcon1TextSize, icon2TextSize, setIcon2TextSize, icon3TextSize, setIcon3TextSize, icon1, setIcon1, icon2, setIcon2, icon3, setIcon3, icon1Blob, setIcon1Blob, icon2Blob, setIcon2Blob, icon3Blob, setIcon3Blob, selectedLoyaltyData }) => {
@@ -193,12 +194,7 @@ const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setCol
 
                         <div className="flex flex-col h-full relative">
                             <div className="absolute top-[25%] left-1/2 -translate-x-1/2 z-10">
-                                <img
-                                    src="/img/loyaltyBannerIcons/Qrcode.png"
-                                    alt="QR Code"
-                                    style={{ height: `${qrSize}px`, width: `${qrSize}px` }}
-                                    className="object-contain"
-                                />
+                                <QRCode value={"https://codehive.ae/"} size={qrSize} />
                             </div>
 
                             <div

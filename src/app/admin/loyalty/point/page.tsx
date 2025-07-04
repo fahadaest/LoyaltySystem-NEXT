@@ -27,6 +27,8 @@ const Dashboard = () => {
   const [deleteCampaignId, setDeleteCampaignId] = useState(null);
   const dispatch = useDispatch();
   const printRef = useRef(null);
+  const currentUrl = window.location.origin;
+  const [registerCustomerLink, setRegisterCustomerLink] = useState("");
 
   const handleOpenAddModal = () => {
     setSelectedLoyaltyData(null);
@@ -71,6 +73,10 @@ const Dashboard = () => {
 
   const handleView = (loyaltyData) => {
     const selectedLoyalty = pointLoyaltyCampaigns.find(campaign => campaign.id === loyaltyData.id);
+    const adminId = selectedLoyalty?.adminId;
+    const loyalty = selectedLoyalty?.id;
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isPoint=true`;
+    setRegisterCustomerLink(registerCustomerUrl);
     if (selectedLoyalty) {
       setSelectedLoyaltyData(selectedLoyalty);
     } else {
@@ -118,9 +124,8 @@ const Dashboard = () => {
     const selectedLoyalty = pointLoyaltyCampaigns.find(campaign => campaign.id === loyaltyData.id);
     const adminId = selectedLoyalty?.adminId;
     const loyalty = selectedLoyalty?.id;
-    const baseUrl = window.location.origin;
-    const generatedUrl = `${baseUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isPoint=true`;
-    navigator.clipboard.writeText(generatedUrl)
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isPoint=true`;
+    navigator.clipboard.writeText(registerCustomerUrl)
       .then(() => {
         dispatch(showAlert({
           message: "Link copied successfully!",
@@ -181,6 +186,7 @@ const Dashboard = () => {
       <CustomModal isOpen={isViewModalOpen} onClose={closeViewModal} handlePrint={handlePrint} title="Real-Time Banner Preview" size="lg">
         <div ref={printRef}>
           <LoyaltyBannerPreview
+            registerCustomerLink={registerCustomerLink}
             bannnerTitle={selectedLoyaltyData?.bannnerTitle}
             color={selectedLoyaltyData?.templateColor || '#4a5568'}
             logoSize={selectedLoyaltyData?.logoSize || 60}

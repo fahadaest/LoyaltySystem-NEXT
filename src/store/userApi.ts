@@ -36,7 +36,7 @@ export const userProfileApi = createApi({
             query: () => '/api/users/profile',
             providesTags: ['UserProfile'],
         }),
-        updateMyProfile: builder.mutation<UserProfile, UpdateUserProfileRequest>({
+        updateMyProfile: builder.mutation({
             query: (data) => ({
                 url: '/api/users/profile',
                 method: 'PUT',
