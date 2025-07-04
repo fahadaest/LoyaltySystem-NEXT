@@ -33,7 +33,7 @@ function CheckTable(props: { tableData: any }) {
         <div className="flex items-center">
           <Checkbox
             defaultChecked={info.getValue()[1]}
-            color="indigo"
+            color="brandGreen"
             me="10px"
           />
           <p className="ml-3 text-sm font-bold text-navy-700 dark:text-white">
@@ -46,7 +46,7 @@ function CheckTable(props: { tableData: any }) {
       id: 'progress',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          PROGRESS
+          LOYALTY
         </p>
       ),
       cell: (info) => (
@@ -59,7 +59,7 @@ function CheckTable(props: { tableData: any }) {
       id: 'quantity',
       header: () => (
         <p className="text-sm font-bold text-gray-600 dark:text-white">
-          QUANTITY
+          AMOUNT SPENT
         </p>
       ),
       cell: (info) => (
@@ -79,7 +79,7 @@ function CheckTable(props: { tableData: any }) {
         </p>
       ),
     }),
-  ]; // eslint-disable-next-line
+  ];
   const [data, setData] = React.useState(() => [...defaultData]);
   const table = useReactTable({
     data,
@@ -92,11 +92,12 @@ function CheckTable(props: { tableData: any }) {
     getSortedRowModel: getSortedRowModel(),
     debugTable: true,
   });
+
   return (
     <Card extra={'w-full h-full sm:overflow-auto px-6'}>
       <header className="relative flex items-center justify-between pt-4">
         <div className="text-xl font-bold text-navy-700 dark:text-white">
-          Check Table
+          New Customers
         </div>
 
         <CardMenu />

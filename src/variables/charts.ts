@@ -52,7 +52,7 @@ export const barChartOptionsDailyTraffic: ApexGeneric = {
     labels: {
       show: true,
       style: {
-        colors: '#CBD5E0',
+        colors: '#36a18f',
         fontSize: '14px',
       },
     },
@@ -82,12 +82,12 @@ export const barChartOptionsDailyTraffic: ApexGeneric = {
         [
           {
             offset: 0,
-            color: '#4318FF',
+            color: '#36a18f',
             opacity: 1,
           },
           {
             offset: 100,
-            color: 'rgba(67, 24, 255, 1)',
+            color: '#c7eee8',
             opacity: 0.28,
           },
         ],
@@ -107,7 +107,7 @@ export const barChartOptionsDailyTraffic: ApexGeneric = {
 
 export const pieChartOptions: ApexGeneric = {
   labels: ['Your files', 'System', 'Empty'],
-  colors: ['#4318FF', '#6AD2FF', '#EFF4FB'],
+  colors: ['#36a18f', '#c7eee8', '#EFF4FB'],
   chart: {
     width: '50px',
   },
@@ -136,7 +136,7 @@ export const pieChartOptions: ApexGeneric = {
     },
   },
   fill: {
-    colors: ['#4318FF', '#6AD2FF', '#EFF4FB'],
+    colors: ['#36a18f', '#c7eee8', '#EFF4FB'],
   },
   tooltip: {
     enabled: true,
@@ -149,17 +149,17 @@ export const pieChartData = [63, 25, 12];
 export const barChartDataWeeklyRevenue = [
   {
     name: 'PRODUCT A',
-    data: [400, 370, 330, 390, 320, 350, 360, 320, 380],
-    color: '#6AD2Fa',
+    data: [400, 370, 330, 390, 320, 350, 360, 320, 380, 400, 370, 330, 390, 320, 350, 360, 320, 380],
+    color: '#36a18f',
   },
   {
     name: 'PRODUCT B',
-    data: [400, 370, 330, 390, 320, 350, 360, 320, 380],
-    color: '#4318FF',
+    data: [400, 370, 330, 390, 320, 350, 360, 320, 380, 400, 370, 330, 390, 320, 350, 360, 320, 380],
+    color: '#c7eee8',
   },
   {
     name: 'PRODUCT C',
-    data: [400, 370, 330, 390, 320, 350, 360, 320, 380],
+    data: [400, 370, 330, 390, 320, 350, 360, 320, 380, 400, 370, 330, 390, 320, 350, 360, 320, 380],
     color: '#EFF4FB',
   },
 ];
@@ -257,13 +257,13 @@ export const barChartOptionsWeeklyRevenue = {
 export const lineChartDataTotalSpent = [
   {
     name: 'Revenue',
-    data: [50, 64, 48, 66, 49, 68],
-    color: '#4318FF',
+    data: [50, 64, 48, 66, 49, 78, 60, 74, 88, 96, 59, 108],
+    color: '#36a18f',
   },
   {
     name: 'Profit',
-    data: [30, 40, 24, 46, 20, 46],
-    color: '#6AD2FF',
+    data: [30, 40, 24, 46, 20, 56, 40, 50, 74, 86, 30, 96],
+    color: '#c7eee8',
   },
 ];
 
@@ -320,7 +320,7 @@ export const lineChartOptionsTotalSpent = {
     },
     type: 'text',
     range: undefined,
-    categories: ['SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB'],
+    categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',],
   },
 
   yaxis: {

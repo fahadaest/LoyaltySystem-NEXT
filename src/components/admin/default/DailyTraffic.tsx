@@ -19,7 +19,7 @@ const DailyTraffic = () => {
           </p>
         </div>
         <div className="mt-2 flex items-start">
-          <div className="flex items-center text-sm text-green-500">
+          <div className="flex items-center text-sm text-brandGreen">
             <MdArrowDropUp className="h-5 w-5" />
             <p className="font-bold"> +2.45% </p>
           </div>

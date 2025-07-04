@@ -1,9 +1,6 @@
-import {
-  MdArrowDropUp,
-  MdOutlineCalendarToday,
-  MdBarChart,
-} from "react-icons/md";
+import { MdArrowDropUp, MdOutlineCalendarToday, MdBarChart } from "react-icons/md";
 import Card from "components/card";
+import { useState } from "react";
 import {
   lineChartDataTotalSpent,
   lineChartOptionsTotalSpent,
@@ -11,19 +8,68 @@ import {
 import LineChart from "components/charts/LineChart";
 
 const TotalSpent = () => {
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState('month');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleDropdownToggle = () => {
+    setDropdownOpen((prev) => !prev);
+  };
+
+  const handleTimeFrameChange = (timeFrame) => {
+    setSelectedTimeFrame(timeFrame);
+    setDropdownOpen(false);
+  };
+
   return (
     <Card extra="!p-[20px] text-center">
       <div className="flex justify-between">
-        <button className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-lightPrimary p-2 text-gray-600 transition duration-200 hover:cursor-pointer hover:bg-gray-100 active:bg-gray-200 dark:bg-navy-700 dark:hover:opacity-90 dark:active:opacity-80">
+        <button
+          className="linear mt-1 flex items-center justify-center gap-2 rounded-lg bg-lightPrimary p-2 text-gray-600 transition duration-200 hover:cursor-pointer hover:bg-gray-100 active:bg-gray-200 dark:bg-navy-700 dark:hover:opacity-90 dark:active:opacity-80"
+          onClick={handleDropdownToggle}
+        >
           <MdOutlineCalendarToday />
-          <span className="text-sm font-medium text-gray-600">This month</span>
+          <span className="text-sm font-medium text-gray-600">
+            {selectedTimeFrame === 'month' ? 'This month' : selectedTimeFrame.charAt(0).toUpperCase() + selectedTimeFrame.slice(1)}
+          </span>
         </button>
-        <button className="!linear z-[1] flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-brand-500 !transition !duration-200 hover:bg-gray-100 active:bg-gray-200 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10">
+
+        {dropdownOpen && (
+          <div className="absolute mt-2 bg-white shadow-lg rounded-md text-gray-600 w-40">
+            <ul>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleTimeFrameChange('week')}
+              >
+                Week
+              </li>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleTimeFrameChange('month')}
+              >
+                Month
+              </li>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleTimeFrameChange('quarter')}
+              >
+                Quarter
+              </li>
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleTimeFrameChange('year')}
+              >
+                Year
+              </li>
+            </ul>
+          </div>
+        )}
+
+        <button className="!linear z-[1] flex items-center justify-center rounded-lg bg-lightPrimary p-2 text-brandGreen !transition !duration-200 hover:bg-gray-100 active:bg-gray-200 dark:bg-navy-700 dark:text-white dark:hover:bg-white/20 dark:active:bg-white/10">
           <MdBarChart className="h-6 w-6" />
         </button>
       </div>
 
-      <div className="flex h-full w-full flex-row justify-between sm:flex-wrap lg:flex-nowrap 2xl:overflow-hidden">
+      <div className="flex h-[300px] w-full flex-row justify-between sm:flex-wrap lg:flex-nowrap 2xl:overflow-hidden">
         <div className="flex flex-col">
           <p className="mt-[20px] text-3xl font-bold text-navy-700 dark:text-white">
             $37.5K
@@ -32,7 +78,7 @@ const TotalSpent = () => {
             <p className="mt-2 text-sm text-gray-600">Total Spent</p>
             <div className="flex flex-row items-center justify-center">
               <MdArrowDropUp className="font-medium text-green-500" />
-              <p className="text-sm font-bold text-green-500"> +2.45% </p>
+              <p className="text-sm font-bold text-brandGreen"> +2.45% </p>
             </div>
           </div>
         </div>
