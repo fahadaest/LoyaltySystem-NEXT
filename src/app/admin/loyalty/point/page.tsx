@@ -187,11 +187,11 @@ const Dashboard = () => {
         <div ref={printRef}>
           <LoyaltyBannerPreview
             registerCustomerLink={registerCustomerLink}
-            bannnerTitle={selectedLoyaltyData?.bannnerTitle}
+            bannerTitle={selectedLoyaltyData?.bannerTitle}
             color={selectedLoyaltyData?.templateColor || '#4a5568'}
             logoSize={selectedLoyaltyData?.logoSize || 60}
             qrSize={selectedLoyaltyData?.qrSize || 80}
-            logo={selectedLoyaltyData?.logoImage}
+            logo={selectedLoyaltyData?.logo}
             templateImage={selectedLoyaltyData?.templateImage}
             icon1Text={selectedLoyaltyData?.icon1Text || 'Scan QR with your mobile phone'}
             icon2Text={selectedLoyaltyData?.icon2Text || 'Download the Point Pass into your mobile'}

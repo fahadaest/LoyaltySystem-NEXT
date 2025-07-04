@@ -20,7 +20,7 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
   const [spendingAmount, setSpendingAmount] = useState("");
   const [rewardPoints, setRewardPoints] = useState("");
   const [rewardPointsEquivalent, setRewardPointsEquivalent] = useState("");
-  const [bannnerTitle, setBannnerTitle] = useState("");
+  const [bannerTitle, setbannerTitle] = useState("");
   const [color, setColor] = useState('#4a5568');
   const [logoSize, setLogoSize] = useState(60);
   const [qrSize, setQrSize] = useState(80);
@@ -52,7 +52,7 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
       setRewardProduct(selectedLoyaltyData.rewardProductId || '');
       setColor(selectedLoyaltyData.templateColor || '#4a5568');
       setLogo(baseUrl + selectedLoyaltyData.logo);
-      setBannnerTitle(selectedLoyaltyData.bannerTitle || '');
+      setbannerTitle(selectedLoyaltyData.bannerTitle || '');
       setLogoBlob(null);
       setTemplateImage(baseUrl + selectedLoyaltyData.templateImage || null);
       setIcon1Text(selectedLoyaltyData.icon1Text || 'Scan QR with your mobile phone');
@@ -89,7 +89,7 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
     formData.append("rewardTitle", rewardTitle);
     formData.append("rewardDescription", rewardDescription);
     formData.append("productId", selectedProduct);
-    formData.append("bannnerTitle", bannnerTitle);
+    formData.append("bannerTitle", bannerTitle);
     formData.append("templateColor", color);
     formData.append("rewardProductId", rewardProduct);
     formData.append("icon1Text", icon1Text);
@@ -270,8 +270,8 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
       )}
 
       <LoyaltyAdditionalDetails
-        bannnerTitle={bannnerTitle}
-        setBannnerTitle={setBannnerTitle}
+        bannerTitle={bannerTitle}
+        setbannerTitle={setbannerTitle}
         color={color}
         setColor={setColor}
         logoSize={logoSize}

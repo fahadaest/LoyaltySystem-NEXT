@@ -4,7 +4,7 @@ const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const LoyaltyBannerPreview = ({
     registerCustomerLink,
-    bannnerTitle,
+    bannerTitle,
     color,
     logoSize,
     qrSize,
@@ -53,7 +53,7 @@ const LoyaltyBannerPreview = ({
                             />
                         )}
                         <h1 className="text-white text-lg font-semibold">
-                            {bannnerTitle}
+                            {bannerTitle}
                         </h1>
                     </div>
 

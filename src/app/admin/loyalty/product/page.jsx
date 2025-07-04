@@ -168,7 +168,7 @@ const Dashboard = () => {
         <div ref={printRef}>
           <LoyaltyBannerPreview
             registerCustomerLink={registerCustomerLink}
-            bannnerTitle={selectedLoyaltyData?.bannerTitle}
+            bannerTitle={selectedLoyaltyData?.bannerTitle}
             color={selectedLoyaltyData?.templateColor || '#4a5568'}
             logoSize={selectedLoyaltyData?.logoSize || 60}
             qrSize={selectedLoyaltyData?.qrSize || 80}

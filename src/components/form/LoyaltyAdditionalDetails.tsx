@@ -4,7 +4,7 @@ import ImageUploaderAndCropper from 'components/imageUploader/ImageUploaderAndCr
 import QRCode from 'react-qr-code';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setColor, logoSize, setLogoSize, qrSize, setQrSize, logo, setLogo, logoBlob, setLogoBlob, templateImage, setTemplateImage, templateImageBlob, setTemplateImageBlob, icon1Text, setIcon1Text, icon2Text, setIcon2Text, icon3Text, setIcon3Text, icon1TextSize, setIcon1TextSize, icon2TextSize, setIcon2TextSize, icon3TextSize, setIcon3TextSize, icon1, setIcon1, icon2, setIcon2, icon3, setIcon3, icon1Blob, setIcon1Blob, icon2Blob, setIcon2Blob, icon3Blob, setIcon3Blob, selectedLoyaltyData }) => {
+const LoyaltyAdditionalDetails = ({ bannerTitle, setbannerTitle, color, setColor, logoSize, setLogoSize, qrSize, setQrSize, logo, setLogo, logoBlob, setLogoBlob, templateImage, setTemplateImage, templateImageBlob, setTemplateImageBlob, icon1Text, setIcon1Text, icon2Text, setIcon2Text, icon3Text, setIcon3Text, icon1TextSize, setIcon1TextSize, icon2TextSize, setIcon2TextSize, icon3TextSize, setIcon3TextSize, icon1, setIcon1, icon2, setIcon2, icon3, setIcon3, icon1Blob, setIcon1Blob, icon2Blob, setIcon2Blob, icon3Blob, setIcon3Blob, selectedLoyaltyData }) => {
     useEffect(() => {
         if (templateImageBlob) {
             const objectUrl = URL.createObjectURL(templateImageBlob);
@@ -59,8 +59,8 @@ const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setCol
                                     placeholder="Enter title"
                                     id="banner-title"
                                     type="text"
-                                    value={bannnerTitle}
-                                    onChange={(e) => setBannnerTitle(e.target.value)} label={''} />
+                                    value={bannerTitle}
+                                    onChange={(e) => setbannerTitle(e.target.value)} label={''} />
                             </div>
                             <div>
                                 <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Select Color</label>
@@ -210,7 +210,7 @@ const LoyaltyAdditionalDetails = ({ bannnerTitle, setBannnerTitle, color, setCol
                                     />
                                 )}
                                 <h1 className="text-white text-lg font-semibold">
-                                    {bannnerTitle}
+                                    {bannerTitle}
                                 </h1>
                             </div>
 
