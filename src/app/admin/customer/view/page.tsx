@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import AddBeacons from 'components/settings/walletBeacons/AddBeaconsForm';
 import { FaUser } from "react-icons/fa";
+import CustomerDetail from 'components/customer/CustomerDetail';
 
 const Dashboard = () => {
   const { data: customersData, error: customerError, isLoading: customerLoading } = useGetAllCustomersQuery('');
@@ -48,20 +49,14 @@ const Dashboard = () => {
 
   const handleDetailClick = (editRowData) => {
     console.log(editRowData)
+    setEditRowData(editRowData)
+    onOpen();
   };
 
   return (
     <div>
       <div className="mt-3 mb-5">
         <HeadingCard icon={<FaUser className="text-brandGreen text-3xl" />} subtitle="Customers List">
-          {/* <HeaderButton
-            icon={MdAdd}
-            text="Add New Beacon"
-            size="md"
-            color="bg-brandGreen"
-            onClick={undefined}
-            variant={undefined}
-          /> */}
         </HeadingCard>
       </div>
 
@@ -76,11 +71,13 @@ const Dashboard = () => {
       <CustomModal
         isOpen={isOpen}
         onClose={onClose}
-        title={editRowData ? 'Edit Beacon' : 'Add Beacon'}
-        size="lg"
+        title={'Customer Detail'}
+        size="4xl"
         handlePrint={undefined}
-        children={undefined}
       >
+        <CustomerDetail
+          customer={editRowData}
+        />
       </CustomModal>
     </div>
   );
