@@ -71,7 +71,7 @@ const HeadingCard = ({
                 ${className}
             `}
         >
-            <div className={`flex items-center ${sizeStyles[size].split(' ').pop()}`}>
+            <div className={`flex items-center gap-3 ${sizeStyles[size].split(' ').pop()}`}>
                 {icon && (
                     <div className={`
                         ${iconSizeStyles[size]} 

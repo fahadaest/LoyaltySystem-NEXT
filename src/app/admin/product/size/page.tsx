@@ -12,6 +12,7 @@ import { MdAdd } from "react-icons/md";
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import Button from 'components/button/Button';
+import { FaRuler } from "react-icons/fa";
 import CircularProgress from '@mui/material/CircularProgress';
 
 const Dashboard = () => {
@@ -69,7 +70,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-5 grid grid-cols-1 gap-5">
-        <HeadingCard subtitle="Size Listing">
+        <HeadingCard icon={<FaRuler className="text-brandGreen" />} subtitle="Size Listing">
           <HeaderButton
             icon={MdAdd}
             text="Add Product"

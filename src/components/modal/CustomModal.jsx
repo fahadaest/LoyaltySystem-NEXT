@@ -1,7 +1,15 @@
 import React from "react";
 import { MdClose, MdPrint } from "react-icons/md";
 
-const CustomModal = ({ isOpen, onClose, title = "", size = "xl", children, handlePrint }) => {
+const CustomModal = ({
+    isOpen,
+    onClose,
+    title = "",
+    size = "xl",
+    children,
+    handlePrint,
+    noScroll = false // Add this prop to disable scrolling when needed
+}) => {
     if (!isOpen) return null;
 
     const sizeClasses = {
@@ -22,7 +30,7 @@ const CustomModal = ({ isOpen, onClose, title = "", size = "xl", children, handl
                 onClick={onClose}
                 className="absolute inset-0 bg-black opacity-50"
             />
-            <div className={`relative bg-white rounded-xl shadow-2xl w-full ${modalWidth} max-h-[90vh] overflow-hidden transform transition-all duration-300 scale-100`}>
+            <div className={`relative bg-white rounded-xl shadow-2xl w-full ${modalWidth} max-h-[90vh] ${noScroll ? 'overflow-hidden' : 'overflow-hidden'} transform transition-all duration-300 scale-100`}>
                 {title && (
                     <div className="flex items-center justify-between p-4 px-8 border-b border-gray-200">
                         <div className="flex items-center gap-4">
@@ -50,7 +58,7 @@ const CustomModal = ({ isOpen, onClose, title = "", size = "xl", children, handl
                     </div>
                 )}
 
-                <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
+                <div className={noScroll ? 'h-full' : 'overflow-y-auto max-h-[calc(90vh-140px)]'}>
                     {children}
                 </div>
             </div>

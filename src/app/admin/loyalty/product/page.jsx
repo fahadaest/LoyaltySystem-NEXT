@@ -14,6 +14,7 @@ import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
+import { FaGift } from "react-icons/fa";
 import LoyaltyBannerPreview from 'components/banner/LoyaltyBannerPreview';
 
 const Dashboard = () => {
@@ -50,7 +51,7 @@ const Dashboard = () => {
   const handleView = (loyaltyData) => {
     const adminId = loyaltyData?.adminId;
     const loyalty = loyaltyData?.id;
-    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isProduct=true`;
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&type=product`;
     setRegisterCustomerLink(registerCustomerUrl);
     setSelectedLoyaltyData(loyaltyData);
     openViewModal();
@@ -99,7 +100,7 @@ const Dashboard = () => {
   const handleCopy = (loyaltyData) => {
     const adminId = loyaltyData?.adminId;
     const loyalty = loyaltyData?.id;
-    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isProduct=true`;
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&type=product`;
     navigator.clipboard.writeText(registerCustomerUrl)
       .then(() => {
         dispatch(showAlert({
@@ -121,7 +122,7 @@ const Dashboard = () => {
     <div className="mt-3 grid h-full grid-cols-1 gap-5">
       <div className="col-span-1 h-fit w-full">
         <div className="mt-3 mb-5">
-          <HeadingCard subtitle="Manage Product-Based Loyalties Reward">
+          <HeadingCard icon={<FaGift className="text-brandGreen text-3xl" />} subtitle="Manage Product-Based Loyalties Reward">
             <HeaderButton
               icon={MdAdd}
               text="Add New Loyalty"

@@ -21,7 +21,9 @@ const AnimatedContactForm = () => {
     const searchParams = useSearchParams();
     const adminId = searchParams.get('adminId');
     const loyalty = searchParams.get('loyalty');
-    const isProduct = searchParams.get('isProduct');
+    const type = searchParams.get('type');
+
+    console.log(type)
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -142,7 +144,7 @@ const AnimatedContactForm = () => {
                 lastName: formData.lastName,
                 email: formData.email,
                 phoneNumber: formData.phoneNumber,
-                isProductLoyalty: isProduct,
+                type: type,
                 loyaltyId: loyalty ? parseInt(loyalty) : 0,
                 adminId: adminId ? parseInt(adminId) : 0,
             };

@@ -11,6 +11,7 @@ import CustomModal from 'components/modal/CustomModal';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
+import { MdLocationOn } from "react-icons/md";
 
 const Dashboard = () => {
   const { data: allAddress, error: allAddressError, isLoading: allAddressLoadinng } = useGetAllAddressesQuery('');
@@ -88,7 +89,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard subtitle="All Addresses">
+        <HeadingCard icon={<MdLocationOn className="text-brandGreen text-3xl" />} subtitle="All Addresses">
           <HeaderButton
             icon={MdAdd}
             text="Add New Address"

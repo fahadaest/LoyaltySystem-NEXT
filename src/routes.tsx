@@ -42,6 +42,7 @@ const routes = [
     icon: <MdLoyalty className="h-6 w-6" />,
     layout: '/admin/loyalty',
     path: '',
+    showDivider: false,
     submenu: [
       {
         name: 'Product Loyalty',
@@ -53,6 +54,20 @@ const routes = [
         name: 'Point Loyalty',
         layout: '/admin/loyalty',
         path: 'point',
+        icon: <MdHome className="h-6 w-6" />,
+      },
+    ],
+  },
+  {
+    name: 'Cards',
+    icon: <MdLoyalty className="h-6 w-6" />,
+    layout: '/admin/walletCards',
+    path: '',
+    submenu: [
+      {
+        name: 'Manage Wallet Cards',
+        layout: '/admin/walletCards',
+        path: 'view',
         icon: <MdHome className="h-6 w-6" />,
       },
     ],

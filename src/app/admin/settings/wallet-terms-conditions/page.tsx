@@ -7,6 +7,7 @@ import { useGetAllTermsQuery, useUpdateTermsMutation } from 'store/settingsApi';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import TermsAndConditions from 'components/settings/walletTAC/TAC';
+import { FaShieldAlt } from "react-icons/fa";
 
 const Dashboard = () => {
   const { data: termsDetail, error: termsError, isLoading: termsLoading } = useGetAllTermsQuery('');
@@ -77,7 +78,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard subtitle="Manage Terms and Conditions">
+        <HeadingCard icon={<FaShieldAlt className="text-brandGreen text-3xl" />} subtitle="Manage Terms and Conditions">
           <HeaderButton
             icon={isEditingTerms ? MdCancel : MdEdit}
             text={isEditingTerms ? "Cancel Edit" : "Edit Terms"}

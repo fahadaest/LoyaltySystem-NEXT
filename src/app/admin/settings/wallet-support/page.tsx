@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import Support from 'components/settings/walletSupport/Support';
 import SupportEdit from 'components/settings/walletSupport/SupportEdit';
+import { MdSupport } from "react-icons/md";
 
 const Dashboard = () => {
   const { data: supportDetails, error: supportError, isLoading: supportLoading } = useGetSupportDetailsQuery('');
@@ -75,7 +76,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard subtitle="Update Support Details">
+        <HeadingCard icon={<MdSupport className="text-brandGreen text-3xl" />} subtitle="Update Support Details">
           <HeaderButton
             icon={MdAdd}
             text={isEditingSupport ? "Cancel Edit" : "Update Support"}

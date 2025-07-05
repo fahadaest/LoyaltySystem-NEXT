@@ -164,6 +164,12 @@ module.exports = {
     },
     colors: {
       brandGreen: '#36a18f',
+      brandGreenGradient1: '#1a5d54',
+      brandGreenGradient2: '#2d8a7a',
+      brandGreenGradient3: '#4db3a3',
+      brandGreenGradient4: '#6bc5b7',
+      brandGreenGradient5: '#8dd7cb',
+      brandGreenGradient6: '#b3e9df',
       brandGreenLight: '#45aa99',
       brandGreenHighlight: '#c7eee8',
       brandBlue: '#173878',

@@ -13,6 +13,8 @@ import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import CircularProgress from '@mui/material/CircularProgress';
+import AddWalletCardForm from 'components/wallet-cards/AddWalletCardForm';
+import AppleWalletEditor from 'components/wallet-cards/AddWalletCardForm';
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -56,10 +58,10 @@ const Dashboard = () => {
   return (
     <div className="relative">
       <div className="mt-3 mb-5">
-        <HeadingCard icon={<FaBox className="text-brandGreen" />} subtitle="Manage Products">
+        <HeadingCard icon={<FaBox className="text-brandGreen" />} subtitle="Manage Cards">
           <HeaderButton
             icon={MdAdd}
-            text="Add Product"
+            text="Add Card"
             size="lg"
             color="bg-brandGreen"
             onClick={handleAddProduct}
@@ -67,49 +69,11 @@ const Dashboard = () => {
         </HeadingCard>
       </div>
 
-      <div className="">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 z-20">
-          {isLoading ? (
-            <div className="flex justify-center items-center min-h-screen">
-              <CircularProgress style={{ color: "#36a18f" }} />
-            </div>
-          ) : products && products.length > 0 ? (
-            products.map((product) => (
-              <ProductCard
-                key={product.id}
-                title={product.name}
-                price={product.price}
-                image={product.image}
-                size={product.size ? product.size.size : null}
-                product={product}
-                onEdit={() => handleEdit(product)}
-                onDelete={() => handleDelete(product.id)}
-                extra="any-additional-classes"
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center flex flex-col items-center justify-center">
-              <div className="text-lg font-semibold text-gray-700 mb-4">
-                No products available yet
-              </div>
-              <p className="text-sm text-gray-500 mb-4">
-                It looks like you haven't added any products. Click the button below to add your first product.
-              </p>
-              <HeaderButton
-                icon={MdAdd}
-                text="Add Your First Product"
-                size="md"
-                color="bg-brandGreen"
-                onClick={handleAddProduct}
-                className="mt-4"
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <CustomModal isOpen={isOpen} onClose={onClose} title={selectedProduct ? "Edit Product" : "Add Product"} size="xl">
-        <AddProductForm product={selectedProduct} onClose={onClose} />
+      <CustomModal isOpen={isOpen} onClose={onClose}
+        title="Wallet Card Editor"
+        size="4xl"
+        noScroll={true} >
+        <AppleWalletEditor isModal={true} />
       </CustomModal>
 
       <DeleteConfirmationModal

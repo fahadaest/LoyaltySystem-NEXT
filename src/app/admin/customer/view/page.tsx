@@ -12,6 +12,7 @@ import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import AddBeacons from 'components/settings/walletBeacons/AddBeaconsForm';
+import { FaUser } from "react-icons/fa";
 
 const Dashboard = () => {
   const { data: customersData, error: customerError, isLoading: customerLoading } = useGetAllCustomersQuery('');
@@ -52,15 +53,15 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard subtitle="Customers List">
-          <HeaderButton
+        <HeadingCard icon={<FaUser className="text-brandGreen text-3xl" />} subtitle="Customers List">
+          {/* <HeaderButton
             icon={MdAdd}
             text="Add New Beacon"
             size="md"
             color="bg-brandGreen"
             onClick={undefined}
             variant={undefined}
-          />
+          /> */}
         </HeadingCard>
       </div>
 

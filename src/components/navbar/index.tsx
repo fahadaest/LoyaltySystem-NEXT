@@ -10,12 +10,12 @@ import {
   IoMdNotificationsOutline,
   IoMdInformationCircleOutline,
 } from 'react-icons/io';
-import avatar from '/public/img/avatars/avatar4.png';
 import Image from 'next/image';
 import { Typewriter } from 'react-simple-typewriter';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useGetMyProfileQuery } from 'store/userApi';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const Navbar = (props: {
   onOpenSidenav: () => void;
@@ -35,6 +35,7 @@ const Navbar = (props: {
     Cookies.remove('token');
     router.push('/auth/sign-in');
   };
+  const avatar = baseUrl + data?.profileImage;
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -205,7 +206,7 @@ const Navbar = (props: {
         </div>
         <Dropdown
           button={
-            <Image
+            <img
               width="2"
               height="20"
               className="h-10 w-10 rounded-full"

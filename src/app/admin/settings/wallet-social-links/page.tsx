@@ -7,6 +7,7 @@ import { useGetAllSocialLinksQuery, useUpdateSocialLinksMutation } from 'store/s
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import SocialLinks from 'components/settings/walletSocialLinks/SocialLinks';
+import { FaShareAlt } from "react-icons/fa";
 
 const Dashboard = () => {
   const { data: socialLinks, error: socialLinksError, isLoading: socialLinksLoading } = useGetAllSocialLinksQuery('');
@@ -73,7 +74,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard subtitle="Manage Social Links">
+        <HeadingCard icon={<FaShareAlt className="text-brandGreen text-3xl" />} subtitle="Manage Social Links">
           <HeaderButton
             icon={MdEdit}
             text={isEditMode ? "Cancel Edit" : "Edit Links"}

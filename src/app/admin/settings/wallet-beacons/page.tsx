@@ -11,6 +11,7 @@ import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/alertSlice';
 import AddBeacons from 'components/settings/walletBeacons/AddBeaconsForm';
+import { FaBacon } from "react-icons/fa";
 
 const Dashboard = () => {
   const { data: beacons, error: beaconsError, isLoading: beaconsLoading } = useGetAllBeaconsQuery('');
@@ -98,7 +99,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard subtitle="Manage Wallet Beacons">
+        <HeadingCard icon={<FaBacon className="text-brandGreen text-3xl" />} subtitle="Manage Wallet Beacons">
           <HeaderButton
             icon={MdAdd}
             text="Add New Beacon"

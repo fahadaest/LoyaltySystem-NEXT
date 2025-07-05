@@ -1,5 +1,5 @@
 import Card from "components/card";
-import { IoEyeOutline, IoCreateOutline, IoTrashOutline } from "react-icons/io5";
+import { IoCreateOutline, IoTrashOutline } from "react-icons/io5";
 import Button from "components/button/Button";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -17,8 +17,13 @@ const ProductCard = ({ title, price, image, size, product, onEdit, onDelete, ext
             </div>
 
             <div className="flex justify-between gap-3 p-4 ">
-                <div className=" flex flex-col gap-2">
-                    <h2 className="text-xl font-semibold text-navy-800 dark:text-white">{title}</h2>
+                <div className="flex flex-col gap-2">
+                    <h2
+                        className="text-md font-semibold text-navy-800 dark:text-white line-clamp-2"
+                        title={title}
+                    >
+                        {title}
+                    </h2>
                     <div className="flex items-center justify-start">
                         <div className="inline-flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200/60">
                             <span className="text-xs font-medium text-gray-600">Size: {size}</span>

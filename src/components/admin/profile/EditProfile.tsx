@@ -49,12 +49,12 @@ const EditProfile = ({ data, onClose }) => {
 
         if (profileImage) {
             const profileBlob = await fetch(profileImage).then(res => res.blob());
-            formData.append("profileImage", profileBlob);
+            formData.append("profileImage", profileBlob, "profileImage.png");
         }
 
         if (coverImage) {
             const coverBlob = await fetch(coverImage).then(res => res.blob());
-            formData.append("coverImage", coverBlob);
+            formData.append("coverImage", coverBlob, "coverImage.png");
         }
 
         try {

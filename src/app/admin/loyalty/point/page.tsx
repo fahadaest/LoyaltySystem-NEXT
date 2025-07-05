@@ -13,6 +13,7 @@ import LoyaltyBannerPreview from 'components/banner/LoyaltyBannerPreview';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd } from 'react-icons/md';
+import { MdStar } from "react-icons/md";
 
 const Dashboard = () => {
   const { data: pointLoyaltyCampaigns, error, isLoading } = useGetAllPointLoyaltyCampaignsQuery('');
@@ -75,7 +76,7 @@ const Dashboard = () => {
     const selectedLoyalty = pointLoyaltyCampaigns.find(campaign => campaign.id === loyaltyData.id);
     const adminId = selectedLoyalty?.adminId;
     const loyalty = selectedLoyalty?.id;
-    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isPoint=true`;
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&type=point`;
     setRegisterCustomerLink(registerCustomerUrl);
     if (selectedLoyalty) {
       setSelectedLoyaltyData(selectedLoyalty);
@@ -124,7 +125,7 @@ const Dashboard = () => {
     const selectedLoyalty = pointLoyaltyCampaigns.find(campaign => campaign.id === loyaltyData.id);
     const adminId = selectedLoyalty?.adminId;
     const loyalty = selectedLoyalty?.id;
-    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&isPoint=true`;
+    const registerCustomerUrl = `${currentUrl}/register-customer?adminId=${adminId}&loyalty=${loyalty}&type=point`;
     navigator.clipboard.writeText(registerCustomerUrl)
       .then(() => {
         dispatch(showAlert({
@@ -145,7 +146,7 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard subtitle="Point-Based Loyalties">
+        <HeadingCard icon={<MdStar className="text-brandGreen text-3xl" />} subtitle="Point-Based Loyalties">
           <HeaderButton
             icon={MdAdd}
             text="Add New Loyalty"
