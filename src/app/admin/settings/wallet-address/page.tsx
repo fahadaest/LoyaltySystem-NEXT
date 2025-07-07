@@ -115,7 +115,7 @@ const Dashboard = () => {
         onClose={onClose}
         title={editRowData ? "Edit Address" : "Add Address"}
         handlePrint={null}
-        size="4xl"
+        size="2xl"
       >
         <AddressSelectionComponent
           onClose={onClose}

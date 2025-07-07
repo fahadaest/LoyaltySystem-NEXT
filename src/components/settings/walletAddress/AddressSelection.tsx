@@ -39,7 +39,7 @@ const AddressSelectionComponent = ({ onClose, editRowData, onSubmit }) => {
     };
 
     return (
-        <div className="address-selection-component py-10 px-5">
+        <div className="address-selection-component py-5 px-5">
             <div className="address-form">
                 <InputField
                     variant="auth"
@@ -54,7 +54,7 @@ const AddressSelectionComponent = ({ onClose, editRowData, onSubmit }) => {
             </div>
 
             <div className="google-map-container mb-4" style={{ height: "300px", width: "100%" }}>
-                <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+                <LoadScript googleMapsApiKey="AIzaSyAuuAQOus0gtMgD4rRUK5r3eY0Ic4rnLkM">
                     <GoogleMap
                         mapContainerStyle={{ width: "100%", height: "100%" }}
                         center={selectedLocation || { lat: 37.7749, lng: -122.4194 }}

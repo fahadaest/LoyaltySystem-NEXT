@@ -63,11 +63,6 @@ export default function CustomerDetail({
     // Column definitions for Point-based loyalty programs
     const pointLoyaltyColumns: ColumnDef<LoyaltyProgram>[] = [
         {
-            accessorKey: "id",
-            header: "ID",
-            cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
-        },
-        {
             accessorKey: "pointLoyalty.rewardTitle",
             header: "Reward Title",
             cell: ({ row }) => (
@@ -116,11 +111,6 @@ export default function CustomerDetail({
 
     // Column definitions for Product-based loyalty programs
     const productLoyaltyColumns: ColumnDef<LoyaltyProgram>[] = [
-        {
-            accessorKey: "id",
-            header: "ID",
-            cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
-        },
         {
             accessorKey: "productLoyalty.rewardTitle",
             header: "Reward Title",
