@@ -10,13 +10,18 @@ export const customersApi = createApi({
             if (token) {
                 headers.set('Authorization', `Bearer ${token}`);
             }
+            headers.set('ngrok-skip-browser-warning', 'true');
             return headers;
         },
     }),
     tagTypes: ['Customer'],
     endpoints: (builder) => ({
         // Create a new customer
-        createCustomer: builder.mutation({
+        createCustomer: builder.mutation<{
+            customer: any;
+            walletPassUrl?: string;
+            isNewCustomer: boolean;
+        }, any>({
             query: (formData) => ({
                 url: '/api/customers',
                 method: 'POST',
@@ -24,6 +29,15 @@ export const customersApi = createApi({
             }),
             invalidatesTags: ['Customer'],
         }),
+
+        // Download wallet pass
+        downloadWalletPass: builder.query<Blob, string>({
+            query: (filename) => ({
+                url: `/api/wallet-passes/${filename}`,
+                responseHandler: (response) => response.blob(),
+            }),
+        }),
+
 
         // Get all customers
         getAllCustomers: builder.query({
@@ -63,4 +77,5 @@ export const {
     useGetCustomerByIdQuery,
     useUpdateCustomerMutation,
     useDeleteCustomerMutation,
+    useDownloadWalletPassQuery
 } = customersApi;
