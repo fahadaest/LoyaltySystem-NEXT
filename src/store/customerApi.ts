@@ -16,12 +16,46 @@ export const customersApi = createApi({
     }),
     tagTypes: ['Customer'],
     endpoints: (builder) => ({
-        // Create a new customer
+        // Create a new customer with Apple Wallet integration
         createCustomer: builder.mutation<{
-            customer: any;
-            walletPassUrl?: string;
-            isNewCustomer: boolean;
-        }, any>({
+            success: boolean;
+            customer: {
+                id: number;
+                firstName: string;
+                lastName: string;
+                email: string;
+                phoneNumber: string;
+                adminId: number;
+                createdAt: string;
+                updatedAt: string;
+                loyaltyPrograms: Array<{
+                    id: number;
+                    customerId: number;
+                    loyaltyId: number;
+                    type: 'PRODUCT' | 'POINT';
+                    createdAt: string;
+                    updatedAt: string;
+                    pointLoyalty?: any;
+                    productLoyalty?: any;
+                }>;
+            };
+            appleWalletPass: {
+                available: boolean;
+                downloadUrl?: string;
+                fileName?: string;
+                passId?: number;
+                error?: string;
+                reason?: string;
+            };
+        }, {
+            firstName: string;
+            lastName: string;
+            email: string;
+            phoneNumber: string;
+            type: 'PRODUCT' | 'POINT';
+            loyaltyId: number;
+            adminId: number;
+        }>({
             query: (formData) => ({
                 url: '/api/customers',
                 method: 'POST',
@@ -29,15 +63,6 @@ export const customersApi = createApi({
             }),
             invalidatesTags: ['Customer'],
         }),
-
-        // Download wallet pass
-        downloadWalletPass: builder.query<Blob, string>({
-            query: (filename) => ({
-                url: `/api/wallet-passes/${filename}`,
-                responseHandler: (response) => response.blob(),
-            }),
-        }),
-
 
         // Get all customers
         getAllCustomers: builder.query({
@@ -77,5 +102,4 @@ export const {
     useGetCustomerByIdQuery,
     useUpdateCustomerMutation,
     useDeleteCustomerMutation,
-    useDownloadWalletPassQuery
 } = customersApi;

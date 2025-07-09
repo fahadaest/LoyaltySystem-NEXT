@@ -9,6 +9,7 @@ import { pointLoyaltyApi } from './pointLoyalty';
 import { userProfileApi } from './userApi';
 import { settingsApi } from './settingsApi';
 import { customersApi } from './customerApi';
+import { appleWalletApi } from './appleWalletApi';
 import alertReducer from './alertSlice';
 
 export const store = configureStore({
@@ -23,6 +24,7 @@ export const store = configureStore({
         [userProfileApi.reducerPath]: userProfileApi.reducer,
         [settingsApi.reducerPath]: settingsApi.reducer,
         [customersApi.reducerPath]: customersApi.reducer,
+        [appleWalletApi.reducerPath]: appleWalletApi.reducer,
         alert: alertReducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -36,7 +38,8 @@ export const store = configureStore({
             .concat(pointLoyaltyApi.middleware)
             .concat(userProfileApi.middleware)
             .concat(settingsApi.middleware)
-            .concat(customersApi.middleware),
+            .concat(customersApi.middleware)
+            .concat(appleWalletApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
