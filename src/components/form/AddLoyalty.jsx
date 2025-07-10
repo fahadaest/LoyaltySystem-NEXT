@@ -6,7 +6,7 @@ import InputDropdown from "components/fields/InputDropDown";
 import LoyaltyAdditionalDetails from "./LoyaltyAdditionalDetails";
 import Button from "components/button/Button";
 import { useDispatch } from 'react-redux';
-import { showAlert } from "store/alertSlice";
+import { showAlert } from "store/apiEndPoints/alertSlice";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 

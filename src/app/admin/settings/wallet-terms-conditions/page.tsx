@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd, MdEdit, MdCancel } from 'react-icons/md';
-import { useGetAllTermsQuery, useUpdateTermsMutation } from 'store/settingsApi';
+import { useGetAllTermsQuery, useUpdateTermsMutation } from 'store/apiEndPoints/settingsApi';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import TermsAndConditions from 'components/settings/walletTAC/TAC';
 import { FaShieldAlt } from "react-icons/fa";
 

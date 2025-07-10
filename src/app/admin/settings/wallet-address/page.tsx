@@ -4,13 +4,13 @@ import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDisclosure } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
-import { useCreateAddressMutation, useGetAllAddressesQuery, useGetAddressByIdQuery, useUpdateAddressMutation, useDeleteAddressMutation } from 'store/settingsApi';
+import { useCreateAddressMutation, useGetAllAddressesQuery, useGetAddressByIdQuery, useUpdateAddressMutation, useDeleteAddressMutation } from 'store/apiEndPoints/settingsApi';
 import Table from 'components/settings/walletAddress/Table';
 import AddressSelectionComponent from 'components/settings/walletAddress/AddressSelection';
 import CustomModal from 'components/modal/CustomModal';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { MdLocationOn } from "react-icons/md";
 
 const Dashboard = () => {

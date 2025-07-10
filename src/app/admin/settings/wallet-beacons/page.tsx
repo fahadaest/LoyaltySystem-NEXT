@@ -4,12 +4,12 @@ import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDisclosure } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
-import { useCreateBeaconMutation, useGetAllBeaconsQuery, useGetBeaconByIdQuery, useUpdateBeaconMutation, useDeleteBeaconMutation } from 'store/settingsApi';
+import { useCreateBeaconMutation, useGetAllBeaconsQuery, useGetBeaconByIdQuery, useUpdateBeaconMutation, useDeleteBeaconMutation } from 'store/apiEndPoints/settingsApi';
 import Table from 'components/settings/walletAddress/Table';
 import CustomModal from 'components/modal/CustomModal';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import AddBeacons from 'components/settings/walletBeacons/AddBeaconsForm';
 import { FaBacon } from "react-icons/fa";
 

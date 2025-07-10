@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MdAdd } from "react-icons/md";
 import Button from "components/button/Button";
-import { useCreateProductMutation, useUpdateProductMutation } from "store/productsApi";
-import { useGetAllProductSizesQuery } from "store/productSizesApi";
+import { useCreateProductMutation, useUpdateProductMutation } from "store/apiEndPoints/productsApi";
+import { useGetAllProductSizesQuery } from "store/apiEndPoints/productSizesApi";
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 import { useDispatch } from 'react-redux';
-import { showAlert } from "store/alertSlice";
+import { showAlert } from "store/apiEndPoints/alertSlice";
 import ImageUploaderAndCropper from "components/imageUploader/ImageUploaderAndCropper";
 
 const AddProductForm = ({ product, onClose }) => {

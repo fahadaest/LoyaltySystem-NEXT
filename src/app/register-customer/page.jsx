@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 import { MdEmail, MdPhone, MdPerson, MdPersonOutline, MdWallet, MdCheckCircle } from 'react-icons/md';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCreateCustomerMutation } from 'store/customerApi';
-import { useDownloadAppleWalletPassMutationMutation } from 'store/appleWalletApi';
+import { useCreateCustomerMutation } from 'store/apiEndPoints/customerApi';
+import { useDownloadAppleWalletPassMutationMutation } from 'store/apiEndPoints/appleWalletApi';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { CircularProgress } from '@mui/material';
 
 const AnimatedContactForm = () => {

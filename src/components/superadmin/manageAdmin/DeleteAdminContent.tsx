@@ -1,4 +1,4 @@
-import { Admin, useDeleteAdminMutation } from 'store/adminApi';
+import { Admin, useDeleteAdminMutation } from 'store/apiEndPoints/adminApi';
 import { Spinner, Text } from '@chakra-ui/react';
 import Button from 'components/button/Button';
 

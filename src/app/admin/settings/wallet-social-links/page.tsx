@@ -3,9 +3,9 @@ import React, { useState, useRef } from 'react';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdEdit } from 'react-icons/md';
-import { useGetAllSocialLinksQuery, useUpdateSocialLinksMutation } from 'store/settingsApi';
+import { useGetAllSocialLinksQuery, useUpdateSocialLinksMutation } from 'store/apiEndPoints/settingsApi';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import SocialLinks from 'components/settings/walletSocialLinks/SocialLinks';
 import { FaShareAlt } from "react-icons/fa";
 

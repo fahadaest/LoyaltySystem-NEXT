@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, Save, Eye } from 'lucide-react';
 import WalletForm from './WalletForm';
 import PhonePreview from './PhonePreview';
-import { useCreateWalletCardMutation, useUpdateWalletCardMutation } from 'store/customWalletCard';
+import { useCreateWalletCardMutation, useUpdateWalletCardMutation } from 'store/apiEndPoints/customWalletCard';
 
 const EditorView = ({
     isModal,

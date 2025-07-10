@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useGetAllAddressesQuery } from "store/settingsApi";
+import { useGetAllAddressesQuery } from "store/apiEndPoints/settingsApi";
 import InputField from "components/fields/InputField";
 import Button from "components/button/Button";
 import InputDropdown from "components/fields/InputDropDown";

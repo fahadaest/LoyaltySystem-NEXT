@@ -7,13 +7,13 @@ import { useDisclosure } from '@chakra-ui/react';
 import ProductLoyaltyCard from 'components/card/ProductLoyaltyCard';
 import AddLoyalty from 'components/form/AddLoyalty';
 import { MdAdd, MdPrint } from "react-icons/md";
-import { useCreateProductLoyaltyCampaignMutation, useGetAllProductLoyaltyCampaignsQuery, useUpdateProductLoyaltyCampaignMutation, useDeleteProductLoyaltyCampaignMutation } from 'store/productLoyalty';
-import { useGetAllProductsQuery } from 'store/productsApi';
+import { useCreateProductLoyaltyCampaignMutation, useGetAllProductLoyaltyCampaignsQuery, useUpdateProductLoyaltyCampaignMutation, useDeleteProductLoyaltyCampaignMutation } from 'store/apiEndPoints/productLoyalty';
+import { useGetAllProductsQuery } from 'store/apiEndPoints/productsApi';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { FaGift } from "react-icons/fa";
 import LoyaltyBannerPreview from 'components/banner/LoyaltyBannerPreview';
 

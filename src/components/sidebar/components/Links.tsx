@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import NavLink from 'components/link/NavLink';
-import DashIcon from 'components/icons/DashIcon';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export const SidebarLinks = ({
@@ -167,7 +166,7 @@ export const SidebarLinks = ({
                       : 'text-white hover:bg-white/10'
                     }`}
                 >
-                  {route.icon || <DashIcon />}
+                  {/* {route.icon || <DashIcon />} */}
                   <p className="ml-4">{route.name}</p>
                 </li>
               </div>

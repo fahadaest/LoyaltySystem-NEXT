@@ -3,9 +3,9 @@ import Card from "components/card";
 import InputField from "components/fields/InputField";
 import Button from "components/button/Button";
 import { MdAdd, MdEdit } from "react-icons/md";
-import { useCreateProductSizeMutation, useUpdateProductSizeMutation } from "store/productSizesApi";
+import { useCreateProductSizeMutation, useUpdateProductSizeMutation } from "store/apiEndPoints/productSizesApi";
 import { useDispatch } from "react-redux";
-import { showAlert } from "store/alertSlice";
+import { showAlert } from "store/apiEndPoints/alertSlice";
 
 const AddProductSizeComponent = ({ productSize, onClose }) => {
   const [size, setSize] = useState("");

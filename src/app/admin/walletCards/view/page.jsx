@@ -8,7 +8,7 @@ import { MdAdd } from "react-icons/md";
 import { FaWallet } from "react-icons/fa";
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import CircularProgress from '@mui/material/CircularProgress';
 import AppleWalletEditor from 'components/wallet-cards/AppleWalletEditor';
 import WalletCardDisplay from 'components/wallet-cards/WalletCardDisplay';
@@ -18,7 +18,7 @@ import {
   useDuplicateWalletCardMutation,
   useToggleWalletCardStatusMutation,
   useGenerateWalletPassMutation
-} from 'store/customWalletCard';
+} from 'store/apiEndPoints/customWalletCard';
 
 const Dashboard = () => {
   const { data: cardsResponse, error: cardsError, isLoading: cardsLoading, refetch: cardsRefetch } = useGetWalletCardsQuery();

@@ -14,7 +14,8 @@ import Image from 'next/image';
 import { Typewriter } from 'react-simple-typewriter';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { useGetMyProfileQuery } from 'store/userApi';
+import { useGetMyProfileQuery } from 'store/apiEndPoints/userApi';
+import { useAuth } from 'hooks/useAuth';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const Navbar = (props: {
@@ -36,6 +37,9 @@ const Navbar = (props: {
     router.push('/auth/sign-in');
   };
   const avatar = baseUrl + data?.profileImage;
+  const {
+    logoutUser
+  } = useAuth();
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -234,7 +238,7 @@ const Navbar = (props: {
                 Profile Settings
               </a>
               <button
-                onClick={handleLogout}
+                onClick={logoutUser}
                 className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
               >
                 Log Out

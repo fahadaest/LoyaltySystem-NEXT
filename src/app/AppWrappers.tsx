@@ -7,6 +7,7 @@ import 'styles/index.css';
 import { Provider } from 'react-redux';
 import { store } from 'store/store';
 import CustomAlert from 'components/customAlert/CustomAlert';
+import { AuthWrapper } from './permissions/AuthWrapper';
 
 import dynamic from 'next/dynamic';
 
@@ -17,11 +18,14 @@ const NoSSR = dynamic(() => Promise.resolve(_NoSSR), {
 });
 
 export default function AppWrappers({ children }: { children: ReactNode }) {
+
   return (
     <NoSSR>
       <Provider store={store}>
-        <CustomAlert />
-        {children}
+        <AuthWrapper>
+          <CustomAlert />
+          {children}
+        </AuthWrapper>
       </Provider>
     </NoSSR>
   );

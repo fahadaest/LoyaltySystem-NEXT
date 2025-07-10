@@ -6,12 +6,12 @@ import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { IoPeopleOutline } from 'react-icons/io5';
 import AdminListTable from 'components/tables/AdminListTable';
-import { useListAdminsQuery, useDeleteAdminMutation } from 'store/adminApi';
+import { useListAdminsQuery, useDeleteAdminMutation } from 'store/apiEndPoints/adminApi';
 import AdminForm from 'components/form/AdminForm';
 import { MdAdd } from 'react-icons/md';
 import { useDisclosure } from '@chakra-ui/react';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { useDispatch } from 'react-redux';
 import AdminDetail from 'components/superadmin/AdminDetail';
 

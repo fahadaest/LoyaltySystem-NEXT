@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { Subscription } from 'utils/types';
 import Button from 'components/button/Button';
 import { MdSave, MdCancel, MdAdd } from 'react-icons/md';
-import { useCreateSubscriptionMutation, useUpdateSubscriptionMutation } from 'store/subscriptionApi';
+import { useCreateSubscriptionMutation, useUpdateSubscriptionMutation } from 'store/apiEndPoints/subscriptionApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store/store';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 
 type SubscriptionFormProps = {
   mode: 'create' | 'edit' | 'view';

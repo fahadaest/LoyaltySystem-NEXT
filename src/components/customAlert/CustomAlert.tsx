@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from 'store/store';
-import { closeAlert } from 'store/alertSlice';
+import { closeAlert } from 'store/apiEndPoints/alertSlice';
 import { Alert, Snackbar, LinearProgress } from '@mui/material';
 import { styled } from '@mui/system';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Success icon

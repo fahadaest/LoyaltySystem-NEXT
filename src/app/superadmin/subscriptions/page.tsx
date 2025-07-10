@@ -14,11 +14,11 @@ import SubscriptionForm from 'components/superadmin/SubscriptionForm';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
-import { useListSubscriptionsQuery, useDeleteSubscriptionMutation } from 'store/subscriptionApi';
+import { useListSubscriptionsQuery, useDeleteSubscriptionMutation } from 'store/apiEndPoints/subscriptionApi';
 import { useState } from 'react';
 import SubscriptionDetails from 'components/superadmin/SubscriptionDetails';
 import { useDispatch, useSelector } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 
 export default function SubscriptionsPage() {
   const router = useRouter();

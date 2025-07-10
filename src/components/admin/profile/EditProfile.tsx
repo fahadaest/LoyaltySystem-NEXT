@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { MdAdd, MdClose } from 'react-icons/md';
 import InputField from 'components/fields/InputField';
 import Button from 'components/button/Button';
-import { useUpdateMyProfileMutation } from 'store/userApi';
+import { useUpdateMyProfileMutation } from 'store/apiEndPoints/userApi';
 import Card from 'components/card';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { useDispatch } from 'react-redux';
 import ImageUploaderAndCropper from 'components/imageUploader/ImageUploaderAndCropper';
 

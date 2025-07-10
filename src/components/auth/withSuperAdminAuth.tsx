@@ -10,14 +10,14 @@ const withSuperAdminAuth = <P extends object>(
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-      const session = localStorage.getItem('superadmin_session');
-      if (!session) {
-        router.replace('/auth/sign-in');
-      } else {
-        setIsLoading(false);
-      }
-    }, [router]);
+    // useEffect(() => {
+    //   const session = localStorage.getItem('superadmin_session');
+    //   if (!session) {
+    //     router.replace('/auth/sign-in');
+    //   } else {
+    //     setIsLoading(false);
+    //   }
+    // }, [router]);
 
     if (isLoading) {
       return (

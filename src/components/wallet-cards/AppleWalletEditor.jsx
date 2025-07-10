@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useGetWalletCardByIdQuery } from 'store/customWalletCard';
+import { useGetWalletCardByIdQuery } from 'store/apiEndPoints/customWalletCard';
 import SelectionView from './SelectionView';
 import EditorView from './EditorView';
 

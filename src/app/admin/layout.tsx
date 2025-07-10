@@ -21,26 +21,26 @@ export default function Admin({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
-  useEffect(() => {
-    const session = localStorage.getItem('admin_session');
-    const superAdminSession = localStorage.getItem('superadmin_session');
+  // useEffect(() => {
+  //   const session = localStorage.getItem('admin_session');
+  //   const superAdminSession = localStorage.getItem('superadmin_session');
 
-    if (superAdminSession) {
-      router.replace('/superadmin/manage-admin/list');
-    } else if (!session) {
-      router.replace('/auth/sign-in/');
-    } else {
-      setIsAuthorized(true);
-    }
-  }, [router]);
+  //   if (superAdminSession) {
+  //     router.replace('/superadmin/manage-admin/list');
+  //   } else if (!session) {
+  //     router.replace('/auth/sign-in/');
+  //   } else {
+  //     setIsAuthorized(true);
+  //   }
+  // }, [router]);
 
-  if (!isAuthorized) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background-100 dark:bg-background-900">
-        <p className="text-lg font-medium">Loading & Verifying Session...</p>
-      </div>
-    );
-  }
+  // if (!isAuthorized) {
+  //   return (
+  //     <div className="flex min-h-screen items-center justify-center bg-background-100 dark:bg-background-900">
+  //       <p className="text-lg font-medium">Loading & Verifying Session...</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
@@ -64,9 +64,6 @@ export default function Admin({ children }: { children: React.ReactNode }) {
             <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">
               {children}
             </div>
-            {/* <div className="p-3">
-              <Footer />
-            </div> */}
           </div>
         </main>
       </div>

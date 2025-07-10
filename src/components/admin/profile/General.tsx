@@ -1,6 +1,6 @@
 import Card from "components/card";
 import { MdCheckCircle, MdCancel } from 'react-icons/md';
-import { useGetSubscriptionByIdQuery } from "store/subscriptionApi";
+import { useGetSubscriptionByIdQuery } from "store/apiEndPoints/subscriptionApi";
 
 const General = ({ data }) => {
   console.log("data", data);

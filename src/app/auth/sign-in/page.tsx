@@ -6,31 +6,48 @@ import Default from 'components/auth/variants/DefaultAuthLayout';
 import Checkbox from 'components/checkbox';
 import Button from 'components/button/Button';
 import { Eye, EyeOff } from 'lucide-react';
-import { useLoginMutation } from 'store/authApi';
+import { useLoginMutation } from 'store/apiEndPoints/authApi';
 import Cookies from 'js-cookie';
+import { useAuth } from 'hooks/useAuth';
 
 function SignInDefault() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [localError, setLocalError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [login, { isLoading: loginLoading, error: loginError, data: loginData }] = useLoginMutation();
+  // const [login, { isLoading: loginLoading, error: loginError, data: loginData }] = useLoginMutation();
+
+  const {
+    login,
+    isAuthenticated,
+    isLoginLoading,
+    loginError,
+    user,
+    isSuperAdmin,
+    isAdmin
+  } = useAuth();
 
   const handleSignIn = async () => {
-    const response = await login({ email, password });
-    Cookies.set('token', response?.data?.token, { expires: 7 });
-    console.log('Login response:', response);
-    if (response?.data?.role === 'superadmin' && response?.data?.token) {
-      setError('');
-      localStorage.setItem('superadmin_session', 'true');
-      router.push('/superadmin/manage-admin');
-    } else if (response?.data.role === 'admin' && response?.data?.token) {
-      setError('');
-      localStorage.setItem('admin_session', 'true');
-      router.push('/admin/default');
-    } else {
-      setError('Invalid email or password. Please try again.');
+    setLocalError(''); // Clear any previous errors
+
+    try {
+      const result = await login(email, password);
+
+      if (result.success) {
+        // The useAuth hook automatically handles:
+        // - Setting cookies
+        // - Updating Redux state
+        // - Token management
+
+        // Navigation will be handled by useEffect below
+        // based on the user role from Redux state
+      } else {
+        setLocalError(result.error || 'Invalid email or password. Please try again.');
+      }
+    } catch (error) {
+      setLocalError('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -38,18 +55,51 @@ function SignInDefault() {
     setShowPassword(!showPassword);
   };
 
+  // Handle navigation based on authentication state and user role
   useEffect(() => {
-    const adminSession = localStorage.getItem('admin_session');
-    const superAdminSession = localStorage.getItem('superadmin_session');
-
-    if (adminSession) {
-      router.replace('/admin/default');
+    if (isAuthenticated && user) {
+      if (user.role === 'superadmin') {
+        router.replace('/superadmin/manage-admin');
+      } else if (user.role === 'admin') {
+        router.replace('/admin/default');
+      }
     }
+  }, [isAuthenticated, user, router]);
 
-    if (superAdminSession) {
-      router.replace('/superadmin/manage-admin/list');
-    }
-  }, [router]);
+
+  // const handleSignIn = async () => {
+  //   const response = await login({ email, password });
+  //   // Cookies.set('token', response?.data?.token, { expires: 7 });
+  //   console.log('Login response:', response);
+  //   if (response?.data?.role === 'superadmin' && response?.data?.token) {
+  //     setError('');
+  //     localStorage.setItem('superadmin_session', 'true');
+  //     router.push('/superadmin/manage-admin');
+  //   } else if (response?.data.role === 'admin' && response?.data?.token) {
+  //     setError('');
+  //     localStorage.setItem('admin_session', 'true');
+  //     router.push('/admin/default');
+  //   } else {
+  //     setError('Invalid email or password. Please try again.');
+  //   }
+  // };
+
+  // const togglePasswordVisibility = () => {
+  //   setShowPassword(!showPassword);
+  // };
+
+  // useEffect(() => {
+  //   const adminSession = localStorage.getItem('admin_session');
+  //   const superAdminSession = localStorage.getItem('superadmin_session');
+
+  //   if (adminSession) {
+  //     router.replace('/admin/default');
+  //   }
+
+  //   if (superAdminSession) {
+  //     router.replace('/superadmin/manage-admin/list');
+  //   }
+  // }, [router]);
 
   return (
     <Default

@@ -8,10 +8,10 @@ import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd } from "react-icons/md";
 import { FaBox } from "react-icons/fa";
-import { useGetAllProductsQuery, useDeleteProductMutation } from 'store/productsApi';
+import { useGetAllProductsQuery, useDeleteProductMutation } from 'store/apiEndPoints/productsApi';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const Dashboard = () => {

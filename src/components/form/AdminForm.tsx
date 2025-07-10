@@ -3,10 +3,10 @@ import Button from 'components/button/Button';
 import { MdOutlineArrowBack, MdSave, MdAdd, MdCheckCircle, MdAutorenew, MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import CircularProgress from '@mui/material/CircularProgress';
 import { CheckCircle } from '@mui/icons-material';
-import { useCreateAdminMutation, useUpdateAdminMutation } from 'store/adminApi';
-import { useListSubscriptionsQuery } from 'store/subscriptionApi';
+import { useCreateAdminMutation, useUpdateAdminMutation } from 'store/apiEndPoints/adminApi';
+import { useListSubscriptionsQuery } from 'store/apiEndPoints/subscriptionApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { showAlert } from 'store/alertSlice';
+import { showAlert } from 'store/apiEndPoints/alertSlice';
 
 const countryCodes = [
   { code: '+971', country: 'UAE', flag: '🇦🇪' },

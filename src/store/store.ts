@@ -1,20 +1,22 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { authApi } from './authApi';
-import { adminApi } from './adminApi';
-import { subscriptionApi } from './subscriptionApi';
-import { productsApi } from './productsApi';
-import { productSizesApi } from './productSizesApi';
-import { productLoyaltyApi } from './productLoyalty';
-import { pointLoyaltyApi } from './pointLoyalty';
-import { userProfileApi } from './userApi';
-import { settingsApi } from './settingsApi';
-import { customersApi } from './customerApi';
-import { appleWalletApi } from './appleWalletApi';
-import { customWalletCardsApi } from './customWalletCard';
-import alertReducer from './alertSlice';
+import { authApi } from './apiEndPoints/authApi';
+import { adminApi } from './apiEndPoints/adminApi';
+import { subscriptionApi } from './apiEndPoints/subscriptionApi';
+import { productsApi } from './apiEndPoints/productsApi';
+import { productSizesApi } from './apiEndPoints/productSizesApi';
+import { productLoyaltyApi } from './apiEndPoints/productLoyalty';
+import { pointLoyaltyApi } from './apiEndPoints/pointLoyalty';
+import { userProfileApi } from './apiEndPoints/userApi';
+import { settingsApi } from './apiEndPoints/settingsApi';
+import { customersApi } from './apiEndPoints/customerApi';
+import { appleWalletApi } from './apiEndPoints/appleWalletApi';
+import { customWalletCardsApi } from './apiEndPoints/customWalletCard';
+import alertReducer from './apiEndPoints/alertSlice';
+import authReducer from './slices/authSlice'
 
 export const store = configureStore({
     reducer: {
+        auth: authReducer,
         [authApi.reducerPath]: authApi.reducer,
         [adminApi.reducerPath]: adminApi.reducer,
         [subscriptionApi.reducerPath]: subscriptionApi.reducer,
@@ -30,7 +32,11 @@ export const store = configureStore({
         alert: alertReducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware()
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+            },
+        })
             .concat(authApi.middleware)
             .concat(adminApi.middleware)
             .concat(subscriptionApi.middleware)
