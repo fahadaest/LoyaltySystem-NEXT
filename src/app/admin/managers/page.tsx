@@ -4,7 +4,8 @@ import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDisclosure } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
-import { useCreateManagerMutation, useGetAllManagersQuery, useGetManagerByIdQuery, useUpdateManagerMutation, useDeleteManagerMutation } from 'store/apiEndPoints/managersApi';
+import { useCreateManagerMutation, useGetAllManagersQuery, useUpdateManagerMutation, useDeleteManagerMutation } from 'store/apiEndPoints/managersApi';
+import { useGetAllPermissionsQuery } from 'store/apiEndPoints/permissionsApi';
 import Table from 'components/settings/walletAddress/Table';
 import CustomModal from 'components/modal/CustomModal';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
@@ -15,6 +16,7 @@ import AddManagerForm from 'components/managers/AddManagerForm';
 
 const ManagersDashboard = () => {
   const { data: managers, error: managersError, isLoading: managersLoading } = useGetAllManagersQuery('');
+  const { data: permissionsData, error: permissionsError, isLoading: permissionsLoading } = useGetAllPermissionsQuery('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editRowData, setEditRowData] = useState(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -25,26 +27,8 @@ const ManagersDashboard = () => {
   const dispatch = useDispatch();
   const formRef = useRef(null);
 
-  const mockPermissions = [
-    { value: 1, label: 'View Sales Reports' },
-    { value: 2, label: 'Create Leads' },
-    { value: 3, label: 'Edit Customer Data' },
-    { value: 4, label: 'Manage Opportunities' },
-    { value: 5, label: 'Access Analytics' },
-    { value: 6, label: 'Export Data' },
-    { value: 7, label: 'Manage Team' },
-    { value: 8, label: 'Admin Access' },
-    { value: 9, label: 'Create Reports' },
-    { value: 10, label: 'Manage Salespersons' },
-    { value: 11, label: 'View Dashboard' },
-    { value: 12, label: 'Manage Territories' },
-    { value: 13, label: 'Approve Deals' },
-    { value: 14, label: 'Budget Management' },
-    { value: 15, label: 'Performance Tracking' },
-    { value: 16, label: 'Training Management' },
-    { value: 17, label: 'Commission Management' },
-    { value: 18, label: 'Goal Setting' },
-  ];
+  // Get permissions from API or use empty array while loading
+  const permissions = permissionsData?.flat || [];
 
   const columns = [
     {
@@ -72,7 +56,24 @@ const ManagersDashboard = () => {
       header: "Permissions",
       cell: (info: any) => {
         const permissionCount = info.row.original.permissionIds?.length || 0;
-        return <p className="text-sm text-gray-800 dark:text-white">{permissionCount} permissions</p>;
+        const permissionModules = info.row.original.permissionIds?.map(id => {
+          const permission = permissions.find(p => p.value === id);
+          return permission?.module || '';
+        }).filter(Boolean);
+
+        const uniqueModules = [...new Set(permissionModules)];
+        const moduleNames = uniqueModules.join(', ');
+
+        return (
+          <div className="text-sm text-gray-800 dark:text-white">
+            <p className="font-medium">{permissionCount} permissions</p>
+            {moduleNames && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]" title={moduleNames}>
+                {moduleNames}
+              </p>
+            )}
+          </div>
+        );
       },
     },
     {
@@ -149,6 +150,25 @@ const ManagersDashboard = () => {
     setDeleteModalOpen(true);
   };
 
+  // Show loading state while permissions are loading
+  if (permissionsLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brandGreen"></div>
+        <span className="ml-2 text-gray-600">Loading permissions...</span>
+      </div>
+    );
+  }
+
+  // Show error state if permissions failed to load
+  if (permissionsError) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800">Error loading permissions. Please refresh the page.</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mt-3 mb-5">
@@ -188,7 +208,8 @@ const ManagersDashboard = () => {
         <AddManagerForm
           ref={formRef}
           onSubmit={editRowData ? handleUpdateManager : handleCreateManager}
-          permissions={mockPermissions}
+          permissions={permissions}
+          permissionsGrouped={permissionsData?.grouped}
           initialData={editRowData}
           isLoading={isCreatingManager || isUpdatingManager}
         />

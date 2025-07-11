@@ -2,8 +2,8 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { MdPerson, MdEmail, MdLock, MdSupervisorAccount, MdSecurity, MdPersonAdd, MdClose } from 'react-icons/md';
 import AnimatedInput from '../ui/AnimatedInput';
-import AnimatedMultiSelect from '../ui/AnimatedMultiSelect';
 import AnimatedSelect from '../ui/AnimatedSelect';
+import AnimatedMultiSelect from 'components/ui/AnimatedMultiSelect';
 import FormSection from '../ui/FormSection';
 import { AnimatedCard, AnimatedCardHeader, AnimatedCardContent } from '../ui/AnimatedCard';
 
@@ -11,6 +11,7 @@ const AddSalesPersonForm = forwardRef(({
     onSubmit,
     managers = [],
     permissions = [],
+    permissionsGrouped = {},
     initialData = null,
     isLoading = false
 }, ref) => {
@@ -25,7 +26,6 @@ const AddSalesPersonForm = forwardRef(({
 
     const [errors, setErrors] = useState({});
     const [isVisible, setIsVisible] = useState(false);
-    const [showSuccessScreen, setShowSuccessScreen] = useState(false);
 
     const isEditMode = !!initialData;
 
@@ -128,35 +128,23 @@ const AddSalesPersonForm = forwardRef(({
                 if (onSubmit) {
                     await onSubmit(submitData);
                 }
-
-                if (!isEditMode) {
-                    setShowSuccessScreen(true);
-                }
             } catch (error) {
                 console.error('Error:', error);
             }
         }
     };
 
-    const resetForm = () => {
-        setFormData({
-            firstName: '', lastName: '', email: '', password: '', managerId: '', permissionIds: []
-        });
-        setShowSuccessScreen(false);
-        setErrors({});
+    // Get selected permission details for display
+    const getSelectedPermissions = () => {
+        return permissions.filter(permission =>
+            formData.permissionIds.includes(permission.value)
+        );
     };
 
     // Remove individual permission
     const removePermission = (permissionId) => {
         const newPermissions = formData.permissionIds.filter(id => id !== permissionId);
         handleInputChange('permissionIds', newPermissions);
-    };
-
-    // Get selected permission labels
-    const getSelectedPermissions = () => {
-        return permissions.filter(permission =>
-            formData.permissionIds.includes(permission.value)
-        );
     };
 
     return (
@@ -224,83 +212,91 @@ const AddSalesPersonForm = forwardRef(({
                             </div>
                         </FormSection>
 
-                        {/* Role & Permissions */}
+                        {/* Manager Assignment */}
                         <FormSection
-                            title="Role & Permissions"
+                            title="Manager Assignment"
                             icon={MdSupervisorAccount}
+                            delay={550}
+                            isVisible={isVisible}
+                        >
+                            <AnimatedSelect
+                                label="Assigned Manager"
+                                icon={MdSupervisorAccount}
+                                value={formData.managerId}
+                                onChange={(value) => handleInputChange('managerId', value)}
+                                options={managers}
+                                error={errors.managerId}
+                                placeholder="Select a manager"
+                                required
+                            />
+                        </FormSection>
+
+                        {/* Permissions */}
+                        <FormSection
+                            title="Permissions & Access"
+                            icon={MdSecurity}
                             delay={600}
                             isVisible={isVisible}
                         >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Manager Selection */}
-                                <div className="grid grid-cols-1 gap-4">
-                                    <AnimatedSelect
-                                        label="Assigned Manager"
-                                        icon={MdSupervisorAccount}
-                                        value={formData.managerId}
-                                        onChange={(value) => handleInputChange('managerId', value)}
-                                        options={managers}
-                                        error={errors.managerId}
-                                        placeholder="Select a manager"
-                                        required
-                                    />
+                            <div className="space-y-4">
+                                {/* Grouped Permission Selector */}
+                                <AnimatedMultiSelect
+                                    label="Salesperson Permissions"
+                                    icon={MdSecurity}
+                                    value={formData.permissionIds}
+                                    onChange={(value) => handleInputChange('permissionIds', value)}
+                                    permissionsGrouped={permissionsGrouped}
+                                    error={errors.permissionIds}
+                                    required
+                                />
 
-                                    <AnimatedMultiSelect
-                                        label="Permissions"
-                                        icon={MdSecurity}
-                                        value={formData.permissionIds}
-                                        onChange={(value) => handleInputChange('permissionIds', value)}
-                                        options={permissions}
-                                        error={errors.permissionIds}
-                                        placeholder="Select permissions"
-                                        required
-                                    />
-                                </div>
-
-                                {/* Selected Permissions Display */}
+                                {/* Selected Permissions Summary */}
                                 {formData.permissionIds.length > 0 && (
-                                    <div className="animate-fadeIn">
+                                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
                                         <div className="flex items-center gap-2 mb-3">
-                                            <MdSecurity size={16} className="text-brandGreen" />
-                                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                Selected Permissions ({formData.permissionIds.length})
-                                            </label>
+                                            <MdSecurity size={16} className="text-green-600 dark:text-green-400" />
+                                            <h4 className="text-sm font-semibold text-green-900 dark:text-green-100">
+                                                Permission Summary ({formData.permissionIds.length} selected)
+                                            </h4>
                                         </div>
 
-                                        <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-gray-200 dark:border-gray-600">
-                                            <div className="flex flex-wrap gap-2">
-                                                {getSelectedPermissions().map((permission) => (
-                                                    <div
-                                                        key={permission.value}
-                                                        className="inline-flex items-center gap-2 bg-brandGreen text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-brandGreen-600 animate-slideIn"
-                                                    >
-                                                        <span>{permission.label}</span>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removePermission(permission.value)}
-                                                            className="hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-colors duration-150"
-                                                            title="Remove permission"
-                                                        >
-                                                            <MdClose size={14} />
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                        <div className="space-y-2">
+                                            {Object.keys(permissionsGrouped).map(module => {
+                                                const modulePermissions = permissionsGrouped[module].filter(p =>
+                                                    formData.permissionIds.includes(p.id)
+                                                );
 
-                                            {formData.permissionIds.length > 0 && (
-                                                <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleInputChange('permissionIds', [])}
-                                                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-150"
-                                                    >
-                                                        Clear all permissions
-                                                    </button>
-                                                </div>
-                                            )}
+                                                if (modulePermissions.length === 0) return null;
+
+                                                return (
+                                                    <div key={module} className="text-sm">
+                                                        <span className="font-medium text-green-800 dark:text-green-200">
+                                                            {module}:
+                                                        </span>
+                                                        <span className="text-green-700 dark:text-green-300 ml-2">
+                                                            {modulePermissions.length} permission{modulePermissions.length !== 1 ? 's' : ''}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
+
+                                {/* Salesperson Role Info */}
+                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                                    <div className="flex items-start gap-3">
+                                        <MdPerson className="text-blue-600 dark:text-blue-400 text-xl mt-0.5" />
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                                                Salesperson Role
+                                            </h4>
+                                            <p className="text-sm text-blue-700 dark:text-blue-300">
+                                                Salespersons can manage customer relationships, track sales opportunities, and generate reports based on their assigned permissions.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </FormSection>
                     </div>

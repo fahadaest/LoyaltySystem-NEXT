@@ -1,143 +1,212 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
+import { MdExpandMore, MdExpandLess, MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md';
 
-const AnimatedMultiSelect = ({
+const AnimatedMultiSelect = forwardRef(({
     label,
     icon: Icon,
-    error,
     value = [],
     onChange,
-    options = [],
-    placeholder = 'Select options',
-    required = false,
-    className = ''
-}) => {
+    permissionsGrouped = {},
+    error,
+    required = false
+}, ref) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [dropdownPosition, setDropdownPosition] = useState('bottom');
-    const containerRef = useRef(null);
-    const dropdownRef = useRef(null);
+    const [expandedModules, setExpandedModules] = useState({});
+    const [isVisible, setIsVisible] = useState(false);
 
-    const hasError = !!error;
-    const hasValue = value.length > 0;
-
-    // Calculate dropdown position when opening
     useEffect(() => {
-        if (isOpen && containerRef.current) {
-            const rect = containerRef.current.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const dropdownHeight = 240; // max-h-60 = 240px
-            const spaceBelow = viewportHeight - rect.bottom;
-            const spaceAbove = rect.top;
+        const timer = setTimeout(() => setIsVisible(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
-            // If there's not enough space below but enough space above, flip it
-            if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
-                setDropdownPosition('top');
-            } else {
-                setDropdownPosition('bottom');
-            }
-        }
-    }, [isOpen]);
+    const toggleModule = (module) => {
+        setExpandedModules(prev => ({
+            ...prev,
+            [module]: !prev[module]
+        }));
+    };
 
-    const handleToggle = (optionValue) => {
-        const newValue = value.includes(optionValue)
-            ? value.filter(v => v !== optionValue)
-            : [...value, optionValue];
+    const handlePermissionToggle = (permissionId) => {
+        const newValue = value.includes(permissionId)
+            ? value.filter(id => id !== permissionId)
+            : [...value, permissionId];
         onChange(newValue);
     };
 
-    const selectedLabels = options
-        .filter(option => value.includes(option.value))
-        .map(option => option.label);
+    const handleModuleToggle = (module) => {
+        const modulePermissions = permissionsGrouped[module]?.map(p => p.id) || [];
+        const allSelected = modulePermissions.every(id => value.includes(id));
+
+        if (allSelected) {
+            // Remove all module permissions
+            const newValue = value.filter(id => !modulePermissions.includes(id));
+            onChange(newValue);
+        } else {
+            // Add all module permissions
+            const newValue = [...new Set([...value, ...modulePermissions])];
+            onChange(newValue);
+        }
+    };
+
+    const getSelectedCount = () => value.length;
+
+    const getModuleSelectionState = (module) => {
+        const modulePermissions = permissionsGrouped[module]?.map(p => p.id) || [];
+        const selectedCount = modulePermissions.filter(id => value.includes(id)).length;
+
+        if (selectedCount === 0) return 'none';
+        if (selectedCount === modulePermissions.length) return 'all';
+        return 'partial';
+    };
 
     return (
-        <div className={`space-y-2 ${className}`} ref={containerRef}>
-            {/* Label with Icon */}
-            <div className="flex items-center gap-2">
-                {Icon && <Icon size={16} className="text-brandGreen" />}
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    {label}
-                    {required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-                {hasValue && (
-                    <div className="flex items-center animate-fadeIn">
-                        <div className="w-2 h-2 bg-brandGreen rounded-full mr-1 animate-pulse"></div>
-                        <span className="text-xs text-brandGreen font-medium">
-                            {value.length} selected
-                        </span>
-                    </div>
-                )}
-            </div>
-
-            {/* MultiSelect Field */}
+        <div className={`w-full transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
             <div className="relative">
+                {/* Label */}
+                <div className="flex items-center gap-2 mb-2">
+                    {Icon && <Icon size={16} className="text-brandGreen" />}
+                    <label className={`text-sm font-semibold ${error ? 'text-red-600' : 'text-gray-700 dark:text-gray-300'}`}>
+                        {label}
+                        {required && <span className="text-red-500 ml-1">*</span>}
+                    </label>
+                </div>
+
+                {/* Dropdown Toggle */}
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 text-left bg-white dark:bg-gray-700
-                        ${hasError
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                            : 'border-gray-200 focus:border-brandGreen focus:ring-brandGreen dark:border-gray-600 hover:border-gray-300'
-                        }  
-                        focus:outline-none focus:ring-2 focus:ring-opacity-50 dark:text-white`}
+                    className={`
+                        w-full flex items-center justify-between p-3 rounded-xl border-2 
+                        transition-all duration-200 bg-white dark:bg-gray-800
+                        ${error
+                            ? 'border-red-300 focus:border-red-500'
+                            : 'border-gray-200 dark:border-gray-600 focus:border-brandGreen hover:border-gray-300'
+                        }
+                        ${isOpen ? 'border-brandGreen shadow-md' : ''}
+                    `}
                 >
-                    <span className="block truncate">
-                        {selectedLabels.length > 0
-                            ? selectedLabels.join(', ')
-                            : placeholder}
+                    <span className={`text-sm ${getSelectedCount() === 0 ? 'text-gray-400' : 'text-gray-900 dark:text-white'}`}>
+                        {getSelectedCount() === 0
+                            ? 'Select permissions'
+                            : `${getSelectedCount()} permission${getSelectedCount() !== 1 ? 's' : ''} selected`
+                        }
                     </span>
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <svg className={`h-5 w-5 text-gray-400 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                    </span>
+                    {isOpen ? <MdExpandLess size={20} /> : <MdExpandMore size={20} />}
                 </button>
 
-                {/* Dropdown Options */}
+                {/* Dropdown Content */}
                 {isOpen && (
-                    <div
-                        ref={dropdownRef}
-                        className={`absolute z-20 w-full bg-white dark:bg-gray-700 shadow-lg max-h-60 rounded-xl py-2 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none animate-slideDown
-                            ${dropdownPosition === 'top'
-                                ? 'bottom-full mb-1'
-                                : 'top-full mt-1'
-                            }`}
-                    >
-                        {options.map((option) => (
-                            <div
-                                key={option.value}
-                                className="cursor-pointer select-none relative py-3 pl-4 pr-4 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150"
-                                onClick={() => handleToggle(option.value)}
-                            >
-                                <div className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        className="h-4 w-4 text-brandGreen focus:ring-brandGreen border-gray-300 rounded transition-colors duration-150 checked:bg-brandGreen checked:border-brandGreen"
-                                        checked={value.includes(option.value)}
-                                        onChange={() => { }}
-                                    />
-                                    <span className="ml-3 block font-normal truncate text-gray-900 dark:text-gray-100">
-                                        {option.label}
-                                    </span>
+                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl shadow-lg max-h-80 overflow-y-auto">
+                        {Object.keys(permissionsGrouped).map((module) => {
+                            const moduleState = getModuleSelectionState(module);
+                            const isExpanded = expandedModules[module];
+
+                            return (
+                                <div key={module} className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                    {/* Module Header */}
+                                    <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleModuleToggle(module)}
+                                            className="flex items-center gap-2 flex-1"
+                                        >
+                                            {moduleState === 'all' ? (
+                                                <MdCheckBox className="text-brandGreen" size={20} />
+                                            ) : moduleState === 'partial' ? (
+                                                <div className="w-5 h-5 border-2 border-brandGreen rounded bg-brandGreen/20 flex items-center justify-center">
+                                                    <div className="w-2 h-2 bg-brandGreen rounded"></div>
+                                                </div>
+                                            ) : (
+                                                <MdCheckBoxOutlineBlank className="text-gray-400" size={20} />
+                                            )}
+                                            <span className="font-medium text-gray-900 dark:text-white">{module}</span>
+                                            <span className="text-xs text-gray-500 ml-1">
+                                                ({permissionsGrouped[module]?.length || 0})
+                                            </span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleModule(module)}
+                                            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                                        >
+                                            {isExpanded ? <MdExpandLess size={16} /> : <MdExpandMore size={16} />}
+                                        </button>
+                                    </div>
+
+                                    {/* Module Permissions */}
+                                    {isExpanded && (
+                                        <div className="bg-gray-50 dark:bg-gray-750">
+                                            {permissionsGrouped[module]?.map((permission) => (
+                                                <button
+                                                    key={permission.id}
+                                                    type="button"
+                                                    onClick={() => handlePermissionToggle(permission.id)}
+                                                    className="w-full flex items-center gap-3 p-3 pl-12 hover:bg-gray-100 dark:hover:bg-gray-700 text-left"
+                                                >
+                                                    {value.includes(permission.id) ? (
+                                                        <MdCheckBox className="text-brandGreen" size={18} />
+                                                    ) : (
+                                                        <MdCheckBoxOutlineBlank className="text-gray-400" size={18} />
+                                                    )}
+                                                    <div className="flex-1">
+                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                                            {permission.name}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                            {permission.description}
+                                                        </p>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                        {/* Clear All / Select All Actions */}
+                        {Object.keys(permissionsGrouped).length > 0 && (
+                            <div className="p-3 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-750">
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => onChange([])}
+                                        className="text-xs text-gray-600 dark:text-gray-400 hover:text-red-500 px-2 py-1 rounded"
+                                        disabled={getSelectedCount() === 0}
+                                    >
+                                        Clear All
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const allPermissions = Object.values(permissionsGrouped)
+                                                .flat()
+                                                .map(p => p.id);
+                                            onChange(allPermissions);
+                                        }}
+                                        className="text-xs text-gray-600 dark:text-gray-400 hover:text-brandGreen px-2 py-1 rounded"
+                                    >
+                                        Select All
+                                    </button>
                                 </div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
-            </div>
 
-            {/* Error Message */}
-            {hasError && (
-                <div className="animate-slideDown">
-                    <p className="text-sm text-red-500 flex items-center gap-2">
-                        <svg className="w-4 h-4 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
+                {/* Error Message */}
+                {error && (
+                    <p className="mt-1 text-xs text-red-600 animate-slideDown">
                         {error}
                     </p>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
-};
+});
+
+AnimatedMultiSelect.displayName = 'AnimatedMultiSelect';
 
 export default AnimatedMultiSelect;
