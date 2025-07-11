@@ -7,6 +7,7 @@ import { IoArrowDown, IoArrowUp, IoSwapVertical } from "react-icons/io5";
 
 interface TableProps {
   data: any[];
+  isLoading: boolean;
   columns: ColumnDef<any>[];
   onEdit?: (admin: any) => void;
   onDelete?: (admin: any) => void;
@@ -14,7 +15,7 @@ interface TableProps {
   onDetail?: (admin: any) => void;
 }
 
-export default function Table({ data, columns, onEdit, onDelete, onView, onDetail }: TableProps) {
+export default function Table({ data, columns, isLoading, onEdit, onDelete, onView, onDetail }: TableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const actionColumn: ColumnDef<any> = {

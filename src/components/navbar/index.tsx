@@ -38,7 +38,7 @@ const Navbar = (props: {
   };
   const avatar = baseUrl + data?.profileImage;
   const {
-    logoutUser
+    logout
   } = useAuth();
 
   return (
@@ -238,7 +238,7 @@ const Navbar = (props: {
                 Profile Settings
               </a>
               <button
-                onClick={logoutUser}
+                onClick={logout}
                 className="mt-3 text-sm font-medium text-red-500 hover:text-red-500"
               >
                 Log Out

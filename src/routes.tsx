@@ -80,6 +80,13 @@ const routes = [
     icon: <MdPeopleAlt className="h-6 w-6" />,
   },
   {
+    heading: 'Sales Person',
+    name: 'Sales Person',
+    layout: '/admin',
+    path: 'sales-person',
+    icon: <MdSupervisorAccount className="h-6 w-6" />,
+  },
+  {
     heading: 'Settings',
     name: 'Settings',
     icon: <MdLoyalty className="h-6 w-6" />,
@@ -118,12 +125,7 @@ const routes = [
       },
     ],
   },
-  // {
-  //   name: 'Sales Person',
-  //   layout: '/customer',
-  //   path: 'default',
-  //   icon: <MdSupervisorAccount className="h-6 w-6" />,
-  // },
+
   // {
   //   name: 'Managers',
   //   layout: '/customer',

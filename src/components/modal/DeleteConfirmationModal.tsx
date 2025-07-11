@@ -9,6 +9,7 @@ type DeleteConfirmationModalProps = {
     onConfirm: () => void;
     itemName: string;
     title?: string;
+    isLoading?: boolean;
 };
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
@@ -16,6 +17,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     onClose,
     onConfirm,
     itemName,
+    isLoading,
     title = "Delete Item",
 }) => {
     return (
