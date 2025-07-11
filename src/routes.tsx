@@ -87,6 +87,13 @@ const routes = [
     icon: <MdSupervisorAccount className="h-6 w-6" />,
   },
   {
+    heading: 'Managers',
+    name: 'Managers',
+    layout: '/admin',
+    path: 'managers',
+    icon: <MdSupervisorAccount className="h-6 w-6" />,
+  },
+  {
     heading: 'Settings',
     name: 'Settings',
     icon: <MdLoyalty className="h-6 w-6" />,

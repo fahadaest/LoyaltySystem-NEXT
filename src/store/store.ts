@@ -12,6 +12,7 @@ import { customersApi } from './apiEndPoints/customerApi';
 import { appleWalletApi } from './apiEndPoints/appleWalletApi';
 import { customWalletCardsApi } from './apiEndPoints/customWalletCard';
 import { salespersonsApi } from './apiEndPoints/salesPersonApi';
+import { managersApi } from './apiEndPoints/managersApi';
 import alertReducer from './apiEndPoints/alertSlice';
 import authReducer from './slices/authSlice'
 
@@ -31,6 +32,7 @@ export const store = configureStore({
         [appleWalletApi.reducerPath]: appleWalletApi.reducer,
         [customWalletCardsApi.reducerPath]: customWalletCardsApi.reducer,
         [salespersonsApi.reducerPath]: salespersonsApi.reducer,
+        [managersApi.reducerPath]: managersApi.reducer,
         alert: alertReducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -51,7 +53,8 @@ export const store = configureStore({
             .concat(customersApi.middleware)
             .concat(appleWalletApi.middleware)
             .concat(customWalletCardsApi.middleware)
-            .concat(salespersonsApi.middleware),
+            .concat(salespersonsApi.middleware)
+            .concat(managersApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
