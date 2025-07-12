@@ -1,7 +1,20 @@
 import React from 'react';
-import { Edit3, Palette, Star, Type, Clock, CreditCard, Building } from 'lucide-react';
+import { Edit3, Palette, Star, Type, Clock, CreditCard, Building, Gift, Award } from 'lucide-react';
 
 const WalletForm = ({ cardData, handleFieldChange, gradientOptions }) => {
+    const loyaltyTypes = [
+        {
+            value: 'product',
+            label: 'Product',
+            icon: Gift
+        },
+        {
+            value: 'points',
+            label: 'Points',
+            icon: Award
+        },
+    ];
+
     const sections = [
         {
             title: 'Basic Information',
@@ -17,15 +30,6 @@ const WalletForm = ({ cardData, handleFieldChange, gradientOptions }) => {
             title: 'Card Configuration',
             icon: CreditCard,
             fields: [
-                {
-                    key: 'cardType',
-                    label: 'Card Type',
-                    type: 'select',
-                    options: [
-                        { value: 'point', label: 'Points Card' },
-                        { value: 'product', label: 'Product Card' }
-                    ]
-                },
                 { key: 'passTypeIdentifier', label: 'Pass Type Identifier', placeholder: 'pass.com.yourcompany.cardname' },
                 { key: 'teamIdentifier', label: 'Team Identifier', placeholder: 'Your Apple Developer Team ID' }
             ]
@@ -141,8 +145,100 @@ const WalletForm = ({ cardData, handleFieldChange, gradientOptions }) => {
         }
     };
 
+    const renderLoyaltyTypeSelection = () => {
+        const selectedType = cardData.loyaltyType || '';
+
+        return (
+            <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <Building className="w-5 h-5 mr-2" />
+                    Card Type
+                </h3>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-4">
+                    {loyaltyTypes.map((type) => {
+                        const isSelected = selectedType === type.value;
+                        const IconComponent = type.icon;
+
+                        return (
+                            <div
+                                key={type.value}
+                                onClick={() => handleFieldChange('loyaltyType', type.value)}
+                                className={`
+                                    relative cursor-pointer rounded-lg border-2 p-3 text-center transition-all duration-200 hover:shadow-sm
+                                    ${isSelected
+                                        ? 'border-blue-500 bg-blue-50 shadow-sm'
+                                        : 'border-gray-200 bg-white hover:border-gray-300'
+                                    }
+                                `}
+                            >
+                                {/* Selection indicator */}
+                                <div className={`
+                                    absolute top-1 right-1 w-3 h-3 rounded-full border transition-colors
+                                    ${isSelected
+                                        ? 'border-blue-500 bg-blue-500'
+                                        : 'border-gray-300'
+                                    }
+                                `}>
+                                    {isSelected && (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <div className="w-1 h-1 bg-white rounded-full"></div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Content */}
+                                <div className="pt-1">
+                                    <div className={`
+                                        w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center transition-colors
+                                        ${isSelected
+                                            ? 'bg-blue-100 text-blue-600'
+                                            : 'bg-gray-100 text-gray-600'
+                                        }
+                                    `}>
+                                        <IconComponent className="w-4 h-4" />
+                                    </div>
+
+                                    <span className={`
+                                        text-xs font-medium transition-colors
+                                        ${isSelected ? 'text-blue-900' : 'text-gray-700'}
+                                    `}>
+                                        {type.label}
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Selected type info */}
+                {selectedType && (
+                    <div className="bg-brandGreenHighlight/30 border border-brandGreenHighlight rounded-lg p-3">
+                        <div className="flex items-center">
+                            <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center mr-2">
+                                {React.createElement(loyaltyTypes.find(t => t.value === selectedType)?.icon, {
+                                    className: "w-3 h-3 text-brandGreen"
+                                })}
+                            </div>
+                            <div>
+                                <h5 className="text-sm font-medium text-brandGreen">
+                                    {loyaltyTypes.find(t => t.value === selectedType)?.label} Card Selected
+                                </h5>
+                                <p className="text-xs text-brandGreen">
+                                    Your wallet card will be configured for {selectedType} tracking
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div className="space-y-8">
+            {/* Loyalty Type Selection - First Section */}
+            {renderLoyaltyTypeSelection()}
+
             {/* Basic Sections */}
             {sections.map((section) => (
                 <div key={section.title}>

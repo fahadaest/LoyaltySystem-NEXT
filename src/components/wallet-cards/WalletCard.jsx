@@ -1,97 +1,89 @@
 import React from 'react';
+import QRCode from 'react-qr-code';
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const WalletCard = ({ cardData, platform = 'ios' }) => {
     const isIOS = platform === 'ios';
 
     if (isIOS) {
         return (
-            <div className="relative transform hover:scale-105 transition-transform duration-300 max-w-sm mx-auto">
+            <div className="relative transform hover:scale-105 transition-transform duration-300 max-w-[280px] mx-auto">
                 <div
-                    className="rounded-2xl shadow-xl text-white relative overflow-hidden"
-                    style={{ background: cardData.backgroundColor || '#4F46E5' }}
+                    className="rounded-xl shadow-xl text-white relative overflow-hidden w-full aspect-[5/8]"
+                    style={{ background: cardData.backgroundColor || '#000000' }}
                 >
-                    {/* Header with Logo/Brand */}
-                    <div className="px-4 pt-4 pb-2">
-                        <div className="flex justify-between items-center">
-                            {/* <div className="absolute -bottom-12 flex h-[87px] w-[87px] items-center justify-center rounded-full border-[4px] border-white bg-brandGreen dark:!border-navy-700">
-                                <Image
-                                    width="20"
-                                    height="20"
-                                    className="h-full w-full rounded-full"
-                                    src={profileImg}
-                                    alt="Profile Avatar"
-                                />
-                            </div> */}
-                            <h1 className="text-sm font-semibold tracking-wide">
-                                {cardData.organizationName || cardData.title || 'LOYALTY PROGRAM'}
-                            </h1>
-                            <div className="text-sm font-medium opacity-90">
-                                {cardData.logoText || 'BALANCE'}
-                            </div>
-                        </div>
-                        <div className="text-2xl font-bold mt-1">
-                            {cardData.primaryFields?.[0]?.value || cardData.primaryValue || '100'}
-                        </div>
+                    {/* Header */}
+                    <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                        <h1 className="text-sm font-semibold">
+                            {cardData.organizationName || cardData.title || 'Barber Shop'}
+                        </h1>
+
+                        <h1 className="text-xs">
+                            {'logo'}
+                        </h1>
                     </div>
 
-                    {/* Illustration/Header Image Area */}
-                    <div className="relative px-4 py-6 flex justify-center items-center min-h-[120px]">
+                    {/* Stamp Collection Image Area */}
+                    <div className="relative bg-pink-200 mb-3">
                         {cardData.headerImage ? (
                             <img
                                 src={cardData.headerImage}
-                                alt="Card illustration"
-                                className="max-w-full h-auto"
+                                alt="Stamp collection"
+                                className="w-full h-full"
                             />
                         ) : (
-                            <div className="w-full h-24 bg-white bg-opacity-10 rounded-lg flex items-center justify-center">
-                                <div className="text-white text-opacity-60 text-sm font-medium">
-                                    {cardData.organizationName || 'BRAND LOGO'}
+                            <div className="w-full h-24 bg-gray-800 relative overflow-hidden">
+                                {/* Background barber image effect */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-gray-600 to-gray-800"></div>
+
+                                {/* Stamp grid overlay */}
+                                <div className="absolute inset-0 p-3">
+                                    <div className="grid grid-cols-5 gap-2 h-full">
+                                        {[...Array(10)].map((_, i) => (
+                                            <div
+                                                key={i}
+                                                className="bg-white rounded-full flex items-center justify-center aspect-square"
+                                            >
+                                                {/* Barber head silhouette icon */}
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="#666" className="opacity-80">
+                                                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M12 6C14.21 6 16 7.79 16 10C16 12.21 14.21 14 12 14C9.79 14 8 12.21 8 10C8 7.79 9.79 6 12 6M12 14C15.31 14 18 16.69 18 20H6C6 16.69 8.69 14 12 14Z" />
+                                                </svg>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Customer Info Section */}
-                    <div className="px-4 pb-4">
-                        <div className="text-xs font-medium opacity-75 mb-1 tracking-wide">
-                            {cardData.customerLabel || 'NAME'}
-                        </div>
-                        <div className="text-lg font-semibold">
-                            {cardData.customerName || cardData.secondaryFields?.[0]?.value || 'Customer Name'}
+                    {/* Stats Section */}
+                    <div className="px-2 pb-6">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <div className="text-[8px] opacity-70 mb-1 tracking-wide uppercase">
+                                    STAMPS UNTIL THE REWAARD
+                                </div>
+                                <div className="text-sm font-bold">
+                                    {cardData.stampsCount || '8 stamps'}
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-[8px] text-right opacity-70 mb-1 tracking-wide uppercase">
+                                    AVAILABLE REWARDS
+                                </div>
+                                <div className="text-sm text-right font-bold">
+                                    {cardData.rewardsCount || '0 rewards'}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* QR Code Section */}
-                    <div className="px-4 pb-6 flex justify-center">
-                        <div className="bg-white rounded-lg p-4 shadow-sm">
-                            {cardData.qrCode ? (
-                                <img
-                                    src={cardData.qrCode}
-                                    alt="QR Code"
-                                    className="w-24 h-24"
-                                />
-                            ) : (
-                                <div className="w-24 h-24 bg-gray-900 rounded grid grid-cols-8 gap-px p-2">
-                                    {[...Array(64)].map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'} rounded-sm`}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                    <div className="px-4 pb-4 flex justify-center">
+                        <div className="bg-white rounded-2xl p-4 text-center">
+                            <QRCode value={baseUrl} size={48} />
                         </div>
                     </div>
-
-                    {/* Member ID */}
-                    <div className="px-4 pb-4 text-center">
-                        <div className="text-sm font-mono tracking-wider">
-                            {cardData.memberId || cardData.barcodeMessage || cardData.barcode || '000548702'}
-                        </div>
-                    </div>
-
-                    {/* Bottom stripe pattern (like Apple Wallet) */}
-                    <div className="h-2 bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500"></div>
                 </div>
             </div>
         );

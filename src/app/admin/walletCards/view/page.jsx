@@ -10,17 +10,31 @@ import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/apiEndPoints/alertSlice';
 import CircularProgress from '@mui/material/CircularProgress';
-import AppleWalletEditor from 'components/wallet-cards/AppleWalletEditor';
+import WalletCardEditor from 'components/wallet-cards/WalletCardEditor';
 import WalletCardDisplay from 'components/wallet-cards/WalletCardDisplay';
-import {
-  useGetWalletCardsQuery,
-  useDeleteWalletCardMutation,
-  useDuplicateWalletCardMutation,
-  useToggleWalletCardStatusMutation,
-  useGenerateWalletPassMutation
-} from 'store/apiEndPoints/customWalletCard';
+import { MdCardGiftcard } from 'react-icons/md';
+import { useGetWalletCardsQuery, useDeleteWalletCardMutation, useDuplicateWalletCardMutation, useToggleWalletCardStatusMutation, useGenerateWalletPassMutation } from 'store/apiEndPoints/customWalletCard';
 
 const Dashboard = () => {
+  const [showModalBackButton, setShowModalBackButton] = useState(false);
+  const [currentModalView, setCurrentModalView] = useState('selection');
+  const [editMode, setEditMode] = useState(false);
+  const [showFooter, setShowFooter] = useState(true);
+  const [showFooterCancel, setShowFooterCancel] = useState(true);
+
+  const handleClickBack = () => {
+    if (editMode) {
+      onCancel?.();
+    } else {
+      setCurrentModalView('selection');
+    }
+  }
+
+
+
+
+
+
   const { data: cardsResponse, error: cardsError, isLoading: cardsLoading, refetch: cardsRefetch } = useGetWalletCardsQuery();
   const [deleteWalletCard, { isLoading: isDeleting }] = useDeleteWalletCardMutation();
   const [duplicateWalletCard, { isLoading: isDuplicating }] = useDuplicateWalletCardMutation();
@@ -34,7 +48,7 @@ const Dashboard = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [deleteItemId, setDeleteItemId] = useState(null);
   const [generatePassCard, setGeneratePassCard] = useState(null);
-  const [editMode, setEditMode] = useState(false);
+
 
   useEffect(() => {
     cardsRefetch();
@@ -118,6 +132,7 @@ const Dashboard = () => {
   };
 
   const handleAddCard = () => {
+    setCurrentModalView('selection')
     setSelectedCard(null);
     setEditMode(false);
     onOpen();
@@ -163,6 +178,24 @@ const Dashboard = () => {
       }));
     }
   };
+
+
+
+
+
+
+
+  const addCard = () => { }
+
+  const createCard = () => {
+  }
+
+
+
+
+
+
+
 
   if (cardsLoading) {
     return (
@@ -230,15 +263,40 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
       <CustomModal
+        showModalBackButton={showModalBackButton}
+        handleClickBack={handleClickBack}
+        headerTitle={"Wallet Cards"}
+        headerDescription={"Customize your wallet card"}
+        showFooter={showFooter}
+        size={currentModalView === 'selection' ? '1xl' : '4xl'}
+        showFooterCancelButton={showFooterCancel}
+        footerConfirmation={currentModalView === 'selection' ? null : createCard}
+        footerConfirmButtonText={'Create Wallet Card'}
+        footerConfirmButtonIcon={MdCardGiftcard}
+
+
+
+
+
+
         isOpen={isOpen}
         onClose={onClose}
         title={editMode ? "Edit Wallet Card" : "Create Wallet Card"}
-        size="4xl"
         noScroll={true}
+
+
+        isLoading={null}
       >
-        <AppleWalletEditor
+        <WalletCardEditor
+          setShowModalBackButton={setShowModalBackButton}
+          currentModalView={currentModalView}
+          setCurrentModalView={setCurrentModalView}
+
+
+
+
+
           isModal={true}
           editMode={editMode}
           cardId={selectedCard?.id}
@@ -246,6 +304,24 @@ const Dashboard = () => {
           onCancel={onClose}
         />
       </CustomModal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* Generate Pass Modal */}
       <CustomModal

@@ -193,7 +193,7 @@ const LoyaltyAdditionalDetails = ({ bannerTitle, setbannerTitle, color, setColor
                         </div>
 
                         <div className="flex flex-col h-full relative">
-                            <div className="absolute top-[25%] left-1/2 -translate-x-1/2 z-10">
+                            <div className="absolute bg-brandGreen top-[25%] left-1/2 -translate-x-1/2 z-10 p-1">
                                 <QRCode value={"https://codehive.ae/"} size={qrSize} />
                             </div>
 

@@ -3,14 +3,34 @@ import { useGetWalletCardByIdQuery } from 'store/apiEndPoints/customWalletCard';
 import SelectionView from './SelectionView';
 import EditorView from './EditorView';
 
-const AppleWalletEditor = ({
-  isModal = false,
-  editMode = false,
-  cardId = null,
-  onSave,
-  onCancel
-}) => {
-  const [currentView, setCurrentView] = useState('selection');
+const WalletCardEditor = ({ setShowModalBackButton, currentModalView, setCurrentModalView, setShowFooter, isModal = false, editMode = false, cardId = null, onSave, onCancel }) => {
+
+  console.log(currentModalView)
+
+  useEffect(() => {
+    if (setShowModalBackButton) {
+      setShowModalBackButton(currentModalView === 'editor');
+    }
+  }, [currentModalView]);
+
+
+  const handleBack = () => {
+    if (editMode) {
+      onCancel?.();
+    } else {
+      setCurrentModalView('selection');
+    }
+  };
+
+
+
+
+
+
+
+
+
+
   const [phoneType, setPhoneType] = useState('iphone');
   const [cardData, setCardData] = useState({
     cardName: '',
@@ -45,7 +65,7 @@ const AppleWalletEditor = ({
   useEffect(() => {
     if (editMode && existingCard?.data) {
       setCardData(existingCard.data);
-      setCurrentView('editor');
+      setCurrentModalView('editor');
     }
   }, [editMode, existingCard]);
 
@@ -69,16 +89,10 @@ const AppleWalletEditor = ({
   };
 
   const handleCreateFromScratch = () => {
-    setCurrentView('editor');
+    setCurrentModalView('editor');
   };
 
-  const handleBack = () => {
-    if (editMode) {
-      onCancel?.();
-    } else {
-      setCurrentView('selection');
-    }
-  };
+
 
   const handleSaveComplete = (savedCard) => {
     onSave?.(savedCard);
@@ -95,9 +109,14 @@ const AppleWalletEditor = ({
     );
   }
 
-  if (currentView === 'selection' && !editMode) {
+  if (currentModalView === 'selection' && !editMode) {
     return (
       <SelectionView
+        setShowModalBackButton={setShowModalBackButton}
+
+
+
+
         isModal={isModal}
         onCreateFromScratch={handleCreateFromScratch}
       />
@@ -106,6 +125,11 @@ const AppleWalletEditor = ({
 
   return (
     <EditorView
+      setShowModalBackButton={setShowModalBackButton}
+
+
+
+      setShowFooter={setShowFooter}
       isModal={isModal}
       onBack={handleBack}
       cardData={cardData}
@@ -120,4 +144,4 @@ const AppleWalletEditor = ({
   );
 };
 
-export default AppleWalletEditor;
+export default WalletCardEditor;
