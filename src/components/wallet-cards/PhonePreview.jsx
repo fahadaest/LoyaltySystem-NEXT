@@ -3,8 +3,8 @@ import IPhoneFrame from './IphoneFrame';
 import AndroidFrame from './AndroidFrame';
 
 const PhonePreview = ({ phoneType, setPhoneType, cardData }) => (
-    <div className="w-1/3 bg-gradient-to-br from-brandGreenGradient5 to-brandGreen flex items-center justify-center p-6 h-full">
-        {/* Phone Frame Container - takes remaining space */}
+    <div className="w-1/3 bg-gradient-to-br from-brandGreenGradient5 to-brandGreen flex gap-5 items-center justify-center p-6 h-full">
+
         <div className="flex-1 flex items-center justify-center w-full h-full">
             {phoneType === 'iphone' ? (
                 <IPhoneFrame cardData={cardData} />
@@ -14,7 +14,6 @@ const PhonePreview = ({ phoneType, setPhoneType, cardData }) => (
         </div>
 
 
-        {/* Phone Type Toggle */}
         <div className="flex flex-col items-center gap-2 mb-4 bg-white rounded-full p-1 shadow-lg">
             <button
                 onClick={() => setPhoneType('iphone')}
@@ -41,8 +40,6 @@ const PhonePreview = ({ phoneType, setPhoneType, cardData }) => (
                 </svg>
             </button>
         </div>
-
-
     </div>
 );
 

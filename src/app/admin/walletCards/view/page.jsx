@@ -13,7 +13,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import WalletCardEditor from 'components/wallet-cards/WalletCardEditor';
 import WalletCardDisplay from 'components/wallet-cards/WalletCardDisplay';
 import { MdCardGiftcard } from 'react-icons/md';
-import { useGetWalletCardsQuery, useDeleteWalletCardMutation, useDuplicateWalletCardMutation, useToggleWalletCardStatusMutation, useGenerateWalletPassMutation } from 'store/apiEndPoints/customWalletCard';
+import {
+  useCreateWalletCardMutation, useUpdateWalletCardMutation,
+  useGetWalletCardsQuery, useDeleteWalletCardMutation, useDuplicateWalletCardMutation, useToggleWalletCardStatusMutation, useGenerateWalletPassMutation
+} from 'store/apiEndPoints/customWalletCard';
+import colorOptions from 'utils/colors';
 
 const Dashboard = () => {
   const [showModalBackButton, setShowModalBackButton] = useState(false);
@@ -29,6 +33,73 @@ const Dashboard = () => {
       setCurrentModalView('selection');
     }
   }
+
+
+
+
+
+  const [createWalletCard, { isLoading: isCreating }] = useCreateWalletCardMutation();
+  const [updateWalletCard, { isLoading: isUpdating }] = useUpdateWalletCardMutation();
+  const [cardData, setCardData] = useState({
+    cardName: '',
+    cardType: 'point',
+    description: '',
+    organizationName: '',
+    logoText: '',
+    foregroundColor: '#FFFFFF',
+    backgroundColor: '#36a18f',
+    labelColor: '#FFFFFF',
+    barcodeMessage: '',
+    barcodeFormat: 'QR',
+    primaryFields: [{ key: 'balance', label: 'Balance', value: '$0.00' }],
+    secondaryFields: [
+      { key: 'member-since', label: 'Member Since', value: '2024' },
+      { key: 'status', label: 'Status', value: 'Active' }
+    ],
+    auxiliaryFields: [
+      { key: 'points', label: 'Points', value: '0' },
+      { key: 'expires', label: 'Expires', value: 'Never' }
+    ],
+    isActive: true
+  });
+
+  const createCard = async () => {
+    try {
+      const formData = new FormData();
+
+      Object.keys(cardData).forEach(key => {
+        if (cardData[key] !== null && cardData[key] !== undefined) {
+          if (typeof cardData[key] === 'object') {
+            formData.append(key, JSON.stringify(cardData[key]));
+          } else {
+            formData.append(key, cardData[key]);
+          }
+        }
+      });
+
+      let result;
+      if (editMode && cardId) {
+        result = await updateWalletCard({ id: cardId, formData }).unwrap();
+      } else {
+        result = await createWalletCard(formData).unwrap();
+      }
+
+      if (onSave) {
+        onSave(result.data);
+      }
+    } catch (error) {
+      console.error('Error saving wallet card:', error);
+    }
+  }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -187,8 +258,7 @@ const Dashboard = () => {
 
   const addCard = () => { }
 
-  const createCard = () => {
-  }
+
 
 
 
@@ -292,6 +362,11 @@ const Dashboard = () => {
           setShowModalBackButton={setShowModalBackButton}
           currentModalView={currentModalView}
           setCurrentModalView={setCurrentModalView}
+          cardData={cardData}
+          setCardData={setCardData}
+          colorOption={colorOptions}
+
+
 
 
 

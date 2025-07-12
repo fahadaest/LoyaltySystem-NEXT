@@ -3,7 +3,7 @@ import { useGetWalletCardByIdQuery } from 'store/apiEndPoints/customWalletCard';
 import SelectionView from './SelectionView';
 import EditorView from './EditorView';
 
-const WalletCardEditor = ({ setShowModalBackButton, currentModalView, setCurrentModalView, setShowFooter, isModal = false, editMode = false, cardId = null, onSave, onCancel }) => {
+const WalletCardEditor = ({ colorOption, cardData, setCardData, setShowModalBackButton, currentModalView, setCurrentModalView, setShowFooter, isModal = false, editMode = false, cardId = null, onSave, onCancel }) => {
 
   console.log(currentModalView)
 
@@ -32,30 +32,6 @@ const WalletCardEditor = ({ setShowModalBackButton, currentModalView, setCurrent
 
 
   const [phoneType, setPhoneType] = useState('iphone');
-  const [cardData, setCardData] = useState({
-    cardName: '',
-    cardType: 'point',
-    organizationName: '',
-    logoText: '',
-    description: '',
-    passTypeIdentifier: '',
-    teamIdentifier: '',
-    backgroundColor: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
-    foregroundColor: '#FFFFFF',
-    labelColor: '#FFFFFF',
-    barcodeMessage: '',
-    barcodeFormat: 'QR',
-    primaryFields: [{ key: 'balance', label: 'Balance', value: '$0.00' }],
-    secondaryFields: [
-      { key: 'member-since', label: 'Member Since', value: '2024' },
-      { key: 'status', label: 'Status', value: 'Active' }
-    ],
-    auxiliaryFields: [
-      { key: 'points', label: 'Points', value: '0' },
-      { key: 'expires', label: 'Expires', value: 'Never' }
-    ],
-    isActive: true
-  });
 
   // Fetch card data if in edit mode
   const { data: existingCard, isLoading } = useGetWalletCardByIdQuery(cardId, {
@@ -68,18 +44,6 @@ const WalletCardEditor = ({ setShowModalBackButton, currentModalView, setCurrent
       setCurrentModalView('editor');
     }
   }, [editMode, existingCard]);
-
-  const gradientOptions = [
-    { name: 'Indigo', value: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' },
-    { name: 'Blue', value: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)' },
-    { name: 'Purple', value: 'linear-gradient(135deg, #8B5CF6 0%, #7C2D12 100%)' },
-    { name: 'Green', value: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' },
-    { name: 'Red', value: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)' },
-    { name: 'Orange', value: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' },
-    { name: 'Pink', value: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)' },
-    { name: 'Teal', value: 'linear-gradient(135deg, #14B8A6 0%, #0F766E 100%)' },
-    { name: 'Black', value: 'linear-gradient(135deg, #374151 0%, #111827 100%)' }
-  ];
 
   const handleFieldChange = (field, value) => {
     setCardData(prev => ({
@@ -126,6 +90,7 @@ const WalletCardEditor = ({ setShowModalBackButton, currentModalView, setCurrent
   return (
     <EditorView
       setShowModalBackButton={setShowModalBackButton}
+      colorOption={colorOption}
 
 
 
@@ -134,7 +99,7 @@ const WalletCardEditor = ({ setShowModalBackButton, currentModalView, setCurrent
       onBack={handleBack}
       cardData={cardData}
       handleFieldChange={handleFieldChange}
-      gradientOptions={gradientOptions}
+
       phoneType={phoneType}
       setPhoneType={setPhoneType}
       editMode={editMode}

@@ -1,193 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
 
-// Types for Custom Wallet Cards
-export interface WalletCardField {
-    key: string;
-    label: string;
-    value: string;
-    changeMessage?: string;
-    textAlignment?: 'PKTextAlignmentLeft' | 'PKTextAlignmentCenter' | 'PKTextAlignmentRight';
-    dateStyle?: 'PKDateStyleNone' | 'PKDateStyleShort' | 'PKDateStyleMedium' | 'PKDateStyleLong' | 'PKDateStyleFull';
-    timeStyle?: 'PKDateStyleNone' | 'PKDateStyleShort' | 'PKDateStyleMedium' | 'PKDateStyleLong' | 'PKDateStyleFull';
-    isRelative?: boolean;
-    ignoresTimeZone?: boolean;
-    currencyCode?: string;
-    numberStyle?: 'PKNumberStyleDecimal' | 'PKNumberStylePercent' | 'PKNumberStyleScientific' | 'PKNumberStyleSpellOut';
-}
-
-export interface WalletCardLocation {
-    latitude: number;
-    longitude: number;
-    altitude?: number;
-    relevantText?: string;
-}
-
-export interface WalletCardBeacon {
-    uuid: string;
-    major: number;
-    minor: number;
-    relevantText?: string;
-}
-
-export interface CustomWalletCard {
-    id: number;
-    cardName: string;
-    cardType: 'point' | 'product';
-    description?: string;
-    passTypeIdentifier: string;
-    teamIdentifier: string;
-    organizationName: string;
-    logoText?: string;
-    logoImage?: string;
-    iconImage?: string;
-    stripImage?: string;
-    thumbnailImage?: string;
-    backgroundImage?: string;
-    foregroundColor?: string;
-    backgroundColor?: string;
-    labelColor?: string;
-    headerFields?: WalletCardField[];
-    primaryFields?: WalletCardField[];
-    secondaryFields?: WalletCardField[];
-    auxiliaryFields?: WalletCardField[];
-    backFields?: WalletCardField[];
-    rewardsTier?: string;
-    pointsLabel?: string;
-    barcodeMessage?: string;
-    barcodeFormat?: 'QR' | 'PDF417' | 'Aztec' | 'Code128';
-    barcodeMessageEncoding?: string;
-    barcodeAltText?: string;
-    locations?: WalletCardLocation[];
-    beacons?: WalletCardBeacon[];
-    relevantDate?: string;
-    expirationDate?: string;
-    voided?: boolean;
-    webServiceURL?: string;
-    authenticationToken?: string;
-    associatedStoreIdentifiers?: string[];
-    appLaunchURL?: string;
-    userInfo?: Record<string, any>;
-    sharingProhibited?: boolean;
-    groupingIdentifier?: string;
-    maxDistance?: number;
-    isActive: boolean;
-    customCSS?: string;
-    adminId: number;
-    createdAt: string;
-    updatedAt: string;
-    admin?: {
-        id: number;
-        firstName: string;
-        lastName: string;
-        email: string;
-    };
-    walletPasses?: AppleWalletPass[];
-}
-
-export interface AppleWalletPass {
-    id: number;
-    customerId: number;
-    customerLoyaltyId?: number;
-    customWalletCardId: number;
-    serialNumber: string;
-    passTypeIdentifier: string;
-    loyaltyType: 'PRODUCT' | 'POINT';
-    status: 'active' | 'expired' | 'revoked';
-    passData?: Record<string, any>;
-    dynamicFields?: Record<string, any>;
-    lastUpdated?: string;
-    updateTag?: string;
-    createdAt: string;
-    updatedAt: string;
-    customer?: {
-        id: number;
-        firstName: string;
-        lastName: string;
-        email: string;
-    };
-    customerLoyalty?: {
-        id: number;
-        points?: number;
-        visits?: number;
-        totalSpent?: number;
-    };
-}
-
-export interface CreateWalletCardRequest {
-    cardName: string;
-    cardType: 'point' | 'product';
-    description?: string;
-    passTypeIdentifier: string;
-    teamIdentifier: string;
-    organizationName: string;
-    logoText?: string;
-    foregroundColor?: string;
-    backgroundColor?: string;
-    labelColor?: string;
-    headerFields?: WalletCardField[];
-    primaryFields?: WalletCardField[];
-    secondaryFields?: WalletCardField[];
-    auxiliaryFields?: WalletCardField[];
-    backFields?: WalletCardField[];
-    rewardsTier?: string;
-    pointsLabel?: string;
-    barcodeMessage?: string;
-    barcodeFormat?: 'QR' | 'PDF417' | 'Aztec' | 'Code128';
-    barcodeMessageEncoding?: string;
-    barcodeAltText?: string;
-    locations?: WalletCardLocation[];
-    beacons?: WalletCardBeacon[];
-    relevantDate?: string;
-    expirationDate?: string;
-    webServiceURL?: string;
-    authenticationToken?: string;
-    associatedStoreIdentifiers?: string[];
-    appLaunchURL?: string;
-    userInfo?: Record<string, any>;
-    sharingProhibited?: boolean;
-    groupingIdentifier?: string;
-    maxDistance?: number;
-    customCSS?: string;
-}
-
-export interface UpdateWalletCardRequest extends Partial<CreateWalletCardRequest> { }
-
-export interface WalletCardsResponse {
-    message: string;
-    data: {
-        cards: CustomWalletCard[];
-        totalCards: number;
-        currentPage: number;
-        totalPages: number;
-        hasNextPage: boolean;
-        hasPrevPage: boolean;
-    };
-}
-
-export interface GeneratePassRequest {
-    customerId: number;
-    customerLoyaltyId?: number;
-    dynamicValues?: Record<string, any>;
-}
-
-export interface GeneratePassResponse {
-    message: string;
-    data: {
-        passData: Record<string, any>;
-        cardInfo: {
-            id: number;
-            name: string;
-            type: string;
-        };
-        pass?: AppleWalletPass;
-    };
-}
-
-export interface DuplicateCardRequest {
-    cardName?: string;
-}
-
 export const customWalletCardsApi = createApi({
     reducerPath: 'customWalletCardsApi',
     baseQuery: fetchBaseQuery({
@@ -204,10 +17,7 @@ export const customWalletCardsApi = createApi({
     tagTypes: ['WalletCard', 'WalletPass'],
     endpoints: (builder) => ({
         // Create a new custom wallet card
-        createWalletCard: builder.mutation<{
-            message: string;
-            data: CustomWalletCard;
-        }, FormData>({
+        createWalletCard: builder.mutation({
             query: (formData) => ({
                 url: '/api/custom-wallet-card',
                 method: 'POST',
@@ -217,13 +27,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Get all wallet cards with filtering and pagination
-        getWalletCards: builder.query<WalletCardsResponse, {
-            search?: string;
-            cardType?: 'point' | 'product';
-            isActive?: boolean;
-            page?: number;
-            limit?: number;
-        }>({
+        getWalletCards: builder.query({
             query: (params = {}) => {
                 const searchParams = new URLSearchParams();
 
@@ -239,19 +43,13 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Get a specific wallet card by ID
-        getWalletCardById: builder.query<{
-            message: string;
-            data: CustomWalletCard;
-        }, number>({
+        getWalletCardById: builder.query({
             query: (id) => `/api/custom-wallet-card/${id}`,
             providesTags: (result, error, id) => [{ type: 'WalletCard', id }],
         }),
 
         // Update an existing wallet card
-        updateWalletCard: builder.mutation<{
-            message: string;
-            data: CustomWalletCard;
-        }, { id: number; formData: FormData }>({
+        updateWalletCard: builder.mutation({
             query: ({ id, formData }) => ({
                 url: `/api/custom-wallet-card/${id}`,
                 method: 'PUT',
@@ -264,9 +62,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Delete a wallet card
-        deleteWalletCard: builder.mutation<{
-            message: string;
-        }, number>({
+        deleteWalletCard: builder.mutation({
             query: (id) => ({
                 url: `/api/custom-wallet-card/${id}`,
                 method: 'DELETE',
@@ -278,10 +74,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Generate Apple Wallet pass for a customer
-        generateWalletPass: builder.mutation<GeneratePassResponse, {
-            cardId: number;
-            passData: GeneratePassRequest;
-        }>({
+        generateWalletPass: builder.mutation({
             query: ({ cardId, passData }) => ({
                 url: `/api/custom-wallet-card/${cardId}/generate-pass`,
                 method: 'POST',
@@ -291,14 +84,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Toggle wallet card active/inactive status
-        toggleWalletCardStatus: builder.mutation<{
-            message: string;
-            data: {
-                id: number;
-                cardName: string;
-                isActive: boolean;
-            };
-        }, number>({
+        toggleWalletCardStatus: builder.mutation({
             query: (id) => ({
                 url: `/api/custom-wallet-card/${id}/toggle-status`,
                 method: 'PATCH',
@@ -310,10 +96,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Duplicate a wallet card
-        duplicateWalletCard: builder.mutation<{
-            message: string;
-            data: CustomWalletCard;
-        }, { id: number; cardName?: string }>({
+        duplicateWalletCard: builder.mutation({
             query: ({ id, cardName }) => ({
                 url: `/api/custom-wallet-card/${id}/duplicate`,
                 method: 'POST',
@@ -323,28 +106,19 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Get all wallet passes for a specific card
-        getWalletPasses: builder.query<{
-            message: string;
-            data: AppleWalletPass[];
-        }, number>({
+        getWalletPasses: builder.query({
             query: (cardId) => `/api/custom-wallet-card/${cardId}/passes`,
             providesTags: ['WalletPass'],
         }),
 
         // Get wallet pass by ID
-        getWalletPassById: builder.query<{
-            message: string;
-            data: AppleWalletPass;
-        }, number>({
+        getWalletPassById: builder.query({
             query: (passId) => `/api/wallet-passes/${passId}`,
             providesTags: (result, error, passId) => [{ type: 'WalletPass', id: passId }],
         }),
 
         // Update wallet pass (for dynamic content updates)
-        updateWalletPass: builder.mutation<{
-            message: string;
-            data: AppleWalletPass;
-        }, { passId: number; dynamicFields: Record<string, any> }>({
+        updateWalletPass: builder.mutation({
             query: ({ passId, dynamicFields }) => ({
                 url: `/api/wallet-passes/${passId}`,
                 method: 'PUT',
@@ -357,9 +131,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Revoke a wallet pass
-        revokeWalletPass: builder.mutation<{
-            message: string;
-        }, number>({
+        revokeWalletPass: builder.mutation({
             query: (passId) => ({
                 url: `/api/wallet-passes/${passId}/revoke`,
                 method: 'PATCH',
@@ -371,43 +143,13 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Get wallet card analytics
-        getWalletCardAnalytics: builder.query<{
-            message: string;
-            data: {
-                totalCards: number;
-                activeCards: number;
-                inactiveCards: number;
-                totalPasses: number;
-                activePasses: number;
-                revokedPasses: number;
-                expiredPasses: number;
-                cardsByType: {
-                    point: number;
-                    product: number;
-                };
-                recentActivity: Array<{
-                    date: string;
-                    passesGenerated: number;
-                    passesRevoked: number;
-                }>;
-            };
-        }, void>({
+        getWalletCardAnalytics: builder.query({
             query: () => '/api/custom-wallet-card/analytics',
             providesTags: ['WalletCard', 'WalletPass'],
         }),
 
         // Bulk operations
-        bulkUpdateWalletCards: builder.mutation<{
-            message: string;
-            data: {
-                updated: number;
-                failed: number;
-                errors: string[];
-            };
-        }, {
-            cardIds: number[];
-            updates: Partial<CustomWalletCard>;
-        }>({
+        bulkUpdateWalletCards: builder.mutation({
             query: ({ cardIds, updates }) => ({
                 url: '/api/custom-wallet-card/bulk-update',
                 method: 'PATCH',
@@ -417,16 +159,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Export wallet card data
-        exportWalletCardData: builder.mutation<{
-            message: string;
-            data: {
-                downloadUrl: string;
-                fileName: string;
-            };
-        }, {
-            cardIds?: number[];
-            format?: 'csv' | 'xlsx' | 'json';
-        }>({
+        exportWalletCardData: builder.mutation({
             query: (params) => ({
                 url: '/api/custom-wallet-card/export',
                 method: 'POST',
@@ -435,10 +168,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Import wallet card template
-        importWalletCardTemplate: builder.mutation<{
-            message: string;
-            data: CustomWalletCard;
-        }, FormData>({
+        importWalletCardTemplate: builder.mutation({
             query: (formData) => ({
                 url: '/api/custom-wallet-card/import',
                 method: 'POST',
@@ -448,22 +178,7 @@ export const customWalletCardsApi = createApi({
         }),
 
         // Get wallet card templates
-        getWalletCardTemplates: builder.query<{
-            message: string;
-            data: Array<{
-                id: string;
-                name: string;
-                description: string;
-                cardType: 'point' | 'product';
-                preview: string;
-                fields: WalletCardField[];
-                colors: {
-                    foreground: string;
-                    background: string;
-                    label: string;
-                };
-            }>;
-        }, void>({
+        getWalletCardTemplates: builder.query({
             query: () => '/api/custom-wallet-card/templates',
         }),
     }),

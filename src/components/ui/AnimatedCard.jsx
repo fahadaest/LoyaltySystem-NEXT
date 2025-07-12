@@ -47,7 +47,7 @@ const AnimatedCardHeader = ({
 
 const AnimatedCardContent = ({ children, className = '' }) => {
     return (
-        <div className={`p-8 ${className}`}>
+        <div className={`p-5 ${className}`}>
             {children}
         </div>
     );

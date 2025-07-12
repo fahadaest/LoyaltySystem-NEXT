@@ -1,345 +1,220 @@
-import React from 'react';
-import { Edit3, Palette, Star, Type, Clock, CreditCard, Building, Gift, Award } from 'lucide-react';
+'use client';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { Edit3, Palette, Star, Type, Clock, CreditCard, Building, Gift, Award, QrCode, AlertCircle } from 'lucide-react';
+import AnimatedInput from '../ui/AnimatedInput';
+import AnimatedSelect from '../ui/AnimatedSelect';
+import FormSection from '../ui/FormSection';
+import AnimatedButton from '../ui/AnimatedButton';
+import { AnimatedCard, AnimatedCardContent } from '../ui/AnimatedCard';
+import ColorPicker from 'components/ui/ColorPicker';
+import CardTypeSelector from '../ui/CardTypeSelector';
+import { loyaltyTypes } from 'utils/loyaltyTypes';
+import { barcodeOptions } from 'utils/barcodeOptions';
 
-const WalletForm = ({ cardData, handleFieldChange, gradientOptions }) => {
-    const loyaltyTypes = [
-        {
-            value: 'product',
-            label: 'Product',
-            icon: Gift
-        },
-        {
-            value: 'points',
-            label: 'Points',
-            icon: Award
-        },
-    ];
+const WalletForm = forwardRef(({
+    cardData,
+    handleFieldChange,
+    colorOption,
+    onSubmit,
+    isLoading = false
+}, ref) => {
+    const [errors, setErrors] = useState({});
+    const [isVisible, setIsVisible] = useState(false);
 
-    const sections = [
-        {
-            title: 'Basic Information',
-            icon: Edit3,
-            fields: [
-                { key: 'cardName', label: 'Card Name', placeholder: 'Enter card name' },
-                { key: 'organizationName', label: 'Organization Name', placeholder: 'Enter organization name' },
-                { key: 'logoText', label: 'Logo Text', placeholder: 'Enter logo text' },
-                { key: 'description', label: 'Description', placeholder: 'Enter card description', type: 'textarea' }
-            ]
-        },
-        {
-            title: 'Card Configuration',
-            icon: CreditCard,
-            fields: [
-                { key: 'passTypeIdentifier', label: 'Pass Type Identifier', placeholder: 'pass.com.yourcompany.cardname' },
-                { key: 'teamIdentifier', label: 'Team Identifier', placeholder: 'Your Apple Developer Team ID' }
-            ]
-        },
-        {
-            title: 'Design',
-            icon: Palette,
-            fields: [
-                { key: 'backgroundColor', label: 'Background Color', type: 'color' },
-                { key: 'foregroundColor', label: 'Text Color', placeholder: '#FFFFFF' },
-                { key: 'labelColor', label: 'Label Color', placeholder: '#FFFFFF' }
-            ]
-        }
-    ];
+    useImperativeHandle(ref, () => ({
+        handleSubmit: validateAndSubmit
+    }));
 
-    const fieldSections = [
-        {
-            title: 'Primary Field',
-            icon: Star,
-            key: 'primaryFields',
-            maxFields: 1
-        },
-        {
-            title: 'Secondary Fields',
-            icon: Type,
-            key: 'secondaryFields',
-            maxFields: 2
-        },
-        {
-            title: 'Auxiliary Fields',
-            icon: Clock,
-            key: 'auxiliaryFields',
-            maxFields: 2
-        }
-    ];
+    useEffect(() => {
+        const timer = setTimeout(() => setIsVisible(true), 50);
+        return () => clearTimeout(timer);
+    }, []);
 
-    const updateFieldArray = (fieldType, index, property, value) => {
-        const fields = cardData[fieldType] || [];
-        const newFields = [...fields];
-        if (!newFields[index]) {
-            newFields[index] = { key: '', label: '', value: '' };
-        }
-        newFields[index][property] = value;
-        handleFieldChange(fieldType, newFields);
-    };
-
-    const renderField = (field) => {
-        const value = cardData[field.key] || '';
-
-        switch (field.type) {
-            case 'select':
-                return (
-                    <select
-                        value={value}
-                        onChange={(e) => handleFieldChange(field.key, e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                        <option value="">Select {field.label}</option>
-                        {field.options.map(option => (
-                            <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                    </select>
-                );
-
-            case 'textarea':
-                return (
-                    <textarea
-                        value={value}
-                        onChange={(e) => handleFieldChange(field.key, e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder={field.placeholder}
-                        rows={3}
-                    />
-                );
-
-            case 'color':
-                return (
-                    <div className="space-y-3">
-                        <input
-                            type="text"
-                            value={value}
-                            onChange={(e) => handleFieldChange(field.key, e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="#4F46E5 or gradient"
-                        />
-                        {field.key === 'backgroundColor' && (
-                            <div className="grid grid-cols-3 gap-2">
-                                {gradientOptions.map((gradient, index) => (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        onClick={() => handleFieldChange(field.key, gradient.value)}
-                                        className="h-12 rounded-lg border-2 border-gray-200 hover:border-gray-400 transition-colors"
-                                        style={{ background: gradient.value }}
-                                        title={gradient.name}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                );
-
+    const validateField = (key, value) => {
+        switch (key) {
+            case 'cardName':
+                if (!value?.trim()) return 'Card name is required';
+                if (value.trim().length < 2) return 'Card name must be at least 2 characters';
+                return '';
+            case 'organizationName':
+                if (!value?.trim()) return 'Organization name is required';
+                return '';
+            case 'passTypeIdentifier':
+                if (!value?.trim()) return 'Pass type identifier is required';
+                const passIdRegex = /^[a-zA-Z0-9.-]+$/;
+                if (!passIdRegex.test(value)) return 'Invalid pass type identifier format';
+                return '';
+            case 'teamIdentifier':
+                if (!value?.trim()) return 'Team identifier is required';
+                return '';
+            case 'loyaltyType':
+                if (!value) return 'Please select a card type';
+                return '';
             default:
-                return (
-                    <input
-                        type="text"
-                        value={value}
-                        onChange={(e) => handleFieldChange(field.key, e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder={field.placeholder}
-                    />
-                );
+                return '';
         }
     };
 
-    const renderLoyaltyTypeSelection = () => {
-        const selectedType = cardData.loyaltyType || '';
+    const handleInputChange = (key, value) => {
+        handleFieldChange(key, value);
 
-        return (
-            <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <Building className="w-5 h-5 mr-2" />
-                    Card Type
-                </h3>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-4">
-                    {loyaltyTypes.map((type) => {
-                        const isSelected = selectedType === type.value;
-                        const IconComponent = type.icon;
+        if (errors[key]) {
+            setErrors(prev => ({ ...prev, [key]: '' }));
+        }
+    };
 
-                        return (
-                            <div
-                                key={type.value}
-                                onClick={() => handleFieldChange('loyaltyType', type.value)}
-                                className={`
-                                    relative cursor-pointer rounded-lg border-2 p-3 text-center transition-all duration-200 hover:shadow-sm
-                                    ${isSelected
-                                        ? 'border-blue-500 bg-blue-50 shadow-sm'
-                                        : 'border-gray-200 bg-white hover:border-gray-300'
-                                    }
-                                `}
-                            >
-                                {/* Selection indicator */}
-                                <div className={`
-                                    absolute top-1 right-1 w-3 h-3 rounded-full border transition-colors
-                                    ${isSelected
-                                        ? 'border-blue-500 bg-blue-500'
-                                        : 'border-gray-300'
-                                    }
-                                `}>
-                                    {isSelected && (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <div className="w-1 h-1 bg-white rounded-full"></div>
-                                        </div>
-                                    )}
-                                </div>
+    const validateForm = () => {
+        const newErrors = {};
+        let isValid = true;
+        const requiredFields = ['cardName', 'organizationName', 'passTypeIdentifier', 'teamIdentifier', 'loyaltyType'];
 
-                                {/* Content */}
-                                <div className="pt-1">
-                                    <div className={`
-                                        w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center transition-colors
-                                        ${isSelected
-                                            ? 'bg-blue-100 text-blue-600'
-                                            : 'bg-gray-100 text-gray-600'
-                                        }
-                                    `}>
-                                        <IconComponent className="w-4 h-4" />
-                                    </div>
+        requiredFields.forEach(key => {
+            const error = validateField(key, cardData[key]);
+            if (error) {
+                newErrors[key] = error;
+                isValid = false;
+            }
+        });
 
-                                    <span className={`
-                                        text-xs font-medium transition-colors
-                                        ${isSelected ? 'text-blue-900' : 'text-gray-700'}
-                                    `}>
-                                        {type.label}
-                                    </span>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+        setErrors(newErrors);
+        return isValid;
+    };
 
-                {/* Selected type info */}
-                {selectedType && (
-                    <div className="bg-brandGreenHighlight/30 border border-brandGreenHighlight rounded-lg p-3">
-                        <div className="flex items-center">
-                            <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center mr-2">
-                                {React.createElement(loyaltyTypes.find(t => t.value === selectedType)?.icon, {
-                                    className: "w-3 h-3 text-brandGreen"
-                                })}
-                            </div>
-                            <div>
-                                <h5 className="text-sm font-medium text-brandGreen">
-                                    {loyaltyTypes.find(t => t.value === selectedType)?.label} Card Selected
-                                </h5>
-                                <p className="text-xs text-brandGreen">
-                                    Your wallet card will be configured for {selectedType} tracking
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
+    const validateAndSubmit = async () => {
+        if (validateForm()) {
+            try {
+                if (onSubmit) {
+                    await onSubmit(cardData);
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+            }
+        }
     };
 
     return (
-        <div className="space-y-8">
-            {/* Loyalty Type Selection - First Section */}
-            {renderLoyaltyTypeSelection()}
+        <div className={`max-w-4xl mx-auto  transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
 
-            {/* Basic Sections */}
-            {sections.map((section) => (
-                <div key={section.title}>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <section.icon className="w-5 h-5 mr-2" />
-                        {section.title}
-                    </h3>
-                    <div className="space-y-4">
-                        {section.fields.map((field) => (
-                            <div key={field.key}>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {field.label}
-                                </label>
-                                {renderField(field)}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
-
-            {/* Dynamic Field Sections */}
-            {fieldSections.map((section) => (
-                <div key={section.title}>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <section.icon className="w-5 h-5 mr-2" />
-                        {section.title}
-                    </h3>
-                    <div className="space-y-4">
-                        {Array.from({ length: section.maxFields }).map((_, index) => {
-                            const fieldData = cardData[section.key]?.[index] || { label: '', value: '' };
-                            return (
-                                <div key={index} className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Label
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={fieldData.label}
-                                            onChange={(e) => updateFieldArray(section.key, index, 'label', e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Field label"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Value
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={fieldData.value}
-                                            onChange={(e) => updateFieldArray(section.key, index, 'value', e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder="Field value"
-                                        />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            ))}
-
-            {/* Barcode Section */}
-            <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <CreditCard className="w-5 h-5 mr-2" />
-                    Barcode
-                </h3>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Barcode Message
-                        </label>
-                        <input
-                            type="text"
-                            value={cardData.barcodeMessage || ''}
-                            onChange={(e) => handleFieldChange('barcodeMessage', e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Enter barcode message"
+            <AnimatedCardContent>
+                <div className="space-y-8">
+                    {/* Card Type Selection */}
+                    <FormSection
+                        title="Card Type"
+                        icon={Building}
+                        delay={100}
+                        isVisible={isVisible}
+                    >
+                        <CardTypeSelector
+                            value={cardData.loyaltyType || ''}
+                            onChange={(value) => handleInputChange('loyaltyType', value)}
+                            options={loyaltyTypes}
+                            error={errors.loyaltyType}
                         />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Barcode Format
-                        </label>
-                        <select
-                            value={cardData.barcodeFormat || 'QR'}
-                            onChange={(e) => handleFieldChange('barcodeFormat', e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="QR">QR Code</option>
-                            <option value="PDF417">PDF417</option>
-                            <option value="Aztec">Aztec</option>
-                            <option value="Code128">Code128</option>
-                        </select>
-                    </div>
+                    </FormSection>
+
+                    {/* Design Section */}
+                    <FormSection
+                        title="Design"
+                        icon={Palette}
+                        delay={400}
+                        isVisible={isVisible}
+                    >
+                        <div className="space-y-1">
+                            <ColorPicker
+                                label="Background Color"
+                                value={cardData.backgroundColor || ''}
+                                onChange={(value) => handleInputChange('backgroundColor', value)}
+                                colorOption={colorOption}
+                                error={errors.backgroundColor}
+                            />
+                        </div>
+                    </FormSection>
+
+                    {/* Basic Information */}
+                    <FormSection
+                        title="Basic Information"
+                        icon={Edit3}
+                        delay={200}
+                        isVisible={isVisible}
+                    >
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <AnimatedInput
+                                    label="Card Title"
+                                    icon={Building}
+                                    value={cardData.organizationName || ''}
+                                    onChange={(value) => handleInputChange('organizationName', value)}
+                                    error={errors.organizationName}
+                                    placeholder="Enter organization name"
+                                    required
+                                />
+                                <AnimatedInput
+                                    label="Total Stamps"
+                                    icon={Building}
+                                    value={cardData.organizationName || ''}
+                                    onChange={(value) => handleInputChange('organizationName', value)}
+                                    error={errors.organizationName}
+                                    placeholder="Enter organization name"
+                                    required
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <AnimatedInput
+                                    label="Card Logo"
+                                    icon={Building}
+                                    value={cardData.organizationName || ''}
+                                    onChange={(value) => handleInputChange('organizationName', value)}
+                                    error={errors.organizationName}
+                                    placeholder="Enter organization name"
+                                    required
+                                />
+                                <AnimatedInput
+                                    label="Card Background Image"
+                                    icon={Building}
+                                    value={cardData.organizationName || ''}
+                                    onChange={(value) => handleInputChange('organizationName', value)}
+                                    error={errors.organizationName}
+                                    placeholder="Enter organization name"
+                                    required
+                                />
+                            </div>
+
+                        </div>
+                    </FormSection>
+
+
+                    {/* Barcode Section */}
+                    <FormSection
+                        title="Barcode"
+                        icon={QrCode}
+                        delay={800}
+                        isVisible={isVisible}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AnimatedInput
+                                label="Barcode Message"
+                                icon={QrCode}
+                                value={cardData.barcodeMessage || ''}
+                                onChange={(value) => handleInputChange('barcodeMessage', value)}
+                                placeholder="Enter barcode message"
+                            />
+
+                            <AnimatedSelect
+                                label="Barcode Format"
+                                icon={QrCode}
+                                value={cardData.barcodeFormat || 'QR'}
+                                onChange={(value) => handleInputChange('barcodeFormat', value)}
+                                options={barcodeOptions}
+                            />
+                        </div>
+                    </FormSection>
                 </div>
-            </div>
+            </AnimatedCardContent>
         </div>
     );
-};
+});
+
+WalletForm.displayName = 'WalletForm';
 
 export default WalletForm;
