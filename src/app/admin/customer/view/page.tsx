@@ -62,6 +62,7 @@ const Dashboard = () => {
 
       <div className="mt-5 grid grid-cols-1 gap-5">
         <Table
+          isLoading={null}
           data={customersData || []}
           columns={columns}
           onDetail={handleDetailClick}
@@ -74,6 +75,14 @@ const Dashboard = () => {
         title={'Customer Detail'}
         size="4xl"
         handlePrint={undefined}
+        showModalBackButton={undefined}
+        handleClickBack={undefined}
+        headerTitle={undefined}
+        headerDescription={undefined}
+        showFooter={undefined}
+        showFooterCancelButton={undefined}
+        footerConfirmation={undefined}
+        footerConfirmButtonIcon={undefined}
       >
         <CustomerDetail
           customer={editRowData}

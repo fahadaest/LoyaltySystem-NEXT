@@ -133,6 +133,70 @@ const WalletForm = forwardRef(({
         }
     };
 
+    // Handle stamp collected image change
+    const handleStampCollectedImageChange = (imageUrl, blob) => {
+        console.log('Stamp collected image change:', { imageUrl, blob });
+
+        // Check if this is a removal case (empty imageUrl and no blob)
+        if ((!imageUrl || imageUrl === '') && !blob) {
+            console.log('Removing stamp collected image');
+            // Clean up existing blob URL if it exists
+            if (cardData.stampCollectedImgUrl && cardData.stampCollectedImgUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(cardData.stampCollectedImgUrl);
+            }
+
+            setCardData(prev => ({
+                ...prev,
+                stampCollectedImg: null,
+                stampCollectedImgUrl: ''
+            }));
+        } else {
+            // Normal case - set both blob and URL
+            setCardData(prev => ({
+                ...prev,
+                stampCollectedImg: blob || prev.stampCollectedImg,
+                stampCollectedImgUrl: imageUrl || prev.stampCollectedImgUrl || (blob ? URL.createObjectURL(blob) : '')
+            }));
+        }
+
+        // Clear any stamp collected image errors
+        if (errors.stampCollectedImg) {
+            setErrors(prev => ({ ...prev, stampCollectedImg: '' }));
+        }
+    };
+
+    // Handle uncollected stamp image change
+    const handleNoStampCollectedImageChange = (imageUrl, blob) => {
+        console.log('Uncollected stamp image change:', { imageUrl, blob });
+
+        // Check if this is a removal case (empty imageUrl and no blob)
+        if ((!imageUrl || imageUrl === '') && !blob) {
+            console.log('Removing uncollected stamp image');
+            // Clean up existing blob URL if it exists
+            if (cardData.noStampCollectedImgUrl && cardData.noStampCollectedImgUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(cardData.noStampCollectedImgUrl);
+            }
+
+            setCardData(prev => ({
+                ...prev,
+                noStampCollectedImg: null,
+                noStampCollectedImgUrl: ''
+            }));
+        } else {
+            // Normal case - set both blob and URL
+            setCardData(prev => ({
+                ...prev,
+                noStampCollectedImg: blob || prev.noStampCollectedImg,
+                noStampCollectedImgUrl: imageUrl || prev.noStampCollectedImgUrl || (blob ? URL.createObjectURL(blob) : '')
+            }));
+        }
+
+        // Clear any uncollected stamp image errors
+        if (errors.noStampCollectedImg) {
+            setErrors(prev => ({ ...prev, noStampCollectedImg: '' }));
+        }
+    };
+
     const validateForm = () => {
         const newErrors = {};
         let isValid = true;
@@ -239,19 +303,7 @@ const WalletForm = forwardRef(({
                                     placeholder="Enter organization name"
                                     required
                                 />
-                                <AnimatedInput
-                                    label="Total Stamps"
-                                    icon={Building}
-                                    value={cardData.totalStamps || ''}
-                                    onChange={(value) => handleInputChange('totalStamps', value)}
-                                    error={errors.totalStamps}
-                                    placeholder="Enter total number of stamps"
-                                    type="number"
-                                />
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Logo Image Selector */}
                                 <ImageSelector
                                     label="Card Logo"
                                     value={cardData.logoImageUrl || ''}
@@ -263,19 +315,53 @@ const WalletForm = forwardRef(({
                                     maxWidth={200}
                                     maxHeight={200}
                                 />
+                            </div>
 
-                                {/* Background Image Selector */}
-                                <ImageSelector
-                                    label="Card Background Image"
-                                    value={cardData.backgroundImageUrl || ''}
-                                    onChange={handleBackgroundImageChange}
-                                    onBlobChange={(blob) => handleBackgroundImageChange('', blob)}
-                                    aspectRatio={16 / 9}
-                                    error={errors.backgroundImage}
-                                    placeholder="Upload background image"
-                                    maxWidth={400}
-                                    maxHeight={225}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                {/* Background Image Selector - Takes 2 columns */}
+                                <div className="md:col-span-2">
+                                    <ImageSelector
+                                        label="Card Background Image"
+                                        value={cardData.backgroundImageUrl || ''}
+                                        onChange={handleBackgroundImageChange}
+                                        onBlobChange={(blob) => handleBackgroundImageChange('', blob)}
+                                        aspectRatio={16 / 9}
+                                        error={errors.backgroundImage}
+                                        placeholder="Upload background image"
+                                        maxWidth={400}
+                                        maxHeight={225}
+                                    />
+                                </div>
+
+                                {cardData.cardType !== 'points' && (
+                                    <>
+                                        {/* Stamp Collected Image Selector - Takes 1 column */}
+                                        <ImageSelector
+                                            label="Stamp Collected"
+                                            value={cardData.stampCollectedImgUrl || ''}
+                                            onChange={handleStampCollectedImageChange}
+                                            onBlobChange={(blob) => handleStampCollectedImageChange('', blob)}
+                                            aspectRatio={1}
+                                            error={errors.stampCollectedImg}
+                                            placeholder="Upload stamp collected image"
+                                            maxWidth={200}
+                                            maxHeight={200}
+                                        />
+
+                                        {/* Uncollected Stamp Image Selector - Takes 1 column */}
+                                        <ImageSelector
+                                            label="Uncollected Stamp"
+                                            value={cardData.noStampCollectedImgUrl || ''}
+                                            onChange={handleNoStampCollectedImageChange}
+                                            onBlobChange={(blob) => handleNoStampCollectedImageChange('', blob)}
+                                            aspectRatio={1}
+                                            error={errors.noStampCollectedImg}
+                                            placeholder="Upload uncollected stamp image"
+                                            maxWidth={200}
+                                            maxHeight={200}
+                                        />
+                                    </>
+                                )}
                             </div>
                         </div>
                     </FormSection>

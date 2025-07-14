@@ -34,27 +34,27 @@ const ManagersDashboard = () => {
     {
       accessorKey: "id",
       header: "ID",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.id}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.id}</p>,
     },
     {
       accessorKey: "firstName",
       header: "First Name",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.firstName}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.firstName}</p>,
     },
     {
       accessorKey: "lastName",
       header: "Last Name",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.lastName}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.lastName}</p>,
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.email}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.email}</p>,
     },
     {
       accessorKey: "permissions",
       header: "Permissions",
-      cell: (info: any) => {
+      cell: (info) => {
         const permissionCount = info.row.original.permissionIds?.length || 0;
         const permissionModules = info.row.original.permissionIds?.map(id => {
           const permission = permissions.find(p => p.value === id);
@@ -79,7 +79,7 @@ const ManagersDashboard = () => {
     {
       accessorKey: "status",
       header: "Status",
-      cell: (info: any) => (
+      cell: (info) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
           Active
         </span>
@@ -204,6 +204,12 @@ const ManagersDashboard = () => {
         footerConfirmButtonText={editRowData ? 'Update Manager' : 'Create Manager'}
         isLoading={isCreatingManager || isUpdatingManager}
         showFooter={true}
+        headerTitle={undefined}
+        headerDescription={undefined}
+        showFooterCancelButton={undefined}
+        footerConfirmButtonIcon={undefined}
+        showModalBackButton={undefined}
+        handleClickBack={undefined}
       >
         <AddManagerForm
           ref={formRef}

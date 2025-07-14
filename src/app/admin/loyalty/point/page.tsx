@@ -168,6 +168,14 @@ const Dashboard = () => {
         title="Add Point Loyalty"
         handlePrint={null}
         size="4xl"
+        headerTitle={undefined}
+        headerDescription={undefined}
+        showFooter={undefined}
+        showFooterCancelButton={undefined}
+        footerConfirmation={undefined}
+        footerConfirmButtonIcon={undefined}
+        showModalBackButton={undefined}
+        handleClickBack={undefined}
       >
         <AddLoyalty
           sourcePage="points"
@@ -184,7 +192,16 @@ const Dashboard = () => {
         onConfirm={handleDeleteLoyalty}
         itemName={''} />
 
-      <CustomModal isOpen={isViewModalOpen} onClose={closeViewModal} handlePrint={handlePrint} title="Real-Time Banner Preview" size="lg">
+      <CustomModal
+        headerTitle={undefined}
+        headerDescription={undefined}
+        showFooter={undefined}
+        showFooterCancelButton={undefined}
+        footerConfirmation={undefined}
+        footerConfirmButtonIcon={undefined}
+        showModalBackButton={undefined}
+        handleClickBack={undefined}
+        isOpen={isViewModalOpen} onClose={closeViewModal} handlePrint={handlePrint} title="Real-Time Banner Preview" size="lg">
         <div ref={printRef}>
           <LoyaltyBannerPreview
             registerCustomerLink={registerCustomerLink}

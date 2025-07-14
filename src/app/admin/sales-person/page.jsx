@@ -41,27 +41,27 @@ const Dashboard = () => {
     {
       accessorKey: "id",
       header: "ID",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.id}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.id}</p>,
     },
     {
       accessorKey: "firstName",
       header: "First Name",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.firstName}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.firstName}</p>,
     },
     {
       accessorKey: "lastName",
       header: "Last Name",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.lastName}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.lastName}</p>,
     },
     {
       accessorKey: "email",
       header: "Email",
-      cell: (info: any) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.email}</p>,
+      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.email}</p>,
     },
     {
       accessorKey: "manager",
       header: "Manager",
-      cell: (info: any) => {
+      cell: (info) => {
         const manager = mockManagers.find(m => m.value === info.row.original.managerId);
         return <p className="text-sm text-gray-800 dark:text-white">{manager?.label || 'N/A'}</p>;
       },
@@ -69,7 +69,7 @@ const Dashboard = () => {
     {
       accessorKey: "permissions",
       header: "Permissions",
-      cell: (info: any) => {
+      cell: (info) => {
         const permissionCount = info.row.original.permissionIds?.length || 0;
         const permissionNames = info.row.original.permissionIds?.map(id => {
           const permission = permissions.find(p => p.value === id);

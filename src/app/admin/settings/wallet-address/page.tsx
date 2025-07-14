@@ -107,7 +107,7 @@ const Dashboard = () => {
           columns={columns}
           onDelete={openDeleteModal}
           onEdit={handleEditClick}
-        />
+          isLoading={false} />
       </div>
 
       <CustomModal
@@ -116,7 +116,13 @@ const Dashboard = () => {
         title={editRowData ? "Edit Address" : "Add Address"}
         handlePrint={null}
         size="2xl"
-      >
+        showModalBackButton={false}
+        handleClickBack={() => { }}
+        headerTitle={editRowData ? "Edit Address" : "Add Address"}
+        headerDescription=""
+        showFooter={false}
+        showFooterCancelButton={false}
+        footerConfirmation={false} footerConfirmButtonIcon={undefined}      >
         <AddressSelectionComponent
           onClose={onClose}
           editRowData={editRowData}

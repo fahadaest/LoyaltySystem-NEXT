@@ -34,7 +34,8 @@ const ProfileOverview = () => {
         onClose={closeModal}
         title="Edit Profile"
         size="lg"
-        handlePrint={undefined}      >
+        handlePrint={undefined}
+        showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}     >
         <EditProfile data={data} onClose={closeModal} />
       </CustomModal>
     </div>

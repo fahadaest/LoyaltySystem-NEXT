@@ -117,7 +117,8 @@ const Dashboard = () => {
         onClose={onClose}
         title={selectedProductSize ? "Edit Product Size" : "Add Product Size"}
         size="md"
-        handlePrint={undefined}      >
+        handlePrint={undefined}
+        showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}       >
         <AddProductSizeComponent productSize={selectedProductSize} onClose={onClose} />
       </CustomModal>
 

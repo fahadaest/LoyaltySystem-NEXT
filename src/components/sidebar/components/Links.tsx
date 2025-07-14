@@ -2,6 +2,8 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import NavLink from 'components/link/NavLink';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+// Replace DashIcon with a valid icon or import your custom DashIcon below
+import { LayoutDashboard } from 'lucide-react'; // Example icon
 
 export const SidebarLinks = ({
   routes,
@@ -85,7 +87,8 @@ export const SidebarLinks = ({
                   }`}
               >
                 <span className="flex h-5 w-5 items-center justify-center text-lg">
-                  {route.icon || <DashIcon />}
+                  {/* {route.icon || <DashIcon />} */}
+                  {route.icon}
                 </span>
                 <p className="ml-4 font-medium">{route.name}</p>
                 <span className="ml-auto">

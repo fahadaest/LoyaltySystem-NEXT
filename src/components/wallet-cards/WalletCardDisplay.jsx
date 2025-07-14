@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { FiEdit3, FiTrash2, FiCopy, FiToggleLeft, FiToggleRight, FiDownload } from 'react-icons/fi';
 import { BiQrScan } from 'react-icons/bi';
 import { MdLocationOn } from 'react-icons/md';
+import WalletCard from './WalletCard'; // Import the WalletCard component
+import PhonePlatformToggle from './PhonePlatformToggle'; // Import the new toggle component
 
 const WalletCardDisplay = ({
     card,
@@ -12,6 +14,7 @@ const WalletCardDisplay = ({
     onGeneratePass
 }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [platform, setPlatform] = useState('iphone'); // 'iphone' or 'android'
 
     // Parse JSON fields safely
     const parseField = (field) => {
@@ -30,126 +33,93 @@ const WalletCardDisplay = ({
     const auxiliaryFields = parseField(card.auxiliaryFields);
 
     const getCardTypeIcon = (type) => {
-        return type === 'point' ? '🏆' : '🛍️';
+        return type === 'points' ? '🏆' : '🎫';
     };
 
     const getCardTypeBadge = (type) => {
         const config = {
-            point: { label: 'Points Card', class: 'bg-blue-100 text-blue-800' },
+            points: { label: 'Points Card', class: 'bg-blue-100 text-blue-800' },
             product: { label: 'Product Card', class: 'bg-green-100 text-green-800' }
         };
-        return config[type] || config.point;
+        return config[type] || config.points;
     };
+
+    // Transform card data to match WalletCard component expectations
+    const transformCardData = (card) => {
+        return {
+            ...card,
+            // Ensure primary fields are properly formatted
+            primaryFields: primaryFields,
+            secondaryFields: secondaryFields,
+            auxiliaryFields: auxiliaryFields,
+
+            // Map database fields to component expected fields
+            rewardQuantity: card.rewardQuantity || 10,
+            collectedStamps: card.collectedStamps || 3,
+            currentStamps: card.currentStamps || 3,
+
+            // Points related fields
+            pointsAmount: card.pointsAmount || '100 points',
+            pointsSpendAmount: card.spendAmount || '100',
+            pointsReward: card.earnPoints || '100',
+            pointsRewardAmount: card.pointsRewardAmount || '10',
+
+            // Stamps related fields
+            stampsCount: card.stampsCount,
+            rewardsCount: card.rewardsCount || '0',
+
+            // Image fields
+            logoImageUrl: card.logoImageUrl || card.logoImage,
+            backgroundImageUrl: card.backgroundImageUrl || card.backgroundImage,
+            stampCollectedImgUrl: card.stampCollectedImgUrl || card.stampCollectedImg,
+            noStampCollectedImgUrl: card.noStampCollectedImgUrl || card.noStampCollectedImg,
+        };
+    };
+
+    const transformedCardData = transformCardData(card);
 
     return (
         <div
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200"
+            className="inline-block bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Card Preview */}
-            <div className="relative p-6">
-                {/* Status Badge */}
-                <div className="absolute top-4 right-4 flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCardTypeBadge(card.cardType).class}`}>
-                        {getCardTypeBadge(card.cardType).label}
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${card.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                        {card.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                </div>
-
-                {/* Wallet Card Preview */}
-                <div
-                    className="rounded-lg p-4 text-white relative overflow-hidden mb-4 mt-8"
-                    style={{
-                        background: card.backgroundColor || '#1a1a1a',
-                        minHeight: '180px'
-                    }}
-                >
-                    {/* Card Header */}
-                    <div className="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 className="text-lg font-bold">{card.organizationName}</h3>
-                            <p className="text-sm opacity-90">{card.logoText}</p>
+            {/* Header with Title and Status */}
+            <div className="px-4 py-3 border-b border-gray-100">
+                <div className="flex items-center justify-between min-w-0">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="min-w-0 flex-1">
+                            <h3 className="text-sm font-semibold text-gray-900 truncate">{card.cardName}</h3>
                         </div>
-                        <div className="text-2xl">{getCardTypeIcon(card.cardType)}</div>
                     </div>
-
-                    {/* Primary Field */}
-                    {primaryFields[0] && (
-                        <div className="mb-3">
-                            <p className="text-xs opacity-80">{primaryFields[0].label}</p>
-                            <p className="text-xl font-bold">{primaryFields[0].value}</p>
-                        </div>
-                    )}
-
-                    {/* Secondary Fields */}
-                    {secondaryFields.length > 0 && (
-                        <div className="grid grid-cols-2 gap-3 mb-2">
-                            {secondaryFields.slice(0, 2).map((field, index) => (
-                                <div key={index}>
-                                    <p className="text-xs opacity-80">{field.label}</p>
-                                    <p className="text-sm font-semibold">{field.value}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Auxiliary Fields */}
-                    {auxiliaryFields.length > 0 && (
-                        <div className="grid grid-cols-2 gap-3 text-xs">
-                            {auxiliaryFields.slice(0, 2).map((field, index) => (
-                                <div key={index}>
-                                    <p className="opacity-80">{field.label}</p>
-                                    <p className="font-semibold">{field.value}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Barcode indicator */}
-                    {card.barcodeMessage && (
-                        <div className="absolute bottom-2 right-2">
-                            <BiQrScan className="w-6 h-6 opacity-60" />
-                        </div>
-                    )}
-                </div>
-
-                {/* Card Info */}
-                <div className="space-y-2">
-                    <h4 className="font-semibold text-gray-900 text-lg">{card.cardName}</h4>
-                    {card.description && (
-                        <p className="text-gray-600 text-sm">{card.description}</p>
-                    )}
-
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>Pass ID: {card.passTypeIdentifier}</span>
-                        {card.locations?.length > 0 && (
-                            <span className="flex items-center gap-1">
-                                <MdLocationOn className="w-4 h-4" />
-                                {card.locations.length} location{card.locations.length > 1 ? 's' : ''}
-                            </span>
-                        )}
-                    </div>
-
-                    <div className="text-xs text-gray-400">
-                        Created: {new Date(card.createdAt).toLocaleDateString()}
-                        {card.admin && (
-                            <span className="ml-2">
-                                by {card.admin.firstName} {card.admin.lastName}
-                            </span>
-                        )}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCardTypeBadge(card.cardType).class}`}>
+                            {getCardTypeBadge(card.cardType).label}
+                        </span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${card.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                            {card.isActive ? 'Active' : 'Inactive'}
+                        </span>
                     </div>
                 </div>
             </div>
 
+            {/* Card Preview Section */}
+            <div className="p-2">
+                {/* Wallet Card Preview - Using actual WalletCard component */}
+                <div className="flex justify-center">
+                    <WalletCard
+                        cardData={transformedCardData}
+                        platform={platform === 'iphone' ? 'ios' : 'android'}
+                    />
+                </div>
+            </div>
+
             {/* Action Buttons */}
-            <div className={`border-t border-gray-200 p-4 transition-all duration-300 ${isHovered ? 'bg-gray-50' : 'bg-white'
+            <div className={`border-t border-gray-200 px-4 py-3 transition-all duration-300 ${isHovered ? 'bg-gray-50' : 'bg-white'
                 }`}>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                         <button
                             onClick={() => onEdit(card)}
                             className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -186,13 +156,12 @@ const WalletCardDisplay = ({
                         </button>
                     </div>
 
-                    <button
-                        onClick={() => onGeneratePass(card)}
-                        className="px-4 py-2 bg-brandGreen text-white rounded-lg hover:bg-brandGreen/90 transition-colors text-sm font-medium flex items-center gap-2"
-                    >
-                        <FiDownload className="w-4 h-4" />
-                        Generate Pass
-                    </button>
+                    <PhonePlatformToggle
+                        phoneType={platform}
+                        setPhoneType={setPlatform}
+                        size="small"
+                        variant="horizontal"
+                    />
                 </div>
             </div>
         </div>

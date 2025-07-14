@@ -116,8 +116,7 @@ const Dashboard = () => {
           data={beacons || []}
           columns={columns}
           onDelete={openDeleteModal}
-          onEdit={handleEditClick}
-        />
+          onEdit={handleEditClick} isLoading={false} />
       </div>
 
       <CustomModal
@@ -125,8 +124,7 @@ const Dashboard = () => {
         onClose={onClose}
         title={editRowData ? 'Edit Beacon' : 'Add Beacon'}
         size="lg"
-        handlePrint={undefined}
-      >
+        handlePrint={undefined} showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}      >
         <AddBeacons
           onClose={onClose}
           editRowData={editRowData}

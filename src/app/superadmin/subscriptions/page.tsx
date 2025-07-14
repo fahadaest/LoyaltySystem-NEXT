@@ -176,8 +176,7 @@ export default function SubscriptionsPage() {
             onClose={onClose}
             title="Subscription Details"
             size="2xl"
-            handlePrint={undefined}
-          >
+            handlePrint={undefined} showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}          >
             <SubscriptionDetails subscription={selectedSubscription} />
           </CustomModal>
         ) : (
@@ -186,8 +185,7 @@ export default function SubscriptionsPage() {
             onClose={onClose}
             title={selectedSubscription ? 'Edit Subscription' : 'Create New Subscription'}
             size="2xl"
-            handlePrint={undefined}
-          >
+            handlePrint={undefined} showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}         >
             <SubscriptionForm
               mode={selectedSubscription ? 'edit' : 'create'}
               subscription={selectedSubscription}

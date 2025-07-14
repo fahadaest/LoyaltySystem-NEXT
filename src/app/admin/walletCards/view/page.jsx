@@ -47,6 +47,13 @@ const Dashboard = () => {
     description: '',
     logoImage: null,
     backgroundImage: null,
+    stampCollectedImg: null,
+    noStampCollectedImg: null,
+    rewardQuantity: 10,
+    rewardsCount: 0,
+    pointsSpendAmount: 100,
+    pointsAmount: 100,
+    pointsRewardAmount: 10,
     organizationName: 'Codehive',
     logoText: '',
     foregroundColor: '#FFFFFF',
@@ -54,7 +61,8 @@ const Dashboard = () => {
     labelColor: '#FFFFFF',
     barcodeMessage: '',
     barcodeFormat: 'QR',
-    primaryFields: [{ key: 'balance', label: 'Balance', value: '$0.00' }],
+    productCardPrimaryFields: [{}],
+    primaryFields: [{ key: 'STAMPS UNTIL REWARD', label: 'stamps_until_reward', value: '7' }],
     secondaryFields: [
       { key: 'member-since', label: 'Member Since', value: '2024' },
       { key: 'status', label: 'Status', value: 'Active' }
@@ -90,6 +98,14 @@ const Dashboard = () => {
 
       if (cardData.backgroundImage) {
         formData.append('backgroundImage', cardData.backgroundImage, 'background.jpg');
+      }
+
+      if (cardData.stampCollectedImg) {
+        formData.append('stampCollectedImg', cardData.stampCollectedImg, 'stampCollectedImg.jpg');
+      }
+
+      if (cardData.noStampCollectedImg) {
+        formData.append('noStampCollectedImg', cardData.noStampCollectedImg, 'noStampCollectedImg.jpg');
       }
 
       let result;
@@ -332,7 +348,7 @@ const Dashboard = () => {
           />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
           {cards.map((card) => (
             <WalletCardDisplay
               key={card.id}

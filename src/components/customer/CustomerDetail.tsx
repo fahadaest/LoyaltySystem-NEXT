@@ -228,8 +228,7 @@ export default function CustomerDetail({
                     </h3>
                     <Table
                         data={pointLoyalties}
-                        columns={pointLoyaltyColumns}
-                    />
+                        columns={pointLoyaltyColumns} isLoading={false} />
                 </div>
             )}
 
@@ -241,8 +240,7 @@ export default function CustomerDetail({
                     </h3>
                     <Table
                         data={productLoyalties}
-                        columns={productLoyaltyColumns}
-                    />
+                        columns={productLoyaltyColumns} isLoading={false} />
                 </div>
             )}
 

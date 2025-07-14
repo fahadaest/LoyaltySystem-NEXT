@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import React from 'react';
 
 const AnimatedInput = ({
     label,
@@ -13,16 +13,12 @@ const AnimatedInput = ({
     className = '',
     ...props
 }) => {
-    const [isAnimating, setIsAnimating] = useState(false);
-
     const hasError = !!error;
-    const hasValue = value && value.trim() !== '';
+    // Handle both string and number values properly
+    const hasValue = value !== undefined && value !== null && value !== '';
 
     const handleChange = (e) => {
         onChange(e.target.value);
-
-        setIsAnimating(true);
-        setTimeout(() => setIsAnimating(false), 150);
     };
 
     return (
@@ -46,7 +42,7 @@ const AnimatedInput = ({
             <div className="relative group">
                 <input
                     type={type}
-                    value={value}
+                    value={value || ''}
                     onChange={handleChange}
                     placeholder={placeholder}
                     className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 
@@ -54,22 +50,10 @@ const AnimatedInput = ({
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                             : 'border-gray-200 focus:border-brandGreen focus:ring-brandGreen dark:border-gray-600 group-hover:border-gray-300'
                         }  
-                        focus:outline-none focus:ring-2 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 
-                        ${isAnimating ? 'scale-105' : 'scale-100'}
+                        focus:outline-none focus:ring-2 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white
                         transform`}
                     {...props}
                 />
-
-                {/* Input Icon */}
-                {Icon && (
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-150">
-                        <Icon
-                            size={18}
-                            className={`${hasError ? 'text-red-500' : hasValue ? 'text-brandGreen' : 'text-gray-400'} 
-                                ${isAnimating ? 'scale-110' : 'scale-100'} transform transition-all duration-150`}
-                        />
-                    </div>
-                )}
 
                 {/* Focus Ring Animation */}
                 <div className="absolute inset-0 rounded-xl bg-brandGreen opacity-0 group-focus-within:opacity-10 transition-opacity duration-200 pointer-events-none"></div>

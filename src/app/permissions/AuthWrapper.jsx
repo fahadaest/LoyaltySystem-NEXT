@@ -2,13 +2,9 @@ import React, { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 
-interface AuthWrapperProps {
-    children: React.ReactNode;
-}
-
 const publicRoutes = ['/login', '/register', '/forgot-password'];
 
-export const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
+export const AuthWrapper = ({ children }) => {
     const { isAuthenticated, isInitialized } = useAuth();
     const router = useRouter();
 
