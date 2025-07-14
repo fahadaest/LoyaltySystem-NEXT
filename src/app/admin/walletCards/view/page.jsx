@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [editMode, setEditMode] = useState(false);
   const [showFooter, setShowFooter] = useState(true);
   const [showFooterCancel, setShowFooterCancel] = useState(true);
+  const [phoneType, setPhoneType] = useState('iphone');
 
   const handleClickBack = () => {
     if (editMode) {
@@ -42,9 +43,11 @@ const Dashboard = () => {
   const [updateWalletCard, { isLoading: isUpdating }] = useUpdateWalletCardMutation();
   const [cardData, setCardData] = useState({
     cardName: '',
-    cardType: 'point',
+    cardType: 'product',
     description: '',
-    organizationName: '',
+    logoImage: null,
+    backgroundImage: null,
+    organizationName: 'Codehive',
     logoText: '',
     foregroundColor: '#FFFFFF',
     backgroundColor: '#36a18f',
@@ -68,14 +71,26 @@ const Dashboard = () => {
       const formData = new FormData();
 
       Object.keys(cardData).forEach(key => {
-        if (cardData[key] !== null && cardData[key] !== undefined) {
-          if (typeof cardData[key] === 'object') {
-            formData.append(key, JSON.stringify(cardData[key]));
-          } else {
-            formData.append(key, cardData[key]);
+        if (!['logoImage', 'backgroundImage', 'logoImageUrl', 'backgroundImageUrl'].includes(key)) {
+          const value = cardData[key];
+          if (value !== null && value !== undefined && value !== '') {
+            if (typeof value === 'object') {
+              formData.append(key, JSON.stringify(value));
+            } else {
+              formData.append(key, value);
+            }
           }
         }
       });
+
+      // Handle image blobs separately
+      if (cardData.logoImage) {
+        formData.append('logoImage', cardData.logoImage, 'logo.jpg');
+      }
+
+      if (cardData.backgroundImage) {
+        formData.append('backgroundImage', cardData.backgroundImage, 'background.jpg');
+      }
 
       let result;
       if (editMode && cardId) {
@@ -90,11 +105,10 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error saving wallet card:', error);
     }
-  }
+  };
 
 
-
-
+  console.log("cardData", cardData)
 
 
 
@@ -362,9 +376,11 @@ const Dashboard = () => {
           setShowModalBackButton={setShowModalBackButton}
           currentModalView={currentModalView}
           setCurrentModalView={setCurrentModalView}
-          cardData={cardData}
+          cardData={cardData} s
           setCardData={setCardData}
           colorOption={colorOptions}
+          phoneType={phoneType}
+          setPhoneType={setPhoneType}
 
 
 

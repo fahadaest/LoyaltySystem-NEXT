@@ -8,18 +8,21 @@ import AnimatedButton from '../ui/AnimatedButton';
 import { AnimatedCard, AnimatedCardContent } from '../ui/AnimatedCard';
 import ColorPicker from 'components/ui/ColorPicker';
 import CardTypeSelector from '../ui/CardTypeSelector';
+import ImageSelector from '../ui/ImageSelector'; // Import the new ImageSelector
 import { loyaltyTypes } from 'utils/loyaltyTypes';
 import { barcodeOptions } from 'utils/barcodeOptions';
 
 const WalletForm = forwardRef(({
     cardData,
-    handleFieldChange,
+    setCardData,
     colorOption,
     onSubmit,
     isLoading = false
 }, ref) => {
     const [errors, setErrors] = useState({});
     const [isVisible, setIsVisible] = useState(false);
+
+    console.log("cardData", cardData)
 
     useImperativeHandle(ref, () => ({
         handleSubmit: validateAndSubmit
@@ -56,10 +59,77 @@ const WalletForm = forwardRef(({
     };
 
     const handleInputChange = (key, value) => {
-        handleFieldChange(key, value);
+        setCardData(prev => ({
+            ...prev,
+            [key]: value
+        }));
 
         if (errors[key]) {
             setErrors(prev => ({ ...prev, [key]: '' }));
+        }
+    };
+
+    // Handle logo image change - store blob directly in cardData.logoImage
+    const handleLogoImageChange = (imageUrl, blob) => {
+        console.log('Logo image change:', { imageUrl, blob });
+
+        // Check if this is a removal case (empty imageUrl and no blob)
+        if ((!imageUrl || imageUrl === '') && !blob) {
+            console.log('Removing logo image');
+            // Clean up existing blob URL if it exists
+            if (cardData.logoImageUrl && cardData.logoImageUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(cardData.logoImageUrl);
+            }
+
+            setCardData(prev => ({
+                ...prev,
+                logoImage: null,
+                logoImageUrl: ''
+            }));
+        } else {
+            // Normal case - set both blob and URL
+            setCardData(prev => ({
+                ...prev,
+                logoImage: blob || prev.logoImage,
+                logoImageUrl: imageUrl || prev.logoImageUrl || (blob ? URL.createObjectURL(blob) : '')
+            }));
+        }
+
+        // Clear any logo image errors
+        if (errors.logoImage) {
+            setErrors(prev => ({ ...prev, logoImage: '' }));
+        }
+    };
+
+    // Handle background image change - store blob directly in cardData.backgroundImage
+    const handleBackgroundImageChange = (imageUrl, blob) => {
+        console.log('Background image change:', { imageUrl, blob });
+
+        // Check if this is a removal case (empty imageUrl and no blob)
+        if ((!imageUrl || imageUrl === '') && !blob) {
+            console.log('Removing background image');
+            // Clean up existing blob URL if it exists
+            if (cardData.backgroundImageUrl && cardData.backgroundImageUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(cardData.backgroundImageUrl);
+            }
+
+            setCardData(prev => ({
+                ...prev,
+                backgroundImage: null,
+                backgroundImageUrl: ''
+            }));
+        } else {
+            // Normal case - set both blob and URL
+            setCardData(prev => ({
+                ...prev,
+                backgroundImage: blob || prev.backgroundImage,
+                backgroundImageUrl: imageUrl || prev.backgroundImageUrl || (blob ? URL.createObjectURL(blob) : '')
+            }));
+        }
+
+        // Clear any background image errors
+        if (errors.backgroundImage) {
+            setErrors(prev => ({ ...prev, backgroundImage: '' }));
         }
     };
 
@@ -93,10 +163,31 @@ const WalletForm = forwardRef(({
     };
 
     return (
-        <div className={`max-w-4xl mx-auto  transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className={`max-w-4xl mx-auto transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
 
             <AnimatedCardContent>
                 <div className="space-y-8">
+
+                    <FormSection
+                        icon={Edit3}
+                        delay={200}
+                        isVisible={isVisible}
+                    >
+                        <div className="space-y-1">
+                            <div className="grid grid-cols-1 gap-4">
+                                <AnimatedInput
+                                    label="Card Name"
+                                    icon={Building}
+                                    value={cardData.cardName || ''}
+                                    onChange={(value) => handleInputChange('cardName', value)}
+                                    error={errors.cardName}
+                                    placeholder="Enter Card Name"
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </FormSection>
+
                     {/* Card Type Selection */}
                     <FormSection
                         title="Card Type"
@@ -105,10 +196,10 @@ const WalletForm = forwardRef(({
                         isVisible={isVisible}
                     >
                         <CardTypeSelector
-                            value={cardData.loyaltyType || ''}
-                            onChange={(value) => handleInputChange('loyaltyType', value)}
+                            value={cardData.cardType || ''}
+                            onChange={(value) => handleInputChange('cardType', value)}
                             options={loyaltyTypes}
-                            error={errors.loyaltyType}
+                            error={errors.cardType}
                         />
                     </FormSection>
 
@@ -151,38 +242,43 @@ const WalletForm = forwardRef(({
                                 <AnimatedInput
                                     label="Total Stamps"
                                     icon={Building}
-                                    value={cardData.organizationName || ''}
-                                    onChange={(value) => handleInputChange('organizationName', value)}
-                                    error={errors.organizationName}
-                                    placeholder="Enter organization name"
-                                    required
+                                    value={cardData.totalStamps || ''}
+                                    onChange={(value) => handleInputChange('totalStamps', value)}
+                                    error={errors.totalStamps}
+                                    placeholder="Enter total number of stamps"
+                                    type="number"
                                 />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <AnimatedInput
+                                {/* Logo Image Selector */}
+                                <ImageSelector
                                     label="Card Logo"
-                                    icon={Building}
-                                    value={cardData.organizationName || ''}
-                                    onChange={(value) => handleInputChange('organizationName', value)}
-                                    error={errors.organizationName}
-                                    placeholder="Enter organization name"
-                                    required
+                                    value={cardData.logoImageUrl || ''}
+                                    onChange={handleLogoImageChange}
+                                    onBlobChange={(blob) => handleLogoImageChange('', blob)}
+                                    aspectRatio={1}
+                                    error={errors.logoImage}
+                                    placeholder="Upload card logo"
+                                    maxWidth={200}
+                                    maxHeight={200}
                                 />
-                                <AnimatedInput
+
+                                {/* Background Image Selector */}
+                                <ImageSelector
                                     label="Card Background Image"
-                                    icon={Building}
-                                    value={cardData.organizationName || ''}
-                                    onChange={(value) => handleInputChange('organizationName', value)}
-                                    error={errors.organizationName}
-                                    placeholder="Enter organization name"
-                                    required
+                                    value={cardData.backgroundImageUrl || ''}
+                                    onChange={handleBackgroundImageChange}
+                                    onBlobChange={(blob) => handleBackgroundImageChange('', blob)}
+                                    aspectRatio={16 / 9}
+                                    error={errors.backgroundImage}
+                                    placeholder="Upload background image"
+                                    maxWidth={400}
+                                    maxHeight={225}
                                 />
                             </div>
-
                         </div>
                     </FormSection>
-
 
                     {/* Barcode Section */}
                     <FormSection

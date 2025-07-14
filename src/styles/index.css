@@ -37,3 +37,11 @@ input:checked.defaultCheckbox::before {
 input.defaultCheckbox::before path {
   fill: currentColor;
 }
+
+.image-selector-modal {
+  z-index: 999999 !important;
+}
+
+.image-selector-modal * {
+  z-index: inherit !important;
+}

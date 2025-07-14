@@ -10,7 +10,7 @@ const FormSection = ({
 }) => {
     return (
         <div
-            className={`space-y-4 transform transition-all duration-500 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'
+            className={`z-[999] space-y-4 transform transition-all duration-500 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'
                 } ${className}`}
             style={{ transitionDelay: `${delay}ms` }}
         >
