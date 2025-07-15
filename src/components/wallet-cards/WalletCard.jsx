@@ -28,10 +28,10 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
         const hasCustomStamps = cardData.stampCollectedImgUrl || cardData.noStampCollectedImgUrl;
 
         if (hasCustomStamps) {
-            // Use custom stamp images
+            // Use custom stamp images with getImageUrl
             const stampImageUrl = isCollected
-                ? (cardData.stampCollectedImgUrl || cardData.stampCollectedImg)
-                : (cardData.noStampCollectedImgUrl || cardData.noStampCollectedImg);
+                ? getImageUrl(cardData.stampCollectedImgUrl || cardData.stampCollectedImg)
+                : getImageUrl(cardData.noStampCollectedImgUrl || cardData.noStampCollectedImg);
 
             if (stampImageUrl) {
                 return (
@@ -97,9 +97,9 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                         </h1>
 
                         <div className="text-xs">
-                            {cardData.logoImageUrl || cardData.logoImage ? (
+                            {(cardData.logoImageUrl || cardData.logoImage) ? (
                                 <img
-                                    src={cardData.logoImageUrl || cardData.logoImage}
+                                    src={getImageUrl(cardData.logoImageUrl || cardData.logoImage)}
                                     alt="Logo"
                                     className="w-6 h-6 object-contain rounded"
                                 />
@@ -111,11 +111,11 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
 
                     {/* Main Content Area */}
                     <div className="relative mb-3">
-                        {cardData.backgroundImageUrl || cardData.backgroundImage ? (
+                        {(cardData.backgroundImageUrl || cardData.backgroundImage) ? (
                             <div className="w-full h-24 relative overflow-hidden">
                                 {/* Background image */}
                                 <img
-                                    src={cardData.backgroundImageUrl || cardData.backgroundImage}
+                                    src={getImageUrl(cardData.backgroundImageUrl || cardData.backgroundImage)}
                                     alt="Card background"
                                     className="w-full h-full object-cover"
                                 />
@@ -152,7 +152,7 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                             </div>
                         ) : cardData.headerImage ? (
                             <img
-                                src={cardData.headerImage}
+                                src={getImageUrl(cardData.headerImage)}
                                 alt="Card content"
                                 className="w-full h-24 object-cover"
                             />
@@ -258,9 +258,9 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                             </p>
                         </div>
                         <div className="w-8 h-8 bg-white bg-opacity-20 rounded backdrop-blur-sm flex items-center justify-center">
-                            {cardData.logoImageUrl || cardData.logoImage ? (
+                            {(cardData.logoImageUrl || cardData.logoImage) ? (
                                 <img
-                                    src={cardData.logoImageUrl || cardData.logoImage}
+                                    src={getImageUrl(cardData.logoImageUrl || cardData.logoImage)}
                                     alt="Logo"
                                     className="w-6 h-6 object-contain rounded"
                                 />

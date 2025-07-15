@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { MdFileUpload, MdAdd, MdCategory, MdCardGiftcard, MdTitle, MdNumbers, MdDescription, MdAttachMoney, MdStars } from "react-icons/md";
+import { MdFileUpload, MdAdd, MdCategory, MdCardGiftcard, MdTitle, MdNumbers, MdDescription, MdAttachMoney, MdStars, MdCreditCard } from "react-icons/md";
 import { Edit3, Palette, Star, Type, Clock, CreditCard, Building, Gift, Award, QrCode, AlertCircle } from 'lucide-react';
 import AnimatedSelect from "components/ui/AnimatedSelect";
 import AnimatedInput from "components/ui/AnimatedInput";
 import FormSection from "components/ui/FormSection";
 import { AnimatedCard, AnimatedCardContent } from "components/ui/AnimatedCard";
 import LoyaltyAdditionalDetails from "./LoyaltyAdditionalDetails";
-import Button from "components/button/Button";
-import { useDispatch } from 'react-redux';
-import { showAlert } from "store/apiEndPoints/alertSlice";
+import WalletCardSelector from "components/loyalty/WalletCardSelector";
 
 const AddLoyalty = ({
   onClose,
@@ -20,13 +18,6 @@ const AddLoyalty = ({
   updateLoyaltyFormField,
   updateLoyaltyFormData
 }) => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const timer = setTimeout(() => updateLoyaltyFormField('isVisible', true), 50);
-    return () => clearTimeout(timer);
-  }, [updateLoyaltyFormField]);
-
   const loyaltyTemplate = sourcePage === "products"
     ? [
       { value: 'general', label: 'General Loyalty' },
@@ -41,55 +32,9 @@ const AddLoyalty = ({
     value: product.id,
   }));
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("loyaltyTemplates", loyaltyFormData.selectedTemplate);
-    formData.append("rewardTitle", loyaltyFormData.rewardTitle);
-    formData.append("rewardDescription", loyaltyFormData.rewardDescription);
-    formData.append("productId", loyaltyFormData.selectedProduct);
-    formData.append("bannerTitle", loyaltyFormData.bannerTitle);
-    formData.append("templateColor", loyaltyFormData.color);
-    formData.append("rewardProductId", loyaltyFormData.rewardProduct);
-    formData.append("icon1Text", loyaltyFormData.icon1Text);
-    formData.append("icon2Text", loyaltyFormData.icon2Text);
-    formData.append("icon3Text", loyaltyFormData.icon3Text);
-    formData.append("color", loyaltyFormData.color);
-
-    if (loyaltyFormData.selectedTemplate === 'general') {
-      formData.append("purchaseQuantity", loyaltyFormData.purchaseQuantity);
-    }
-
-    if (loyaltyFormData.selectedTemplate === 'point') {
-      formData.append("spendingAmount", loyaltyFormData.spendingAmount);
-      formData.append("rewardPoints", loyaltyFormData.rewardPoints);
-      formData.append("rewardPointsEquivalent", loyaltyFormData.rewardPointsEquivalent);
-    }
-
-    if (loyaltyFormData.templateImageBlob) {
-      formData.append("templateImage", loyaltyFormData.templateImageBlob, "templateImage.png");
-    }
-
-    if (loyaltyFormData.icon1Blob) {
-      formData.append("icon1", loyaltyFormData.icon1Blob, "icon1.png");
-    }
-    if (loyaltyFormData.icon2Blob) {
-      formData.append("icon2", loyaltyFormData.icon2Blob, "icon2.png");
-    }
-    if (loyaltyFormData.icon3Blob) {
-      formData.append("icon3", loyaltyFormData.icon3Blob, "icon3.png");
-    }
-
-    if (loyaltyFormData.logoBlob) {
-      formData.append("logo", loyaltyFormData.logoBlob, "logo.png");
-    }
-
-    if (selectedLoyaltyData) {
-      onSubmit(formData, selectedLoyaltyData.id);
-    } else {
-      onSubmit(formData);
-    }
+  // Handler for wallet card selection
+  const handleWalletCardSelect = (cardId) => {
+    updateLoyaltyFormField('cardId', cardId);
   };
 
   return (
@@ -110,15 +55,15 @@ const AddLoyalty = ({
                   icon={MdCategory}
                   placeholder="Select a template"
                   options={loyaltyTemplate}
-                  value={loyaltyFormData.selectedTemplate}
-                  onChange={(value) => updateLoyaltyFormField('selectedTemplate', value)}
+                  value={loyaltyFormData.loyaltyTemplates}
+                  onChange={(value) => updateLoyaltyFormField('loyaltyTemplates', value)}
                   required
                 />
               </div>
             </FormSection>
 
             {/* General Loyalty Template Fields */}
-            {loyaltyFormData.selectedTemplate === 'general' && (
+            {loyaltyFormData.loyaltyTemplates === 'general' && (
               <FormSection
                 title="General Loyalty Configuration"
                 icon={Gift}
@@ -162,8 +107,8 @@ const AddLoyalty = ({
                       icon={MdNumbers}
                       placeholder="Enter reward quantity"
                       type="number"
-                      value={loyaltyFormData.purchaseQuantity}
-                      onChange={(value) => updateLoyaltyFormField('purchaseQuantity', value)}
+                      value={loyaltyFormData.rewardQuantity || loyaltyFormData.purchaseQuantity}
+                      onChange={(value) => updateLoyaltyFormField('rewardQuantity', value)}
                       required
                     />
                   </div>
@@ -174,8 +119,8 @@ const AddLoyalty = ({
                       icon={MdCardGiftcard}
                       placeholder="Select a Product"
                       options={productOptions}
-                      value={loyaltyFormData.selectedProduct}
-                      onChange={(value) => updateLoyaltyFormField('selectedProduct', value)}
+                      value={loyaltyFormData.productId}
+                      onChange={(value) => updateLoyaltyFormField('productId', value)}
                       required
                     />
 
@@ -184,8 +129,84 @@ const AddLoyalty = ({
                       icon={MdCardGiftcard}
                       placeholder="Select a Reward Product"
                       options={productOptions}
-                      value={loyaltyFormData.rewardProduct}
-                      onChange={(value) => updateLoyaltyFormField('rewardProduct', value)}
+                      value={loyaltyFormData.rewardProductId}
+                      onChange={(value) => updateLoyaltyFormField('rewardProductId', value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </FormSection>
+            )}
+
+            {/* Coffee Loyalty Template Fields */}
+            {loyaltyFormData.loyaltyTemplates === 'coffee' && (
+              <FormSection
+                title="Coffee Loyalty Configuration"
+                icon={Gift}
+                delay={200}
+                isVisible={loyaltyFormData.isVisible}
+              >
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedInput
+                      label="Reward Title"
+                      icon={MdTitle}
+                      placeholder="Enter Coffee Loyalty Name"
+                      value={loyaltyFormData.rewardTitle}
+                      onChange={(value) => updateLoyaltyFormField('rewardTitle', value)}
+                      required
+                    />
+
+                    <AnimatedInput
+                      label="Reward Description"
+                      icon={MdDescription}
+                      placeholder="Enter reward description"
+                      value={loyaltyFormData.rewardDescription}
+                      onChange={(value) => updateLoyaltyFormField('rewardDescription', value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedInput
+                      label="Cups to Purchase"
+                      icon={MdNumbers}
+                      placeholder="Enter number of cups to purchase"
+                      type="number"
+                      value={loyaltyFormData.purchaseQuantity}
+                      onChange={(value) => updateLoyaltyFormField('purchaseQuantity', value)}
+                      required
+                    />
+
+                    <AnimatedInput
+                      label="Free Cups Reward"
+                      icon={MdNumbers}
+                      placeholder="Enter number of free cups"
+                      type="number"
+                      value={loyaltyFormData.rewardQuantity || '1'}
+                      onChange={(value) => updateLoyaltyFormField('rewardQuantity', value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedSelect
+                      label="Select Coffee Product"
+                      icon={MdCardGiftcard}
+                      placeholder="Select a Coffee Product"
+                      options={productOptions}
+                      value={loyaltyFormData.productId}
+                      onChange={(value) => updateLoyaltyFormField('productId', value)}
+                      required
+                    />
+
+                    <AnimatedSelect
+                      label="Select Reward Coffee"
+                      icon={MdCardGiftcard}
+                      placeholder="Select a Reward Coffee"
+                      options={productOptions}
+                      value={loyaltyFormData.rewardProductId}
+                      onChange={(value) => updateLoyaltyFormField('rewardProductId', value)}
                       required
                     />
                   </div>
@@ -194,7 +215,7 @@ const AddLoyalty = ({
             )}
 
             {/* Point-Based Loyalty Template Fields */}
-            {loyaltyFormData.selectedTemplate === 'point' && (
+            {loyaltyFormData.loyaltyTemplates === 'point' && (
               <FormSection
                 title="Point-Based Loyalty Configuration"
                 icon={Star}
@@ -249,57 +270,55 @@ const AddLoyalty = ({
             )}
 
             {/* Additional Details Section */}
-            {(loyaltyFormData.selectedTemplate === 'general' || loyaltyFormData.selectedTemplate === 'point') && (
+            {(loyaltyFormData.loyaltyTemplates === 'general' ||
+              loyaltyFormData.loyaltyTemplates === 'coffee' ||
+              loyaltyFormData.loyaltyTemplates === 'point') && (
+                <FormSection
+                  title="Additional Details"
+                  icon={Palette}
+                  delay={300}
+                  isVisible={loyaltyFormData.isVisible}
+                >
+                  <LoyaltyAdditionalDetails
+                    formData={loyaltyFormData}
+                    updateFormField={updateLoyaltyFormField}
+                    selectedLoyaltyData={selectedLoyaltyData}
+                  />
+                </FormSection>
+              )}
+
+            {/* Wallet Card Selection Section */}
+            {loyaltyFormData.loyaltyTemplates && (
               <FormSection
-                title="Additional Details"
-                icon={Palette}
-                delay={300}
+                title="Wallet Card Association"
+                icon={MdCreditCard}
+                delay={150}
                 isVisible={loyaltyFormData.isVisible}
               >
-                <LoyaltyAdditionalDetails
-                  bannerTitle={loyaltyFormData.bannerTitle}
-                  setbannerTitle={(value) => updateLoyaltyFormField('bannerTitle', value)}
-                  color={loyaltyFormData.color}
-                  setColor={(value) => updateLoyaltyFormField('color', value)}
-                  logoSize={loyaltyFormData.logoSize}
-                  setLogoSize={(value) => updateLoyaltyFormField('logoSize', value)}
-                  qrSize={loyaltyFormData.qrSize}
-                  setQrSize={(value) => updateLoyaltyFormField('qrSize', value)}
-                  logo={loyaltyFormData.logo}
-                  setLogo={(value) => updateLoyaltyFormField('logo', value)}
-                  logoBlob={loyaltyFormData.logoBlob}
-                  setLogoBlob={(value) => updateLoyaltyFormField('logoBlob', value)}
-                  templateImage={loyaltyFormData.templateImage}
-                  setTemplateImage={(value) => updateLoyaltyFormField('templateImage', value)}
-                  templateImageBlob={loyaltyFormData.templateImageBlob}
-                  setTemplateImageBlob={(value) => updateLoyaltyFormField('templateImageBlob', value)}
-                  icon1Text={loyaltyFormData.icon1Text}
-                  setIcon1Text={(value) => updateLoyaltyFormField('icon1Text', value)}
-                  icon2Text={loyaltyFormData.icon2Text}
-                  setIcon2Text={(value) => updateLoyaltyFormField('icon2Text', value)}
-                  icon3Text={loyaltyFormData.icon3Text}
-                  setIcon3Text={(value) => updateLoyaltyFormField('icon3Text', value)}
-                  icon1TextSize={loyaltyFormData.icon1TextSize}
-                  setIcon1TextSize={(value) => updateLoyaltyFormField('icon1TextSize', value)}
-                  icon2TextSize={loyaltyFormData.icon2TextSize}
-                  setIcon2TextSize={(value) => updateLoyaltyFormField('icon2TextSize', value)}
-                  icon3TextSize={loyaltyFormData.icon3TextSize}
-                  setIcon3TextSize={(value) => updateLoyaltyFormField('icon3TextSize', value)}
-                  icon1={loyaltyFormData.icon1}
-                  setIcon1={(value) => updateLoyaltyFormField('icon1', value)}
-                  icon2={loyaltyFormData.icon2}
-                  setIcon2={(value) => updateLoyaltyFormField('icon2', value)}
-                  icon3={loyaltyFormData.icon3}
-                  setIcon3={(value) => updateLoyaltyFormField('icon3', value)}
-                  icon1Blob={loyaltyFormData.icon1Blob}
-                  setIcon1Blob={(value) => updateLoyaltyFormField('icon1Blob', value)}
-                  icon2Blob={loyaltyFormData.icon2Blob}
-                  setIcon2Blob={(value) => updateLoyaltyFormField('icon2Blob', value)}
-                  icon3Blob={loyaltyFormData.icon3Blob}
-                  setIcon3Blob={(value) => updateLoyaltyFormField('icon3Blob', value)}
-                  selectedLoyaltyData={selectedLoyaltyData}
+                <WalletCardSelector
+                  selectedCardId={loyaltyFormData.cardId}
+                  onCardSelect={handleWalletCardSelect}
+                  isVisible={loyaltyFormData.isVisible}
                 />
               </FormSection>
+            )}
+
+            {/* Validation Notice */}
+            {loyaltyFormData.loyaltyTemplates && !loyaltyFormData.cardId && (
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                      Wallet Card Required
+                    </h4>
+                    <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                      Please select a wallet card to associate with this loyalty campaign.
+                      This ensures customers can properly enroll and track their rewards.
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
 
           </div>

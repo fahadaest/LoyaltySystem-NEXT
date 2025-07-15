@@ -9,6 +9,8 @@ const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit, onView, onCopy }
   const [heart, setHeart] = useState(true);
   const fullImageUrl = baseUrl + product?.product?.image;
 
+  console.log("product", product)
+
   const handleView = () => {
     onView(product)
   }

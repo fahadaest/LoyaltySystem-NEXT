@@ -1,44 +1,102 @@
 import React, { useState, useEffect } from 'react';
-import InputField from 'components/fields/InputField';
-import ImageUploaderAndCropper from 'components/imageUploader/ImageUploaderAndCropper';
+import AnimatedInput from 'components/ui/AnimatedInput';
+import AnimatedSelect from 'components/ui/AnimatedSelect';
+import ImageSelector from 'components/ui/ImageSelector';
 import QRCode from 'react-qr-code';
+import { MdTitle, MdPalette, MdPhotoSizeSelectActual, MdQrCode, MdTextFields } from 'react-icons/md';
+import { Type, Palette, Image, Settings } from 'lucide-react';
+
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const LoyaltyAdditionalDetails = ({ bannerTitle, setbannerTitle, color, setColor, logoSize, setLogoSize, qrSize, setQrSize, logo, setLogo, logoBlob, setLogoBlob, templateImage, setTemplateImage, templateImageBlob, setTemplateImageBlob, icon1Text, setIcon1Text, icon2Text, setIcon2Text, icon3Text, setIcon3Text, icon1TextSize, setIcon1TextSize, icon2TextSize, setIcon2TextSize, icon3TextSize, setIcon3TextSize, icon1, setIcon1, icon2, setIcon2, icon3, setIcon3, icon1Blob, setIcon1Blob, icon2Blob, setIcon2Blob, icon3Blob, setIcon3Blob, selectedLoyaltyData }) => {
+const LoyaltyAdditionalDetails = ({
+    formData,
+    updateFormField,
+    selectedLoyaltyData
+}) => {
+    // Handle blob URL creation for preview
     useEffect(() => {
-        if (templateImageBlob) {
-            const objectUrl = URL.createObjectURL(templateImageBlob);
-            setTemplateImage(objectUrl);
+        if (formData.templateImageBlob) {
+            const objectUrl = URL.createObjectURL(formData.templateImageBlob);
+            updateFormField('templateImage', objectUrl);
             return () => URL.revokeObjectURL(objectUrl);
         }
-    }, [templateImageBlob]);
+    }, [formData.templateImageBlob, updateFormField]);
 
     useEffect(() => {
-        if (logoBlob) {
-            const objectUrl = URL.createObjectURL(logoBlob);
-            setLogo(objectUrl);
+        if (formData.logoBlob) {
+            const objectUrl = URL.createObjectURL(formData.logoBlob);
+            updateFormField('logo', objectUrl);
             return () => URL.revokeObjectURL(objectUrl);
         }
-    }, [logoBlob]);
+    }, [formData.logoBlob, updateFormField]);
 
     useEffect(() => {
-        if (icon1Blob) setIcon1(URL.createObjectURL(icon1Blob));
-    }, [icon1Blob]);
-
-    useEffect(() => {
-        if (icon2Blob) setIcon2(URL.createObjectURL(icon2Blob));
-    }, [icon2Blob]);
-
-    useEffect(() => {
-        if (icon3Blob) setIcon3(URL.createObjectURL(icon3Blob));
-    }, [icon3Blob]);
-
-    useEffect(() => {
-        if (selectedLoyaltyData) {
-            setTemplateImage(baseUrl + selectedLoyaltyData.templateImage || null);
+        if (formData.icon1Blob) {
+            const objectUrl = URL.createObjectURL(formData.icon1Blob);
+            updateFormField('icon1', objectUrl);
+            return () => URL.revokeObjectURL(objectUrl);
         }
-    }, [selectedLoyaltyData]);
+    }, [formData.icon1Blob, updateFormField]);
 
+    useEffect(() => {
+        if (formData.icon2Blob) {
+            const objectUrl = URL.createObjectURL(formData.icon2Blob);
+            updateFormField('icon2', objectUrl);
+            return () => URL.revokeObjectURL(objectUrl);
+        }
+    }, [formData.icon2Blob, updateFormField]);
+
+    useEffect(() => {
+        if (formData.icon3Blob) {
+            const objectUrl = URL.createObjectURL(formData.icon3Blob);
+            updateFormField('icon3', objectUrl);
+            return () => URL.revokeObjectURL(objectUrl);
+        }
+    }, [formData.icon3Blob, updateFormField]);
+
+    useEffect(() => {
+        if (selectedLoyaltyData?.templateImage) {
+            updateFormField('templateImage', baseUrl + selectedLoyaltyData.templateImage);
+        }
+    }, [selectedLoyaltyData, updateFormField]);
+
+    // Size options for logo and QR code
+    const logoSizeOptions = Array.from({ length: 23 }, (_, i) => ({
+        value: (30 + i * 4).toString(),
+        label: `${30 + i * 4}px`
+    }));
+
+    const qrSizeOptions = Array.from({ length: 31 }, (_, i) => ({
+        value: (40 + i * 4).toString(),
+        label: `${40 + i * 4}px`
+    }));
+
+    const textSizeOptions = Array.from({ length: 15 }, (_, i) => ({
+        value: (10 + i).toString(),
+        label: `${10 + i}px`
+    }));
+
+    // Icon configuration array to reduce repetition
+    const iconConfigs = [
+        {
+            textField: 'icon1Text',
+            sizeField: 'icon1TextSize',
+            imageField: 'icon1',
+            blobField: 'icon1Blob'
+        },
+        {
+            textField: 'icon2Text',
+            sizeField: 'icon2TextSize',
+            imageField: 'icon2',
+            blobField: 'icon2Blob'
+        },
+        {
+            textField: 'icon3Text',
+            sizeField: 'icon3TextSize',
+            imageField: 'icon3',
+            blobField: 'icon3Blob'
+        }
+    ];
 
     return (
         <div className="w-full col-span-12 flex flex-col gap-6">
@@ -51,135 +109,121 @@ const LoyaltyAdditionalDetails = ({ bannerTitle, setbannerTitle, color, setColor
                 <div className="flex flex-col space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col space-y-4">
+                            <AnimatedInput
+                                label="Banner Title"
+                                icon={MdTitle}
+                                placeholder="Enter banner title"
+                                value={formData.bannerTitle}
+                                onChange={(value) => updateFormField('bannerTitle', value)}
+                                required
+                                error={undefined}
+                            />
+
                             <div>
-                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Title</label>
-                                <InputField
-                                    variant="auth"
-                                    extra="mb-0"
-                                    placeholder="Enter title"
-                                    id="banner-title"
-                                    type="text"
-                                    value={bannerTitle}
-                                    onChange={(e) => setbannerTitle(e.target.value)} label={''} />
-                            </div>
-                            <div>
-                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Select Color</label>
+                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white flex items-center gap-2">
+                                    <Palette className="w-4 h-4" />
+                                    Select Color
+                                </label>
                                 <input
                                     type="color"
-                                    value={color}
-                                    onChange={(e) => setColor(e.target.value)}
+                                    value={formData.templateColor}
+                                    onChange={(e) => updateFormField('templateColor', e.target.value)}
                                     className="h-10 w-full cursor-pointer rounded border border-gray-300 px-2 dark:border-gray-600 dark:bg-navy-900"
                                 />
                                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                    Selected: {color}
+                                    Selected: {formData.templateColor}
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Logo Size</label>
-                                <input
-                                    type="range"
-                                    min="30"
-                                    max="120"
-                                    step="4"
-                                    value={logoSize}
-                                    onChange={(e) => setLogoSize(parseInt(e.target.value))}
-                                    className="w-full accent-brandGreen"
-                                />
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    Logo Size: {logoSize}px
-                                </span>
-                            </div>
+                            <AnimatedSelect
+                                label="Logo Size"
+                                icon={MdPhotoSizeSelectActual}
+                                placeholder="Select logo size"
+                                options={logoSizeOptions}
+                                value={formData.logoSize?.toString()}
+                                onChange={(value) => updateFormField('logoSize', parseInt(value))}
+                                error={undefined}
+                            />
 
-                            <div>
-                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">QR Code Size</label>
-                                <input
-                                    type="range"
-                                    min="40"
-                                    max="160"
-                                    step="4"
-                                    value={qrSize}
-                                    onChange={(e) => setQrSize(parseInt(e.target.value))}
-                                    className="w-full accent-brandGreen"
-                                />
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    Current Size: {qrSize}px
-                                </span>
-                            </div>
-
+                            <AnimatedSelect
+                                label="QR Code Size"
+                                icon={MdQrCode}
+                                placeholder="Select QR code size"
+                                options={qrSizeOptions}
+                                value={formData.qrSize?.toString()}
+                                onChange={(value) => updateFormField('qrSize', parseInt(value))}
+                                error={undefined}
+                            />
                         </div>
 
                         <div className="flex flex-col space-y-4">
-                            <div >
-                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Upload Logo</label>
-                                <ImageUploaderAndCropper
-                                    previewImage={logo}
-                                    setPreviewImage={setLogo}
-                                    onCropComplete={(blob) => setLogoBlob(blob)}
-                                    removeImage={() => setLogo(null)}
-                                    aspectRatio={16 / 9}
-                                />
-                            </div>
-                            <div>
-                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">Template Image</label>
-                                <ImageUploaderAndCropper
-                                    previewImage={templateImage}
-                                    setPreviewImage={setTemplateImage}
-                                    onCropComplete={(blob) => setTemplateImageBlob(blob)}
-                                    removeImage={() => setTemplateImage(null)}
-                                />
-                            </div>
+                            <ImageSelector
+                                label="Upload Logo"
+                                value={formData.logo}
+                                onChange={(value) => updateFormField('logo', value)}
+                                onBlobChange={(blob) => updateFormField('logoBlob', blob)}
+                                aspectRatio={1 / 1}
+                                placeholder="Upload logo image"
+                                maxHeight={200}
+                                error={undefined}
+                            />
+
+                            <ImageSelector
+                                label="Template Image"
+                                value={formData.templateImage}
+                                onChange={(value) => updateFormField('templateImage', value)}
+                                onBlobChange={(blob) => updateFormField('templateImageBlob', blob)}
+                                aspectRatio={16 / 9}
+                                placeholder="Upload template image"
+                                maxHeight={200}
+                                error={undefined}
+                            />
                         </div>
                     </div>
 
+                    {/* Icon configuration section */}
                     <div className="grid grid-cols-3 gap-4">
-                        {[icon1Text, icon2Text, icon3Text].map((value, i) => (
+                        {iconConfigs.map((config, i) => (
                             <div className="flex flex-col space-y-2" key={i}>
-                                <InputField
-                                    variant="auth"
-                                    extra="mb-0"
+                                <AnimatedInput
                                     label={`Icon ${i + 1} Text`}
+                                    icon={MdTextFields}
                                     placeholder={`Enter text for Icon ${i + 1}`}
-                                    id={`icon${i + 1}-text`}
-                                    type="text"
-                                    value={value}
-                                    onChange={(e) => {
-                                        [setIcon1Text, setIcon2Text, setIcon3Text][i](e.target.value);
-                                    }}
+                                    value={formData[config.textField]}
+                                    onChange={(value) => updateFormField(config.textField, value)}
+                                    error={undefined}
                                 />
-                                <label className="text-xs text-gray-500 dark:text-gray-400">Text Size: {[icon1TextSize, icon2TextSize, icon3TextSize][i]}px</label>
-                                <input
-                                    type="range"
-                                    min="10"
-                                    max="24"
-                                    step="1"
-                                    value={[icon1TextSize, icon2TextSize, icon3TextSize][i]}
-                                    onChange={(e) => {
-                                        [setIcon1TextSize, setIcon2TextSize, setIcon3TextSize][i](parseInt(e.target.value));
-                                    }}
-                                    className="w-full accent-brandGreen"
+                                <AnimatedSelect
+                                    label={`Text Size`}
+                                    icon={Type}
+                                    placeholder="Select text size"
+                                    options={textSizeOptions}
+                                    value={formData[config.sizeField]?.toString()}
+                                    onChange={(value) => updateFormField(config.sizeField, parseInt(value))}
+                                    error={undefined}
                                 />
                             </div>
                         ))}
                     </div>
 
                     <div className="grid grid-cols-3 gap-4">
-                        {[icon1, icon2, icon3].map((icon, i) => (
-                            <div className="flex flex-col" key={i}>
-                                <label className="mb-2 text-sm font-medium text-gray-700 dark:text-white">
-                                    Icon {i + 1}
-                                </label>
-                                <ImageUploaderAndCropper
-                                    previewImage={icon}
-                                    setPreviewImage={[setIcon1, setIcon2, setIcon3][i]}
-                                    onCropComplete={(blob) => [setIcon1Blob, setIcon2Blob, setIcon3Blob][i](blob)}
-                                    removeImage={() => [setIcon1, setIcon2, setIcon3][i](null)}
-                                />
-                            </div>
+                        {iconConfigs.map((config, i) => (
+                            <ImageSelector
+                                key={i}
+                                label={`Icon ${i + 1}`}
+                                value={formData[config.imageField]}
+                                onChange={(value) => updateFormField(config.imageField, value)}
+                                onBlobChange={(blob) => updateFormField(config.blobField, blob)}
+                                aspectRatio={1}
+                                placeholder={`Upload icon ${i + 1}`}
+                                maxHeight={150}
+                                error={undefined}
+                            />
                         ))}
                     </div>
                 </div>
 
+                {/* Real-time preview section */}
                 <div className="w-full flex justify-center">
                     <div
                         className="bg-white dark:bg-navy-900 shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
@@ -194,30 +238,30 @@ const LoyaltyAdditionalDetails = ({ bannerTitle, setbannerTitle, color, setColor
 
                         <div className="flex flex-col h-full relative">
                             <div className="absolute bg-brandGreen top-[25%] left-1/2 -translate-x-1/2 z-10 p-1">
-                                <QRCode value={"https://codehive.ae/"} size={qrSize} />
+                                <QRCode value={"https://codehive.ae/"} size={formData.qrSize} />
                             </div>
 
                             <div
                                 className="h-[30%] relative flex flex-col items-center pt-16 text-center px-4 gap-2"
-                                style={{ backgroundColor: color }}
+                                style={{ backgroundColor: formData.templateColor }}
                             >
-                                {logo && (
+                                {formData.logo && (
                                     <img
-                                        src={logo}
+                                        src={formData.logo}
                                         alt="Logo"
-                                        style={{ height: `${logoSize}px`, width: `${logoSize}px` }}
+                                        style={{ height: `${formData.logoSize}px`, width: `${formData.logoSize}px` }}
                                         className="object-contain mb-1"
                                     />
                                 )}
                                 <h1 className="text-white text-lg font-semibold">
-                                    {bannerTitle}
+                                    {formData.bannerTitle}
                                 </h1>
                             </div>
 
                             <div className="h-[40%] flex items-center justify-center">
-                                {templateImage ? (
+                                {formData.templateImage ? (
                                     <img
-                                        src={templateImage}
+                                        src={formData.templateImage}
                                         alt="Template Preview"
                                         className="w-full h-full object-cover"
                                     />
@@ -231,15 +275,15 @@ const LoyaltyAdditionalDetails = ({ bannerTitle, setbannerTitle, color, setColor
                             <div className="h-[27%] bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white text-sm font-medium px-2 py-2 flex flex-col">
                                 <div className="flex-1 flex flex-col justify-center gap-2">
                                     <div className="flex justify-around items-center w-full">
-                                        {[icon1, icon2, icon3].map((icon, index) => {
+                                        {iconConfigs.map((config, index) => {
                                             const defaultIcons = [
                                                 '/img/loyaltyBannerIcons/scanQR.png',
                                                 '/img/loyaltyBannerIcons/downloadPoints.png',
                                                 '/img/loyaltyBannerIcons/promotion.png',
                                             ];
                                             const imageSrc =
-                                                typeof icon === 'string' && icon.trim() !== ''
-                                                    ? icon
+                                                typeof formData[config.imageField] === 'string' && formData[config.imageField].trim() !== ''
+                                                    ? formData[config.imageField]
                                                     : defaultIcons[index];
                                             return (
                                                 <img
@@ -252,18 +296,17 @@ const LoyaltyAdditionalDetails = ({ bannerTitle, setbannerTitle, color, setColor
                                         })}
                                     </div>
                                     <div className="flex justify-between items-center w-full gap-4 px-5">
-                                        {[icon1Text, icon2Text, icon3Text].map((text, index) => {
-                                            const sizes = [icon1TextSize, icon2TextSize, icon3TextSize];
-                                            return (
-                                                <span
-                                                    key={index}
-                                                    className="text-center flex-1"
-                                                    style={{ fontSize: `${sizes[index]}px` }}
-                                                >
-                                                    {text.trim() !== '' ? text : `Default ${index + 1}`}
-                                                </span>
-                                            );
-                                        })}
+                                        {iconConfigs.map((config, index) => (
+                                            <span
+                                                key={index}
+                                                className="text-center flex-1"
+                                                style={{ fontSize: `${formData[config.sizeField]}px` }}
+                                            >
+                                                {formData[config.textField].trim() !== ''
+                                                    ? formData[config.textField]
+                                                    : `Default ${index + 1}`}
+                                            </span>
+                                        ))}
                                     </div>
                                 </div>
 
