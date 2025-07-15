@@ -54,7 +54,7 @@ const CustomModal = ({
 
             <div className={`relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full ${modalWidth} max-h-[90vh] ${noScroll ? 'overflow-hidden' : 'overflow-hidden'} transform transition-all duration-300 scale-100`}>
 
-                {title && (
+                {headerTitle && (
                     <div className="flex items-center justify-between p-4 px-8 border-b border-gray-200 dark:border-gray-700">
 
                         <div className="flex items-center justify-center gap-5">

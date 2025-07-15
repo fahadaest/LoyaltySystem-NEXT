@@ -29,23 +29,17 @@ const WalletCardEditor = ({ phoneType, setPhoneType, colorOption, cardData, setC
 
 
 
+  const { data: existingCard, isLoading } = useGetWalletCardByIdQuery(cardId, {
+    skip: !editMode || !cardId
+  });
 
 
-
-
-
-
-  // const { data: existingCard, isLoading } = useGetWalletCardByIdQuery(cardId, {
-  //   skip: !editMode || !cardId
-  // });
-
-
-  // const handleFieldChange = (field, value) => {
-  //   setCardData(prev => ({
-  //     ...prev,
-  //     [field]: value
-  //   }));
-  // };
+  const handleFieldChange = (field, value) => {
+    setCardData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
 
 

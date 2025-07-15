@@ -333,7 +333,7 @@ const WalletForm = forwardRef(({
                                     />
                                 </div>
 
-                                {cardData.cardType !== 'points' && (
+                                {cardData.cardType !== 'point' && (
                                     <>
                                         {/* Stamp Collected Image Selector - Takes 1 column */}
                                         <ImageSelector

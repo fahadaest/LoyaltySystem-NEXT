@@ -13,34 +13,30 @@ import CircularProgress from '@mui/material/CircularProgress';
 import WalletCardEditor from 'components/wallet-cards/WalletCardEditor';
 import WalletCardDisplay from 'components/wallet-cards/WalletCardDisplay';
 import { MdCardGiftcard } from 'react-icons/md';
-import {
-  useCreateWalletCardMutation, useUpdateWalletCardMutation,
-  useGetWalletCardsQuery, useDeleteWalletCardMutation, useDuplicateWalletCardMutation, useToggleWalletCardStatusMutation, useGenerateWalletPassMutation
-} from 'store/apiEndPoints/customWalletCard';
+import { useCreateWalletCardMutation, useUpdateWalletCardMutation, useGetWalletCardsQuery, useDeleteWalletCardMutation, useDuplicateWalletCardMutation, useToggleWalletCardStatusMutation, useGenerateWalletPassMutation } from 'store/apiEndPoints/customWalletCard';
 import colorOptions from 'utils/colors';
+import { getImageUrl } from 'utils/imageUtils';
 
 const Dashboard = () => {
+  const { data: cardsResponse, error: cardsError, isLoading: cardsLoading, refetch: cardsRefetch } = useGetWalletCardsQuery();
+  const [deleteWalletCard, { isLoading: isDeleting }] = useDeleteWalletCardMutation();
+  const [duplicateWalletCard, { isLoading: isDuplicating }] = useDuplicateWalletCardMutation();
+  const [toggleWalletCardStatus, { isLoading: isToggling }] = useToggleWalletCardStatusMutation();
+  const [generateWalletPass, { isLoading: isGenerating }] = useGenerateWalletPassMutation();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isPassModalOpen, onOpen: onPassModalOpen, onClose: onPassModalClose } = useDisclosure();
+  const dispatch = useDispatch();
   const [showModalBackButton, setShowModalBackButton] = useState(false);
   const [currentModalView, setCurrentModalView] = useState('selection');
   const [editMode, setEditMode] = useState(false);
   const [showFooter, setShowFooter] = useState(true);
   const [showFooterCancel, setShowFooterCancel] = useState(true);
   const [phoneType, setPhoneType] = useState('iphone');
-
-  const handleClickBack = () => {
-    if (editMode) {
-      onCancel?.();
-    } else {
-      setCurrentModalView('selection');
-    }
-  }
-
-
-
-
-
   const [createWalletCard, { isLoading: isCreating }] = useCreateWalletCardMutation();
   const [updateWalletCard, { isLoading: isUpdating }] = useUpdateWalletCardMutation();
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [deleteItemId, setDeleteItemId] = useState(null);
+  const [generatePassCard, setGeneratePassCard] = useState(null);
   const [cardData, setCardData] = useState({
     cardName: '',
     cardType: 'product',
@@ -68,18 +64,95 @@ const Dashboard = () => {
       { key: 'status', label: 'Status', value: 'Active' }
     ],
     auxiliaryFields: [
-      { key: 'points', label: 'Points', value: '0' },
+      { key: 'point', label: 'Points', value: '0' },
       { key: 'expires', label: 'Expires', value: 'Never' }
     ],
     isActive: true
   });
+
+  // Function to reset cardData to default values
+  const resetCardData = () => {
+    setCardData({
+      cardName: '',
+      cardType: 'product',
+      description: '',
+      logoImage: null,
+      backgroundImage: null,
+      stampCollectedImg: null,
+      noStampCollectedImg: null,
+      rewardQuantity: 10,
+      rewardsCount: 0,
+      pointsSpendAmount: 100,
+      pointsAmount: 100,
+      pointsRewardAmount: 10,
+      organizationName: 'Codehive',
+      logoText: '',
+      foregroundColor: '#FFFFFF',
+      backgroundColor: '#36a18f',
+      labelColor: '#FFFFFF',
+      barcodeMessage: '',
+      barcodeFormat: 'QR',
+      productCardPrimaryFields: [{}],
+      primaryFields: [{ key: 'STAMPS UNTIL REWARD', label: 'stamps_until_reward', value: '7' }],
+      secondaryFields: [
+        { key: 'member-since', label: 'Member Since', value: '2024' },
+        { key: 'status', label: 'Status', value: 'Active' }
+      ],
+      auxiliaryFields: [
+        { key: 'point', label: 'Points', value: '0' },
+        { key: 'expires', label: 'Expires', value: 'Never' }
+      ],
+      isActive: true
+    });
+  };
+
+  // Function to populate cardData with selected card data
+  const populateCardData = (card) => {
+    setCardData({
+      cardName: card.cardName || '',
+      cardType: card.cardType || 'product',
+      description: card.description || '',
+      logoImage: null, // Reset to null for edit mode
+      backgroundImage: getImageUrl(card.backgroundImage, null), // Reset to null for edit mode
+      stampCollectedImg: null,
+      noStampCollectedImg: null,
+      rewardQuantity: card.rewardQuantity || 10,
+      rewardsCount: card.rewardsCount || 0,
+      pointsSpendAmount: card.pointsSpendAmount || 100,
+      pointsAmount: card.pointsAmount || 100,
+      pointsRewardAmount: card.pointsRewardAmount || 10,
+      organizationName: card.organizationName || 'Codehive',
+      logoText: card.logoText || '',
+      foregroundColor: card.foregroundColor || '#FFFFFF',
+      backgroundColor: card.backgroundColor || '#36a18f',
+      labelColor: card.labelColor || '#FFFFFF',
+      barcodeMessage: card.barcodeMessage || '',
+      barcodeFormat: card.barcodeFormat || 'QR',
+      productCardPrimaryFields: card.productCardPrimaryFields || [{}],
+      primaryFields: card.primaryFields || [{ key: 'STAMPS UNTIL REWARD', label: 'stamps_until_reward', value: '7' }],
+      secondaryFields: card.secondaryFields || [
+        { key: 'member-since', label: 'Member Since', value: '2024' },
+        { key: 'status', label: 'Status', value: 'Active' }
+      ],
+      auxiliaryFields: card.auxiliaryFields || [
+        { key: 'point', label: 'Points', value: '0' },
+        { key: 'expires', label: 'Expires', value: 'Never' }
+      ],
+      isActive: card.isActive !== undefined ? card.isActive : true,
+      // Store image URLs for display purposes
+      logoImageUrl: card.logoImageUrl || null,
+      backgroundImageUrl: card.backgroundImageUrl || null,
+      stampCollectedImgUrl: card.stampCollectedImgUrl || null,
+      noStampCollectedImgUrl: card.noStampCollectedImgUrl || null
+    });
+  };
 
   const createCard = async () => {
     try {
       const formData = new FormData();
 
       Object.keys(cardData).forEach(key => {
-        if (!['logoImage', 'backgroundImage', 'logoImageUrl', 'backgroundImageUrl'].includes(key)) {
+        if (!['logoImage', 'backgroundImage', 'stampCollectedImg', 'noStampCollectedImg', 'logoImageUrl', 'backgroundImageUrl', 'stampCollectedImgUrl', 'noStampCollectedImgUrl'].includes(key)) {
           const value = cardData[key];
           if (value !== null && value !== undefined && value !== '') {
             if (typeof value === 'object') {
@@ -109,47 +182,30 @@ const Dashboard = () => {
       }
 
       let result;
-      if (editMode && cardId) {
-        result = await updateWalletCard({ id: cardId, formData }).unwrap();
+      if (editMode && selectedCard?.id) {
+        result = await updateWalletCard({ id: selectedCard.id, formData }).unwrap();
       } else {
         result = await createWalletCard(formData).unwrap();
       }
 
-      if (onSave) {
-        onSave(result.data);
-      }
+      handleSaveCard(result.data);
     } catch (error) {
       console.error('Error saving wallet card:', error);
+      dispatch(showAlert({
+        message: `Failed to ${editMode ? 'update' : 'create'} wallet card!`,
+        severity: "error",
+        duration: 2000
+      }));
     }
   };
 
-
-  console.log("cardData", cardData)
-
-
-
-
-
-
-
-
-
-
-
-  const { data: cardsResponse, error: cardsError, isLoading: cardsLoading, refetch: cardsRefetch } = useGetWalletCardsQuery();
-  const [deleteWalletCard, { isLoading: isDeleting }] = useDeleteWalletCardMutation();
-  const [duplicateWalletCard, { isLoading: isDuplicating }] = useDuplicateWalletCardMutation();
-  const [toggleWalletCardStatus, { isLoading: isToggling }] = useToggleWalletCardStatusMutation();
-  const [generateWalletPass, { isLoading: isGenerating }] = useGenerateWalletPassMutation();
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isPassModalOpen, onOpen: onPassModalOpen, onClose: onPassModalClose } = useDisclosure();
-  const dispatch = useDispatch();
-
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [deleteItemId, setDeleteItemId] = useState(null);
-  const [generatePassCard, setGeneratePassCard] = useState(null);
-
+  const handleClickBack = () => {
+    if (editMode) {
+      onClose();
+    } else {
+      setCurrentModalView('selection');
+    }
+  };
 
   useEffect(() => {
     cardsRefetch();
@@ -160,6 +216,8 @@ const Dashboard = () => {
   const handleEdit = (card) => {
     setSelectedCard(card);
     setEditMode(true);
+    populateCardData(card); // Populate form with card data
+    setCurrentModalView('editor');
     onOpen();
   };
 
@@ -233,9 +291,10 @@ const Dashboard = () => {
   };
 
   const handleAddCard = () => {
-    setCurrentModalView('selection')
+    setCurrentModalView('selection');
     setSelectedCard(null);
     setEditMode(false);
+    resetCardData(); // Reset form data for new card
     onOpen();
   };
 
@@ -249,75 +308,12 @@ const Dashboard = () => {
     onClose();
   };
 
-  const handleGeneratePassSubmit = async (customerId, customerLoyaltyId = null) => {
-    try {
-      const result = await generateWalletPass({
-        cardId: generatePassCard.id,
-        passData: {
-          customerId,
-          customerLoyaltyId,
-          dynamicValues: {
-            // Add any dynamic values here
-          }
-        }
-      }).unwrap();
-
-      dispatch(showAlert({
-        message: "Wallet pass generated successfully!",
-        severity: "success",
-        duration: 2000
-      }));
-      onPassModalClose();
-
-      // You can handle the pass download here
-      console.log('Generated pass:', result);
-    } catch (error) {
-      dispatch(showAlert({
-        message: "Failed to generate wallet pass!",
-        severity: "error",
-        duration: 2000
-      }));
-    }
+  const handleModalClose = () => {
+    setSelectedCard(null);
+    setEditMode(false);
+    resetCardData();
+    onClose();
   };
-
-
-
-
-
-
-
-  const addCard = () => { }
-
-
-
-
-
-
-
-
-
-
-  if (cardsLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <CircularProgress size={40} className="text-brandGreen" />
-      </div>
-    );
-  }
-
-  if (cardsError) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-600">Error loading wallet cards</p>
-        <button
-          onClick={cardsRefetch}
-          className="mt-2 px-4 py-2 bg-brandGreen text-white rounded hover:bg-brandGreen/90"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="relative">
@@ -333,163 +329,49 @@ const Dashboard = () => {
         </HeadingCard>
       </div>
 
-      {/* Cards Grid */}
-      {cards.length === 0 ? (
-        <div className="text-center py-12">
-          <FaWallet className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No wallet cards yet</h3>
-          <p className="text-gray-500 mb-6">Create your first wallet card to get started</p>
-          <HeaderButton
-            icon={MdAdd}
-            text="Create First Card"
-            size="lg"
-            color="bg-brandGreen"
-            onClick={handleAddCard}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+        {cards.map((card) => (
+          <WalletCardDisplay
+            key={card.id}
+            card={card}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onDuplicate={handleDuplicate}
+            onToggleStatus={handleToggleStatus}
+            onGeneratePass={handleGeneratePass}
           />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-          {cards.map((card) => (
-            <WalletCardDisplay
-              key={card.id}
-              card={card}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onDuplicate={handleDuplicate}
-              onToggleStatus={handleToggleStatus}
-              onGeneratePass={handleGeneratePass}
-            />
-          ))}
-        </div>
-      )}
+        ))}
+      </div>
 
       <CustomModal
         showModalBackButton={showModalBackButton}
         handleClickBack={handleClickBack}
-        headerTitle={"Wallet Cards"}
-        headerDescription={"Customize your wallet card"}
+        headerTitle={editMode ? "Edit Wallet Card" : "Wallet Cards"}
+        headerDescription={editMode ? "Edit your wallet card" : "Customize your wallet card"}
         showFooter={showFooter}
         size={currentModalView === 'selection' ? '1xl' : '4xl'}
         showFooterCancelButton={showFooterCancel}
         footerConfirmation={currentModalView === 'selection' ? null : createCard}
-        footerConfirmButtonText={'Create Wallet Card'}
+        footerConfirmButtonText={editMode ? 'Update Wallet Card' : 'Create Wallet Card'}
         footerConfirmButtonIcon={MdCardGiftcard}
-
-
-
-
-
-
         isOpen={isOpen}
-        onClose={onClose}
-        title={editMode ? "Edit Wallet Card" : "Create Wallet Card"}
-        noScroll={true}
-
-
-        isLoading={null}
+        onClose={handleModalClose}
       >
         <WalletCardEditor
           setShowModalBackButton={setShowModalBackButton}
           currentModalView={currentModalView}
           setCurrentModalView={setCurrentModalView}
-          cardData={cardData} s
+          cardData={cardData}
           setCardData={setCardData}
           colorOption={colorOptions}
           phoneType={phoneType}
           setPhoneType={setPhoneType}
-
-
-
-
-
-
-
-          isModal={true}
           editMode={editMode}
+          isModal={true}
           cardId={selectedCard?.id}
           onSave={handleSaveCard}
-          onCancel={onClose}
+          onCancel={handleModalClose}
         />
-      </CustomModal>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* Generate Pass Modal */}
-      <CustomModal
-        isOpen={isPassModalOpen}
-        onClose={onPassModalClose}
-        title="Generate Wallet Pass"
-        size="md"
-      >
-        <div className="p-4">
-          <h3 className="text-lg font-medium mb-4">
-            Generate pass for: {generatePassCard?.cardName}
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Customer ID
-              </label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brandGreen"
-                placeholder="Enter customer ID"
-                id="customerId"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Customer Loyalty ID (Optional)
-              </label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brandGreen"
-                placeholder="Enter loyalty ID (optional)"
-                id="customerLoyaltyId"
-              />
-            </div>
-            <div className="flex justify-end gap-3 pt-4">
-              <button
-                onClick={onPassModalClose}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  const customerId = document.getElementById('customerId').value;
-                  const customerLoyaltyId = document.getElementById('customerLoyaltyId').value;
-                  if (customerId) {
-                    handleGeneratePassSubmit(
-                      parseInt(customerId),
-                      customerLoyaltyId ? parseInt(customerLoyaltyId) : null
-                    );
-                  }
-                }}
-                disabled={isGenerating}
-                className="px-4 py-2 bg-brandGreen text-white rounded-md hover:bg-brandGreen/90 disabled:opacity-50"
-              >
-                {isGenerating ? 'Generating...' : 'Generate Pass'}
-              </button>
-            </div>
-          </div>
-        </div>
       </CustomModal>
 
       {/* Delete Confirmation Modal */}

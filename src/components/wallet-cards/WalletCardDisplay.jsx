@@ -33,15 +33,15 @@ const WalletCardDisplay = ({
     const auxiliaryFields = parseField(card.auxiliaryFields);
 
     const getCardTypeIcon = (type) => {
-        return type === 'points' ? '🏆' : '🎫';
+        return type === 'point' ? '🏆' : '🎫';
     };
 
     const getCardTypeBadge = (type) => {
         const config = {
-            points: { label: 'Points Card', class: 'bg-blue-100 text-blue-800' },
+            point: { label: 'Points Card', class: 'bg-blue-100 text-blue-800' },
             product: { label: 'Product Card', class: 'bg-green-100 text-green-800' }
         };
-        return config[type] || config.points;
+        return config[type] || config.point;
     };
 
     // Transform card data to match WalletCard component expectations

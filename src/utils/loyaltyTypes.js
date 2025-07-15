@@ -8,7 +8,7 @@ export const loyaltyTypes = [
         description: 'Track product purchases and rewards'
     },
     {
-        value: 'points',
+        value: 'point',
         label: 'Points',
         icon: Award,
         description: 'Points-based loyalty system'

@@ -1,10 +1,13 @@
 import React from 'react';
 import QRCode from 'react-qr-code';
 import { getStampLayout } from 'utils/stampLayout';
+import { getImageUrl } from 'utils/imageUtils';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const WalletCard = ({ cardData, platform = 'ios' }) => {
     const isIOS = platform === 'ios';
+
+    console.log("cardData", cardData)
 
     // Create background style with fallback color only
     const getBackgroundStyle = () => {
@@ -120,7 +123,7 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                                 {/* Content overlay */}
                                 <div className="absolute inset-0 bg-black bg-opacity-30"></div>
 
-                                {cardData.cardType === 'points' ? (
+                                {cardData.cardType === 'point' ? (
                                     /* Points earning message */
                                     <div className="absolute inset-0 flex items-center justify-center p-4">
                                         <div className="text-center bg-black bg-opacity-50 rounded-lg p-3 backdrop-blur-sm">
@@ -158,7 +161,7 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                                 {/* Background effect */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-gray-600 to-gray-800"></div>
 
-                                {cardData.cardType === 'points' ? (
+                                {cardData.cardType === 'point' ? (
                                     /* Points earning message for default background */
                                     <div className="absolute inset-0 flex items-center justify-center p-4">
                                         <div className="text-center">
@@ -193,10 +196,10 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <div className="text-[8px] opacity-70 tracking-wide uppercase">
-                                    {cardData.cardType === 'points' ? 'CURRENT POINTS' : 'STAMPS UNTIL REWARD'}
+                                    {cardData.cardType === 'point' ? 'CURRENT POINTS' : 'STAMPS UNTIL REWARD'}
                                 </div>
                                 <div className="text-sm font-bold">
-                                    {cardData.cardType === 'points'
+                                    {cardData.cardType === 'point'
                                         ? (cardData.pointsAmount)
                                         : (cardData.stampsCount || `${collectedStampsCount}/${cardData.rewardQuantity || stampLayout.quantity} stamps`)
                                     }
@@ -207,7 +210,7 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                                     AVAILABLE REWARDS
                                 </div>
                                 <div className="text-sm text-right font-bold">
-                                    {cardData.cardType === 'points'
+                                    {cardData.cardType === 'point'
                                         ? (`${cardData.pointsRewardAmount} AED`)
                                         : (`${cardData.rewardsCount} rewards`)
                                     }
@@ -268,7 +271,7 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                     </div>
 
                     {/* Points earning message for Android */}
-                    {cardData.cardType === 'points' && (
+                    {cardData.cardType === 'point' && (
                         <div className="mb-4 bg-black bg-opacity-20 rounded-lg p-3 backdrop-blur-sm">
                             <p className="text-xs opacity-90 drop-shadow mb-2">Earning Rule</p>
                             <p className="text-sm font-semibold text-center">
@@ -278,7 +281,7 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                     )}
 
                     {/* Stamp Collection Area for Android */}
-                    {cardData.cardType !== 'points' && (
+                    {cardData.cardType !== 'point' && (
                         <div className="mb-4 bg-black bg-opacity-20 rounded-lg p-3 backdrop-blur-sm">
                             <p className="text-xs opacity-90 drop-shadow mb-2">Stamp Progress</p>
                             <div className="flex flex-wrap gap-1 justify-center">
