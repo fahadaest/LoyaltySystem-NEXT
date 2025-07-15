@@ -1,71 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { MdFileUpload, MdAdd } from "react-icons/md";
-import Card from "components/card";
-import InputField from "components/fields/InputField";
-import InputDropdown from "components/fields/InputDropDown";
+import { MdFileUpload, MdAdd, MdCategory, MdCardGiftcard, MdTitle, MdNumbers, MdDescription, MdAttachMoney, MdStars } from "react-icons/md";
+import { Edit3, Palette, Star, Type, Clock, CreditCard, Building, Gift, Award, QrCode, AlertCircle } from 'lucide-react';
+import AnimatedSelect from "components/ui/AnimatedSelect";
+import AnimatedInput from "components/ui/AnimatedInput";
+import FormSection from "components/ui/FormSection";
+import { AnimatedCard, AnimatedCardContent } from "components/ui/AnimatedCard";
 import LoyaltyAdditionalDetails from "./LoyaltyAdditionalDetails";
 import Button from "components/button/Button";
 import { useDispatch } from 'react-redux';
 import { showAlert } from "store/apiEndPoints/alertSlice";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePage }) => {
-  const [selectedTemplate, setSelectedTemplate] = useState("");
-  const [rewardTitle, setRewardTitle] = useState("");
-  const [purchaseQuantity, setPurchaseQuantity] = useState("");
-  const [rewardDescription, setRewardDescription] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState("");
-  const [rewardProduct, setRewardProduct] = useState("");
-  const [spendingAmount, setSpendingAmount] = useState("");
-  const [rewardPoints, setRewardPoints] = useState("");
-  const [rewardPointsEquivalent, setRewardPointsEquivalent] = useState("");
-  const [bannerTitle, setbannerTitle] = useState("");
-  const [color, setColor] = useState('#4a5568');
-  const [logoSize, setLogoSize] = useState(60);
-  const [qrSize, setQrSize] = useState(80);
-  const [logo, setLogo] = useState(null);
-  const [logoBlob, setLogoBlob] = useState(null);
-  const [templateImage, setTemplateImage] = useState(null);
-  const [templateImageBlob, setTemplateImageBlob] = useState(null);
-  const [icon1Text, setIcon1Text] = useState('Scan Qr with your mobile phone');
-  const [icon2Text, setIcon2Text] = useState('Download the Point Pass into your mobile');
-  const [icon3Text, setIcon3Text] = useState('Enter Your promotion');
-  const [icon1TextSize, setIcon1TextSize] = useState(12);
-  const [icon2TextSize, setIcon2TextSize] = useState(12);
-  const [icon3TextSize, setIcon3TextSize] = useState(12);
-  const [icon1, setIcon1] = useState(null);
-  const [icon2, setIcon2] = useState(null);
-  const [icon3, setIcon3] = useState(null);
-  const [icon1Blob, setIcon1Blob] = useState(null);
-  const [icon2Blob, setIcon2Blob] = useState(null);
-  const [icon3Blob, setIcon3Blob] = useState(null);
+const AddLoyalty = ({
+  onClose,
+  products,
+  selectedLoyaltyData,
+  onSubmit,
+  sourcePage,
+  loyaltyFormData,
+  updateLoyaltyFormField,
+  updateLoyaltyFormData
+}) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (selectedLoyaltyData) {
-      setSelectedTemplate(selectedLoyaltyData.loyaltyTemplates || '');
-      setRewardTitle(selectedLoyaltyData.rewardTitle || '');
-      setRewardDescription(selectedLoyaltyData.rewardDescription || '');
-      setPurchaseQuantity(selectedLoyaltyData.purchaseQuantity || '');
-      setSelectedProduct(selectedLoyaltyData.productId || '');
-      setRewardProduct(selectedLoyaltyData.rewardProductId || '');
-      setColor(selectedLoyaltyData.templateColor || '#4a5568');
-      setLogo(baseUrl + selectedLoyaltyData.logo);
-      setbannerTitle(selectedLoyaltyData.bannerTitle || '');
-      setLogoBlob(null);
-      setTemplateImage(baseUrl + selectedLoyaltyData.templateImage || null);
-      setIcon1Text(selectedLoyaltyData.icon1Text || 'Scan QR with your mobile phone');
-      setIcon2Text(selectedLoyaltyData.icon2Text || 'Download the Point Pass into your mobile');
-      setIcon3Text(selectedLoyaltyData.icon3Text || 'Enter Your promotion');
-      setIcon1(null);
-      setIcon2(null);
-      setIcon3(null);
-      setSpendingAmount(selectedLoyaltyData.spendingAmount || '');
-      setRewardPoints(selectedLoyaltyData.rewardPoints || '');
-      setRewardPointsEquivalent(selectedLoyaltyData.rewardPointsEquivalent || '');
-    }
-  }, [selectedLoyaltyData]);
+    const timer = setTimeout(() => updateLoyaltyFormField('isVisible', true), 50);
+    return () => clearTimeout(timer);
+  }, [updateLoyaltyFormField]);
 
   const loyaltyTemplate = sourcePage === "products"
     ? [
@@ -85,44 +45,44 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("loyaltyTemplates", selectedTemplate);
-    formData.append("rewardTitle", rewardTitle);
-    formData.append("rewardDescription", rewardDescription);
-    formData.append("productId", selectedProduct);
-    formData.append("bannerTitle", bannerTitle);
-    formData.append("templateColor", color);
-    formData.append("rewardProductId", rewardProduct);
-    formData.append("icon1Text", icon1Text);
-    formData.append("icon2Text", icon2Text);
-    formData.append("icon3Text", icon3Text);
-    formData.append("color", color);
+    formData.append("loyaltyTemplates", loyaltyFormData.selectedTemplate);
+    formData.append("rewardTitle", loyaltyFormData.rewardTitle);
+    formData.append("rewardDescription", loyaltyFormData.rewardDescription);
+    formData.append("productId", loyaltyFormData.selectedProduct);
+    formData.append("bannerTitle", loyaltyFormData.bannerTitle);
+    formData.append("templateColor", loyaltyFormData.color);
+    formData.append("rewardProductId", loyaltyFormData.rewardProduct);
+    formData.append("icon1Text", loyaltyFormData.icon1Text);
+    formData.append("icon2Text", loyaltyFormData.icon2Text);
+    formData.append("icon3Text", loyaltyFormData.icon3Text);
+    formData.append("color", loyaltyFormData.color);
 
-    if (selectedTemplate === 'general') {
-      formData.append("purchaseQuantity", purchaseQuantity);
-    }
-
-    if (selectedTemplate === 'point') {
-      formData.append("spendingAmount", spendingAmount);
-      formData.append("rewardPoints", rewardPoints);
-      formData.append("rewardPointsEquivalent", rewardPointsEquivalent);
+    if (loyaltyFormData.selectedTemplate === 'general') {
+      formData.append("purchaseQuantity", loyaltyFormData.purchaseQuantity);
     }
 
-    if (templateImageBlob) {
-      formData.append("templateImage", templateImageBlob, "templateImage.png");
+    if (loyaltyFormData.selectedTemplate === 'point') {
+      formData.append("spendingAmount", loyaltyFormData.spendingAmount);
+      formData.append("rewardPoints", loyaltyFormData.rewardPoints);
+      formData.append("rewardPointsEquivalent", loyaltyFormData.rewardPointsEquivalent);
     }
 
-    if (icon1Blob) {
-      formData.append("icon1", icon1Blob, "icon1.png");
-    }
-    if (icon2Blob) {
-      formData.append("icon2", icon2Blob, "icon2.png");
-    }
-    if (icon3Blob) {
-      formData.append("icon3", icon3Blob, "icon3.png");
+    if (loyaltyFormData.templateImageBlob) {
+      formData.append("templateImage", loyaltyFormData.templateImageBlob, "templateImage.png");
     }
 
-    if (logoBlob) {
-      formData.append("logo", logoBlob, "logo.png");
+    if (loyaltyFormData.icon1Blob) {
+      formData.append("icon1", loyaltyFormData.icon1Blob, "icon1.png");
+    }
+    if (loyaltyFormData.icon2Blob) {
+      formData.append("icon2", loyaltyFormData.icon2Blob, "icon2.png");
+    }
+    if (loyaltyFormData.icon3Blob) {
+      formData.append("icon3", loyaltyFormData.icon3Blob, "icon3.png");
+    }
+
+    if (loyaltyFormData.logoBlob) {
+      formData.append("logo", loyaltyFormData.logoBlob, "logo.png");
     }
 
     if (selectedLoyaltyData) {
@@ -133,197 +93,219 @@ const AddLoyalty = ({ onClose, products, selectedLoyaltyData, onSubmit, sourcePa
   };
 
   return (
-    <Card className="grid h-full w-full grid-cols-1 gap-3 py-7 px-10 rounded-[20px] bg-white bg-clip-border font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none 2xl:grid-cols-12">
-      <div className="col-span-12 flex h-full w-full flex-col justify-center rounded-xl bg-white dark:!bg-navy-800">
-        <InputDropdown
-          label="Select Loyalty Template"
-          id="template"
-          placeholder="Select a template"
-          options={loyaltyTemplate}
-          value={selectedTemplate}
-          onChange={(option) => setSelectedTemplate(option.value)}
-          variant="auth"
-        />
-      </div>
+    <div className={`transform transition-all duration-500 ${loyaltyFormData.isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+      <AnimatedCard>
+        <AnimatedCardContent>
+          <div className="space-y-8 px-6">
+            {/* Template Selection Section */}
+            <FormSection
+              title="Loyalty Template"
+              icon={MdCategory}
+              delay={100}
+              isVisible={loyaltyFormData.isVisible}
+            >
+              <div className="grid grid-cols-1 gap-4">
+                <AnimatedSelect
+                  label="Select Loyalty Template"
+                  icon={MdCategory}
+                  placeholder="Select a template"
+                  options={loyaltyTemplate}
+                  value={loyaltyFormData.selectedTemplate}
+                  onChange={(value) => updateLoyaltyFormField('selectedTemplate', value)}
+                  required
+                />
+              </div>
+            </FormSection>
 
-      {selectedTemplate === 'general' && (
-        <>
-          <div className="col-span-12 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Reward Title"
-              placeholder="Enter Loyalty Name"
-              id="reward-title"
-              type="text"
-              value={rewardTitle}
-              onChange={(e) => setRewardTitle(e.target.value)}
-            />
+            {/* General Loyalty Template Fields */}
+            {loyaltyFormData.selectedTemplate === 'general' && (
+              <FormSection
+                title="General Loyalty Configuration"
+                icon={Gift}
+                delay={200}
+                isVisible={loyaltyFormData.isVisible}
+              >
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedInput
+                      label="Reward Title"
+                      icon={MdTitle}
+                      placeholder="Enter Loyalty Name"
+                      value={loyaltyFormData.rewardTitle}
+                      onChange={(value) => updateLoyaltyFormField('rewardTitle', value)}
+                      required
+                    />
+
+                    <AnimatedInput
+                      label="Reward Description"
+                      icon={MdDescription}
+                      placeholder="Enter reward description"
+                      value={loyaltyFormData.rewardDescription}
+                      onChange={(value) => updateLoyaltyFormField('rewardDescription', value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedInput
+                      label="Purchase Quantity"
+                      icon={MdNumbers}
+                      placeholder="Enter quantity to purchase"
+                      type="number"
+                      value={loyaltyFormData.purchaseQuantity}
+                      onChange={(value) => updateLoyaltyFormField('purchaseQuantity', value)}
+                      required
+                    />
+
+                    <AnimatedInput
+                      label="Reward Quantity"
+                      icon={MdNumbers}
+                      placeholder="Enter reward quantity"
+                      type="number"
+                      value={loyaltyFormData.purchaseQuantity}
+                      onChange={(value) => updateLoyaltyFormField('purchaseQuantity', value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedSelect
+                      label="Select Product"
+                      icon={MdCardGiftcard}
+                      placeholder="Select a Product"
+                      options={productOptions}
+                      value={loyaltyFormData.selectedProduct}
+                      onChange={(value) => updateLoyaltyFormField('selectedProduct', value)}
+                      required
+                    />
+
+                    <AnimatedSelect
+                      label="Select Reward Product"
+                      icon={MdCardGiftcard}
+                      placeholder="Select a Reward Product"
+                      options={productOptions}
+                      value={loyaltyFormData.rewardProduct}
+                      onChange={(value) => updateLoyaltyFormField('rewardProduct', value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </FormSection>
+            )}
+
+            {/* Point-Based Loyalty Template Fields */}
+            {loyaltyFormData.selectedTemplate === 'point' && (
+              <FormSection
+                title="Point-Based Loyalty Configuration"
+                icon={Star}
+                delay={200}
+                isVisible={loyaltyFormData.isVisible}
+              >
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedInput
+                      label="Reward Title"
+                      icon={MdTitle}
+                      placeholder="Enter Loyalty Name"
+                      value={loyaltyFormData.rewardTitle}
+                      onChange={(value) => updateLoyaltyFormField('rewardTitle', value)}
+                      required
+                    />
+
+                    <AnimatedInput
+                      label="Spending Amount (AED)"
+                      icon={MdAttachMoney}
+                      placeholder="Enter spending amount"
+                      type="number"
+                      value={loyaltyFormData.spendingAmount}
+                      onChange={(value) => updateLoyaltyFormField('spendingAmount', value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <AnimatedInput
+                      label="Reward Points"
+                      icon={MdStars}
+                      placeholder="Enter reward points"
+                      type="number"
+                      value={loyaltyFormData.rewardPoints}
+                      onChange={(value) => updateLoyaltyFormField('rewardPoints', value)}
+                      required
+                    />
+
+                    <AnimatedInput
+                      label="Reward Points Equivalent to AED"
+                      icon={MdAttachMoney}
+                      placeholder="Enter equivalent amount"
+                      type="number"
+                      value={loyaltyFormData.rewardPointsEquivalent}
+                      onChange={(value) => updateLoyaltyFormField('rewardPointsEquivalent', value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </FormSection>
+            )}
+
+            {/* Additional Details Section */}
+            {(loyaltyFormData.selectedTemplate === 'general' || loyaltyFormData.selectedTemplate === 'point') && (
+              <FormSection
+                title="Additional Details"
+                icon={Palette}
+                delay={300}
+                isVisible={loyaltyFormData.isVisible}
+              >
+                <LoyaltyAdditionalDetails
+                  bannerTitle={loyaltyFormData.bannerTitle}
+                  setbannerTitle={(value) => updateLoyaltyFormField('bannerTitle', value)}
+                  color={loyaltyFormData.color}
+                  setColor={(value) => updateLoyaltyFormField('color', value)}
+                  logoSize={loyaltyFormData.logoSize}
+                  setLogoSize={(value) => updateLoyaltyFormField('logoSize', value)}
+                  qrSize={loyaltyFormData.qrSize}
+                  setQrSize={(value) => updateLoyaltyFormField('qrSize', value)}
+                  logo={loyaltyFormData.logo}
+                  setLogo={(value) => updateLoyaltyFormField('logo', value)}
+                  logoBlob={loyaltyFormData.logoBlob}
+                  setLogoBlob={(value) => updateLoyaltyFormField('logoBlob', value)}
+                  templateImage={loyaltyFormData.templateImage}
+                  setTemplateImage={(value) => updateLoyaltyFormField('templateImage', value)}
+                  templateImageBlob={loyaltyFormData.templateImageBlob}
+                  setTemplateImageBlob={(value) => updateLoyaltyFormField('templateImageBlob', value)}
+                  icon1Text={loyaltyFormData.icon1Text}
+                  setIcon1Text={(value) => updateLoyaltyFormField('icon1Text', value)}
+                  icon2Text={loyaltyFormData.icon2Text}
+                  setIcon2Text={(value) => updateLoyaltyFormField('icon2Text', value)}
+                  icon3Text={loyaltyFormData.icon3Text}
+                  setIcon3Text={(value) => updateLoyaltyFormField('icon3Text', value)}
+                  icon1TextSize={loyaltyFormData.icon1TextSize}
+                  setIcon1TextSize={(value) => updateLoyaltyFormField('icon1TextSize', value)}
+                  icon2TextSize={loyaltyFormData.icon2TextSize}
+                  setIcon2TextSize={(value) => updateLoyaltyFormField('icon2TextSize', value)}
+                  icon3TextSize={loyaltyFormData.icon3TextSize}
+                  setIcon3TextSize={(value) => updateLoyaltyFormField('icon3TextSize', value)}
+                  icon1={loyaltyFormData.icon1}
+                  setIcon1={(value) => updateLoyaltyFormField('icon1', value)}
+                  icon2={loyaltyFormData.icon2}
+                  setIcon2={(value) => updateLoyaltyFormField('icon2', value)}
+                  icon3={loyaltyFormData.icon3}
+                  setIcon3={(value) => updateLoyaltyFormField('icon3', value)}
+                  icon1Blob={loyaltyFormData.icon1Blob}
+                  setIcon1Blob={(value) => updateLoyaltyFormField('icon1Blob', value)}
+                  icon2Blob={loyaltyFormData.icon2Blob}
+                  setIcon2Blob={(value) => updateLoyaltyFormField('icon2Blob', value)}
+                  icon3Blob={loyaltyFormData.icon3Blob}
+                  setIcon3Blob={(value) => updateLoyaltyFormField('icon3Blob', value)}
+                  selectedLoyaltyData={selectedLoyaltyData}
+                />
+              </FormSection>
+            )}
+
           </div>
-
-          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Purchase Quantity"
-              placeholder="Enter quantity to purchase"
-              id="purchase-quantity"
-              type="text"
-              value={purchaseQuantity}
-              onChange={(e) => setPurchaseQuantity(e.target.value)}
-            />
-          </div>
-
-          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Reward Description"
-              placeholder="Enter reward description"
-              id="reward-description"
-              type="text"
-              value={rewardDescription}
-              onChange={(e) => setRewardDescription(e.target.value)}
-            />
-          </div>
-
-          <div className="col-span-6 flex h-full w-full flex-col justify-center rounded-xl bg-white dark:!bg-navy-800">
-            <InputDropdown
-              label="Select Product"
-              id="product"
-              placeholder="Select a Product"
-              options={productOptions}
-              value={selectedProduct}
-              onChange={(option) => setSelectedProduct(option.value)}
-              variant="auth"
-            />
-          </div>
-
-          <div className="col-span-6 flex h-full w-full flex-col justify-center rounded-xl bg-white dark:!bg-navy-800">
-            <InputDropdown
-              label="Select Reward Product"
-              id="reward-product"
-              placeholder="Select a Reward Product"
-              options={productOptions}
-              value={rewardProduct}
-              onChange={(option) => setRewardProduct(option.value)}
-              variant="auth"
-            />
-          </div>
-        </>
-      )}
-
-      {selectedTemplate === 'point' && (
-        <>
-          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Reward Title"
-              placeholder="Enter Loyalty Name"
-              id="reward-title"
-              type="text"
-              value={rewardTitle}
-              onChange={(e) => setRewardTitle(e.target.value)}
-            />
-          </div>
-
-          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Spending Amount (AED)"
-              placeholder="Enter spending amount"
-              id="spending-amount"
-              type="text"
-              value={spendingAmount}
-              onChange={(e) => setSpendingAmount(e.target.value)}
-            />
-          </div>
-
-          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Reward Points"
-              placeholder="Enter reward points"
-              id="reward-points"
-              type="text"
-              value={rewardPoints}
-              onChange={(e) => setRewardPoints(e.target.value)}
-            />
-          </div>
-
-          <div className="col-span-6 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Reward Points Equivalent to AED"
-              placeholder="Enter equivalent amount"
-              id="reward-points-equivalent"
-              type="text"
-              value={rewardPointsEquivalent}
-              onChange={(e) => setRewardPointsEquivalent(e.target.value)}
-            />
-          </div>
-        </>
-      )}
-
-      <LoyaltyAdditionalDetails
-        bannerTitle={bannerTitle}
-        setbannerTitle={setbannerTitle}
-        color={color}
-        setColor={setColor}
-        logoSize={logoSize}
-        setLogoSize={setLogoSize}
-        qrSize={qrSize}
-        setQrSize={setQrSize}
-        logo={logo}
-        setLogo={setLogo}
-        logoBlob={logoBlob}
-        setLogoBlob={setLogoBlob}
-        templateImage={templateImage}
-        setTemplateImage={setTemplateImage}
-        templateImageBlob={templateImageBlob}
-        setTemplateImageBlob={setTemplateImageBlob}
-        icon1Text={icon1Text}
-        setIcon1Text={setIcon1Text}
-        icon2Text={icon2Text}
-        setIcon2Text={setIcon2Text}
-        icon3Text={icon3Text}
-        setIcon3Text={setIcon3Text}
-        icon1TextSize={icon1TextSize}
-        setIcon1TextSize={setIcon1TextSize}
-        icon2TextSize={icon2TextSize}
-        setIcon2TextSize={setIcon2TextSize}
-        icon3TextSize={icon3TextSize}
-        setIcon3TextSize={setIcon3TextSize}
-        icon1={icon1}
-        setIcon1={setIcon1}
-        icon2={icon2}
-        setIcon2={setIcon2}
-        icon3={icon3}
-        setIcon3={setIcon3}
-        icon1Blob={icon1Blob}
-        setIcon1Blob={setIcon1Blob}
-        icon2Blob={icon2Blob}
-        setIcon2Blob={setIcon2Blob}
-        icon3Blob={icon3Blob}
-        setIcon3Blob={setIcon3Blob}
-        selectedLoyaltyData={selectedLoyaltyData}
-      />
-
-      <div className="col-span-12">
-        <Button
-          icon={MdAdd}
-          text={selectedLoyaltyData ? 'Edit Product Loyalty' : 'Add Product Loyalty'}
-          size="sm"
-          color="bg-brandGreen"
-          className="w-full"
-          onClick={handleFormSubmit}
-        />
-      </div>
-    </Card>
+        </AnimatedCardContent>
+      </AnimatedCard>
+    </div>
   );
 };
 

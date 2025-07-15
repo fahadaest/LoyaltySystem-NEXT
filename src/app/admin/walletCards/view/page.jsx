@@ -173,13 +173,13 @@ const Dashboard = () => {
         formData.append('backgroundImage', cardData.backgroundImage, 'background.jpg');
       }
 
-      if (cardData.stampCollectedImg) {
-        formData.append('stampCollectedImg', cardData.stampCollectedImg, 'stampCollectedImg.jpg');
-      }
+      // if (cardData.stampCollectedImg) {
+      //   formData.append('stampCollectedImg', cardData.stampCollectedImg, 'stampCollectedImg.jpg');
+      // }
 
-      if (cardData.noStampCollectedImg) {
-        formData.append('noStampCollectedImg', cardData.noStampCollectedImg, 'noStampCollectedImg.jpg');
-      }
+      // if (cardData.noStampCollectedImg) {
+      //   formData.append('noStampCollectedImg', cardData.noStampCollectedImg, 'noStampCollectedImg.jpg');
+      // }
 
       let result;
       if (editMode && selectedCard?.id) {
