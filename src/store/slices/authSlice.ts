@@ -22,11 +22,7 @@ const initialState: AuthState = {
     token: null,
 };
 
-// Helper function to normalize user data from different API responses
 const normalizeUserData = (userData: any): User => {
-    console.log('🔧 Normalizing user data:', userData);
-
-    // Handle both login response (_id) and verify response (id)
     const id = userData.id || userData._id;
 
     const normalized = {
@@ -36,7 +32,6 @@ const normalizeUserData = (userData: any): User => {
         role: userData.role as 'admin' | 'superadmin'
     };
 
-    console.log('🔧 Normalized result:', normalized);
     return normalized;
 };
 
@@ -50,42 +45,30 @@ const authSlice = createSlice({
             state.token = token;
             state.isAuthenticated = true;
             state.isInitialized = true;
-            console.log('🔄 Auth slice - credentials set:', user);
         },
         logout: (state) => {
             state.user = null;
             state.token = null;
             state.isAuthenticated = false;
-            console.log('🔄 Auth slice - logged out');
         },
         setInitialized: (state) => {
             state.isInitialized = true;
-            console.log('🔄 Auth slice - marked as initialized');
         },
     },
     extraReducers: (builder) => {
         builder
-            // Handle token verification success
             .addMatcher(
                 authApi.endpoints.verifyToken.matchFulfilled,
                 (state, { payload }) => {
-                    console.log('🔍 Raw verify token payload:', payload);
-
-                    // IMPORTANT: The payload IS the user data directly
-                    // Your API returns the user object directly, not wrapped in { user: ... }
                     const normalizedUser = normalizeUserData(payload);
-
                     state.user = normalizedUser;
                     state.isAuthenticated = true;
                     state.isInitialized = true;
-                    console.log('🔄 Auth slice - token verification success:', normalizedUser);
                 }
             )
-            // Handle token verification failure
             .addMatcher(
                 authApi.endpoints.verifyToken.matchRejected,
                 (state, { payload, error }) => {
-                    console.log('🔄 Auth slice - token verification failed:', { payload, error });
                     state.user = null;
                     state.isAuthenticated = false;
                     state.isInitialized = true;

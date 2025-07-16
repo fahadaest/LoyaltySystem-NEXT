@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import WalletForm from './WalletForm';
 import PhonePreview from './PhonePreview';
 
-const EditorView = ({ isModal, cardData, setCardData, handleFieldChange, colorOption, phoneType, setPhoneType, }) => {
+const EditorView = ({ isModal, cardData, setCardData, colorOption, phoneType, setPhoneType, }) => {
 
     return (
         <div className={`${isModal ? 'h-[70vh]' : 'min-h-screen'} bg-white flex`}>

@@ -7,8 +7,6 @@ const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const WalletCard = ({ cardData, platform = 'ios' }) => {
     const isIOS = platform === 'ios';
 
-    console.log("cardData", cardData)
-
     const getBackgroundStyle = () => {
         const backgroundColor = cardData.backgroundColor || '#000000';
         return {
@@ -17,11 +15,8 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
     };
 
     const stampLayout = getStampLayout(cardData.rewardQuantity);
+    const collectedStampsCount = cardData.collectedStamps || cardData.currentStamps || 3;
 
-    // Get current collected stamps count (you might need to adjust this based on your data structure)
-    const collectedStampsCount = cardData.collectedStamps || cardData.currentStamps || 3; // Default to 3 for demo
-
-    // Render individual stamp
     const renderStamp = (index, isCollected) => {
         const hasCustomStamps = cardData.stampCollectedImgUrl || cardData.noStampCollectedImgUrl;
 
@@ -56,7 +51,6 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
             }
         }
 
-        // Fallback to default SVG stamps
         return (
             <div
                 key={index}

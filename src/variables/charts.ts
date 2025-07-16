@@ -256,14 +256,19 @@ export const barChartOptionsWeeklyRevenue = {
 
 export const lineChartDataTotalSpent = [
   {
-    name: 'Revenue',
+    name: 'All',
     data: [50, 64, 48, 66, 49, 78, 60, 74, 88, 96, 59, 108],
     color: '#36a18f',
   },
   {
-    name: 'Profit',
+    name: 'Points',
     data: [30, 40, 24, 46, 20, 56, 40, 50, 74, 86, 30, 96],
     color: '#c7eee8',
+  },
+  {
+    name: 'Products',
+    data: [20, 10, 34, 66, 20, 36, 40, 50, 74, 86, 30, 96],
+    color: '#c7ee38',
   },
 ];
 

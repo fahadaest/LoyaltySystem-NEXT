@@ -70,16 +70,22 @@ const Dashboard = () => {
     isActive: true
   });
 
-  // Function to reset cardData to default values
   const resetCardData = () => {
     setCardData({
       cardName: '',
       cardType: 'product',
       description: '',
+
       logoImage: null,
       backgroundImage: null,
       stampCollectedImg: null,
       noStampCollectedImg: null,
+
+      logoImageUrl: '',
+      backgroundImageUrl: '',
+      stampCollectedImgUrl: '',
+      noStampCollectedImgUrl: '',
+
       rewardQuantity: 10,
       rewardsCount: 0,
       pointsSpendAmount: 100,
@@ -106,16 +112,17 @@ const Dashboard = () => {
     });
   };
 
-  // Function to populate cardData with selected card data
   const populateCardData = (card) => {
     setCardData({
       cardName: card.cardName || '',
       cardType: card.cardType || 'product',
       description: card.description || '',
-      logoImage: null, // Reset to null for edit mode
-      backgroundImage: card.backgroundImage, // Reset to null for edit mode
+
+      logoImage: null,
+      backgroundImage: null,
       stampCollectedImg: null,
       noStampCollectedImg: null,
+
       rewardQuantity: card.rewardQuantity || 10,
       rewardsCount: card.rewardsCount || 0,
       pointsSpendAmount: card.pointsSpendAmount || 100,
@@ -139,11 +146,11 @@ const Dashboard = () => {
         { key: 'expires', label: 'Expires', value: 'Never' }
       ],
       isActive: card.isActive !== undefined ? card.isActive : true,
-      // Store image URLs for display purposes
-      logoImageUrl: card.logoImageUrl || null,
-      backgroundImageUrl: card.backgroundImageUrl || null,
-      stampCollectedImgUrl: card.stampCollectedImgUrl || null,
-      noStampCollectedImgUrl: card.noStampCollectedImgUrl || null
+
+      logoImageUrl: card.logoImageUrl || card.logoImage || null,
+      backgroundImageUrl: card.backgroundImageUrl || card.backgroundImage || null,
+      stampCollectedImgUrl: card.stampCollectedImgUrl || card.stampCollectedImg || null,
+      noStampCollectedImgUrl: card.noStampCollectedImgUrl || card.noStampCollectedImg || null
     });
   };
 
@@ -164,22 +171,25 @@ const Dashboard = () => {
         }
       });
 
-      // Handle image blobs separately
-      if (cardData.logoImage) {
+      const isValidBlob = (value) => {
+        return value instanceof File || value instanceof Blob;
+      };
+
+      if (cardData.logoImage && isValidBlob(cardData.logoImage)) {
         formData.append('logoImage', cardData.logoImage, 'logo.jpg');
       }
 
-      if (cardData.backgroundImage) {
+      if (cardData.backgroundImage && isValidBlob(cardData.backgroundImage)) {
         formData.append('backgroundImage', cardData.backgroundImage, 'background.jpg');
       }
 
-      // if (cardData.stampCollectedImg) {
-      //   formData.append('stampCollectedImg', cardData.stampCollectedImg, 'stampCollectedImg.jpg');
-      // }
+      if (cardData.stampCollectedImg && isValidBlob(cardData.stampCollectedImg)) {
+        formData.append('stampCollectedImg', cardData.stampCollectedImg, 'stampCollectedImg.jpg');
+      }
 
-      // if (cardData.noStampCollectedImg) {
-      //   formData.append('noStampCollectedImg', cardData.noStampCollectedImg, 'noStampCollectedImg.jpg');
-      // }
+      if (cardData.noStampCollectedImg && isValidBlob(cardData.noStampCollectedImg)) {
+        formData.append('noStampCollectedImg', cardData.noStampCollectedImg, 'noStampCollectedImg.jpg');
+      }
 
       let result;
       if (editMode && selectedCard?.id) {

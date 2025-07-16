@@ -23,40 +23,10 @@ const WalletCardEditor = ({ phoneType, setPhoneType, colorOption, cardData, setC
     setCurrentModalView('editor');
   };
 
-
-
-
-
-
-
-  const { data: existingCard, isLoading } = useGetWalletCardByIdQuery(cardId, {
-    skip: !editMode || !cardId
-  });
-
-
-  const handleFieldChange = (field, value) => {
-    setCardData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-
-
-
-
-
-
   if (currentModalView === 'selection' && !editMode) {
     return (
       <SelectionView
         setShowModalBackButton={setShowModalBackButton}
-
-
-
-
-
-
         isModal={isModal}
         onCreateFromScratch={handleCreateFromScratch}
       />
@@ -71,17 +41,10 @@ const WalletCardEditor = ({ phoneType, setPhoneType, colorOption, cardData, setC
       setPhoneType={setPhoneType}
       cardData={cardData}
       setCardData={setCardData}
-
-
-
-
-
       isModal={isModal}
       onBack={handleBack}
-      // handleFieldChange={handleFieldChange}
       editMode={editMode}
       cardId={cardId}
-    // onSave={handleSaveComplete}
     />
   );
 };

@@ -8,7 +8,7 @@ import AnimatedButton from '../ui/AnimatedButton';
 import { AnimatedCard, AnimatedCardContent } from '../ui/AnimatedCard';
 import ColorPicker from 'components/ui/ColorPicker';
 import CardTypeSelector from '../ui/CardTypeSelector';
-import ImageSelector from '../ui/ImageSelector'; // Import the new ImageSelector
+import ImageSelector from '../ui/ImageSelector';
 import { loyaltyTypes } from 'utils/loyaltyTypes';
 import { barcodeOptions } from 'utils/barcodeOptions';
 import { getImageUrl } from 'utils/imageUtils';
@@ -70,14 +70,9 @@ const WalletForm = forwardRef(({
         }
     };
 
-    // Handle logo image change - store blob directly in cardData.logoImage
-    const handleLogoImageChange = (imageUrl, blob) => {
-        console.log('Logo image change:', { imageUrl, blob });
 
-        // Check if this is a removal case (empty imageUrl and no blob)
+    const handleLogoImageChange = (imageUrl, blob) => {
         if ((!imageUrl || imageUrl === '') && !blob) {
-            console.log('Removing logo image');
-            // Clean up existing blob URL if it exists
             if (cardData.logoImageUrl && cardData.logoImageUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(cardData.logoImageUrl);
             }
@@ -88,28 +83,28 @@ const WalletForm = forwardRef(({
                 logoImageUrl: ''
             }));
         } else {
-            // Normal case - set both blob and URL
+            let displayUrl = imageUrl;
+            let blobToStore = blob;
+
+            if (blob && !imageUrl) {
+                displayUrl = URL.createObjectURL(blob);
+            }
+
             setCardData(prev => ({
                 ...prev,
-                logoImage: blob || prev.logoImage,
-                logoImageUrl: imageUrl || prev.logoImageUrl || (blob ? URL.createObjectURL(blob) : '')
+                logoImage: blobToStore,
+                logoImageUrl: displayUrl
             }));
         }
 
-        // Clear any logo image errors
         if (errors.logoImage) {
             setErrors(prev => ({ ...prev, logoImage: '' }));
         }
     };
 
-    // Handle background image change - store blob directly in cardData.backgroundImage
     const handleBackgroundImageChange = (imageUrl, blob) => {
-        console.log('Background image change:', { imageUrl, blob });
-
-        // Check if this is a removal case (empty imageUrl and no blob)
         if ((!imageUrl || imageUrl === '') && !blob) {
             console.log('Removing background image');
-            // Clean up existing blob URL if it exists
             if (cardData.backgroundImageUrl && cardData.backgroundImageUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(cardData.backgroundImageUrl);
             }
@@ -120,28 +115,26 @@ const WalletForm = forwardRef(({
                 backgroundImageUrl: ''
             }));
         } else {
-            // Normal case - set both blob and URL
+            let displayUrl = imageUrl;
+            let blobToStore = blob;
+            if (blob && !imageUrl) {
+                displayUrl = URL.createObjectURL(blob);
+            }
+
             setCardData(prev => ({
                 ...prev,
-                backgroundImage: blob || prev.backgroundImage,
-                backgroundImageUrl: imageUrl || prev.backgroundImageUrl || (blob ? URL.createObjectURL(blob) : '')
+                backgroundImage: blobToStore,
+                backgroundImageUrl: displayUrl
             }));
         }
 
-        // Clear any background image errors
         if (errors.backgroundImage) {
             setErrors(prev => ({ ...prev, backgroundImage: '' }));
         }
     };
 
-    // Handle stamp collected image change
     const handleStampCollectedImageChange = (imageUrl, blob) => {
-        console.log('Stamp collected image change:', { imageUrl, blob });
-
-        // Check if this is a removal case (empty imageUrl and no blob)
         if ((!imageUrl || imageUrl === '') && !blob) {
-            console.log('Removing stamp collected image');
-            // Clean up existing blob URL if it exists
             if (cardData.stampCollectedImgUrl && cardData.stampCollectedImgUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(cardData.stampCollectedImgUrl);
             }
@@ -152,28 +145,26 @@ const WalletForm = forwardRef(({
                 stampCollectedImgUrl: ''
             }));
         } else {
-            // Normal case - set both blob and URL
+            let displayUrl = imageUrl;
+            let blobToStore = blob;
+            if (blob && !imageUrl) {
+                displayUrl = URL.createObjectURL(blob);
+            }
+
             setCardData(prev => ({
                 ...prev,
-                stampCollectedImg: blob || prev.stampCollectedImg,
-                stampCollectedImgUrl: imageUrl || prev.stampCollectedImgUrl || (blob ? URL.createObjectURL(blob) : '')
+                stampCollectedImg: blobToStore,
+                stampCollectedImgUrl: displayUrl
             }));
         }
 
-        // Clear any stamp collected image errors
         if (errors.stampCollectedImg) {
             setErrors(prev => ({ ...prev, stampCollectedImg: '' }));
         }
     };
 
-    // Handle uncollected stamp image change
     const handleNoStampCollectedImageChange = (imageUrl, blob) => {
-        console.log('Uncollected stamp image change:', { imageUrl, blob });
-
-        // Check if this is a removal case (empty imageUrl and no blob)
         if ((!imageUrl || imageUrl === '') && !blob) {
-            console.log('Removing uncollected stamp image');
-            // Clean up existing blob URL if it exists
             if (cardData.noStampCollectedImgUrl && cardData.noStampCollectedImgUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(cardData.noStampCollectedImgUrl);
             }
@@ -184,15 +175,20 @@ const WalletForm = forwardRef(({
                 noStampCollectedImgUrl: ''
             }));
         } else {
-            // Normal case - set both blob and URL
+            let displayUrl = imageUrl;
+            let blobToStore = blob;
+
+            if (blob && !imageUrl) {
+                displayUrl = URL.createObjectURL(blob);
+            }
+
             setCardData(prev => ({
                 ...prev,
-                noStampCollectedImg: blob || prev.noStampCollectedImg,
-                noStampCollectedImgUrl: imageUrl || prev.noStampCollectedImgUrl || (blob ? URL.createObjectURL(blob) : '')
+                noStampCollectedImg: blobToStore,
+                noStampCollectedImgUrl: displayUrl
             }));
         }
 
-        // Clear any uncollected stamp image errors
         if (errors.noStampCollectedImg) {
             setErrors(prev => ({ ...prev, noStampCollectedImg: '' }));
         }
@@ -253,7 +249,6 @@ const WalletForm = forwardRef(({
                         </div>
                     </FormSection>
 
-                    {/* Card Type Selection */}
                     <FormSection
                         title="Card Type"
                         icon={Building}
@@ -268,7 +263,6 @@ const WalletForm = forwardRef(({
                         />
                     </FormSection>
 
-                    {/* Design Section */}
                     <FormSection
                         title="Design"
                         icon={Palette}
@@ -286,7 +280,6 @@ const WalletForm = forwardRef(({
                         </div>
                     </FormSection>
 
-                    {/* Basic Information */}
                     <FormSection
                         title="Basic Information"
                         icon={Edit3}
@@ -307,7 +300,7 @@ const WalletForm = forwardRef(({
 
                                 <ImageSelector
                                     label="Card Logo"
-                                    value={cardData.logoImageUrl || ''}
+                                    value={getImageUrl(cardData.logoImage || cardData.logoImageUrl)}
                                     onChange={handleLogoImageChange}
                                     onBlobChange={(blob) => handleLogoImageChange('', blob)}
                                     aspectRatio={1}
@@ -319,7 +312,6 @@ const WalletForm = forwardRef(({
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                {/* Background Image Selector - Takes 2 columns */}
                                 <div className="md:col-span-2">
                                     <ImageSelector
                                         label="Card Background Image"
@@ -336,10 +328,9 @@ const WalletForm = forwardRef(({
 
                                 {cardData.cardType !== 'point' && (
                                     <>
-                                        {/* Stamp Collected Image Selector - Takes 1 column */}
                                         <ImageSelector
                                             label="Stamp Collected"
-                                            value={cardData.stampCollectedImgUrl || ''}
+                                            value={getImageUrl(cardData.stampCollectedImg || cardData.stampCollectedImgUrl)}
                                             onChange={handleStampCollectedImageChange}
                                             onBlobChange={(blob) => handleStampCollectedImageChange('', blob)}
                                             aspectRatio={1}
@@ -348,11 +339,9 @@ const WalletForm = forwardRef(({
                                             maxWidth={200}
                                             maxHeight={200}
                                         />
-
-                                        {/* Uncollected Stamp Image Selector - Takes 1 column */}
                                         <ImageSelector
                                             label="Uncollected Stamp"
-                                            value={cardData.noStampCollectedImgUrl || ''}
+                                            value={getImageUrl(cardData.noStampCollectedImg || cardData.noStampCollectedImgUrl)}
                                             onChange={handleNoStampCollectedImageChange}
                                             onBlobChange={(blob) => handleNoStampCollectedImageChange('', blob)}
                                             aspectRatio={1}
@@ -367,7 +356,6 @@ const WalletForm = forwardRef(({
                         </div>
                     </FormSection>
 
-                    {/* Barcode Section */}
                     <FormSection
                         title="Barcode"
                         icon={QrCode}
