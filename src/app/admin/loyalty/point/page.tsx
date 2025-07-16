@@ -183,6 +183,9 @@ const Dashboard = () => {
           selectedLoyaltyData={selectedLoyaltyData}
           onSubmit={selectedLoyaltyData ? handleUpdateLoyalty : handleAddLoyalty}
           products={undefined}
+          loyaltyFormData={undefined}
+          updateLoyaltyFormField={undefined}
+          updateLoyaltyFormData={undefined}
         />
       </CustomModal>
 
