@@ -113,7 +113,7 @@ const Dashboard = () => {
       cardType: card.cardType || 'product',
       description: card.description || '',
       logoImage: null, // Reset to null for edit mode
-      backgroundImage: getImageUrl(card.backgroundImage, null), // Reset to null for edit mode
+      backgroundImage: card.backgroundImage, // Reset to null for edit mode
       stampCollectedImg: null,
       noStampCollectedImg: null,
       rewardQuantity: card.rewardQuantity || 10,

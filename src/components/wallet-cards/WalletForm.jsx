@@ -11,6 +11,7 @@ import CardTypeSelector from '../ui/CardTypeSelector';
 import ImageSelector from '../ui/ImageSelector'; // Import the new ImageSelector
 import { loyaltyTypes } from 'utils/loyaltyTypes';
 import { barcodeOptions } from 'utils/barcodeOptions';
+import { getImageUrl } from 'utils/imageUtils';
 
 const WalletForm = forwardRef(({
     cardData,
@@ -322,7 +323,7 @@ const WalletForm = forwardRef(({
                                 <div className="md:col-span-2">
                                     <ImageSelector
                                         label="Card Background Image"
-                                        value={cardData.backgroundImageUrl || ''}
+                                        value={getImageUrl(cardData.backgroundImage || cardData.backgroundImageUrl)}
                                         onChange={handleBackgroundImageChange}
                                         onBlobChange={(blob) => handleBackgroundImageChange('', blob)}
                                         aspectRatio={16 / 9}

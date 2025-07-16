@@ -9,7 +9,6 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
 
     console.log("cardData", cardData)
 
-    // Create background style with fallback color only
     const getBackgroundStyle = () => {
         const backgroundColor = cardData.backgroundColor || '#000000';
         return {
@@ -17,7 +16,6 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
         };
     };
 
-    // Get stamp layout configuration
     const stampLayout = getStampLayout(cardData.rewardQuantity);
 
     // Get current collected stamps count (you might need to adjust this based on your data structure)
