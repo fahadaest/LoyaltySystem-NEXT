@@ -17,7 +17,7 @@ export const permissionsApi = createApi({
     tagTypes: ['Permissions', 'UserPermissions'],
     endpoints: (builder) => ({
         getAllPermissions: builder.query({
-            query: () => '/api/permissions',
+            query: () => '/permissions',
             providesTags: ['Permissions'],
             transformResponse: (response: any) => {
                 // Transform the grouped permissions into a flat array for easier use in forms
@@ -39,12 +39,12 @@ export const permissionsApi = createApi({
             }
         }),
         getUserPermissions: builder.query({
-            query: (userId: number | string) => `/api/permissions/user/${userId}`,
+            query: (userId: number | string) => `/permissions/user/${userId}`,
             providesTags: (result, error, userId) => [{ type: 'UserPermissions', id: userId }],
         }),
         updateUserPermissions: builder.mutation({
             query: ({ userId, permissionIds }) => ({
-                url: `/api/permissions/user/${userId}`,
+                url: `/permissions/user/${userId}`,
                 method: 'PUT',
                 body: { permissionIds },
             }),

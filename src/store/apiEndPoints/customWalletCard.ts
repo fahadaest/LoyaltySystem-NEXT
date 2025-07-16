@@ -19,7 +19,7 @@ export const customWalletCardsApi = createApi({
         // Create a new custom wallet card
         createWalletCard: builder.mutation({
             query: (formData) => ({
-                url: '/api/custom-wallet-card',
+                url: '/custom-wallet-card',
                 method: 'POST',
                 body: formData,
             }),
@@ -37,21 +37,21 @@ export const customWalletCardsApi = createApi({
                 if (params.page) searchParams.append('page', params.page.toString());
                 if (params.limit) searchParams.append('limit', params.limit.toString());
 
-                return `/api/custom-wallet-card?${searchParams.toString()}`;
+                return `/custom-wallet-card?${searchParams.toString()}`;
             },
             providesTags: ['WalletCard'],
         }),
 
         // Get a specific wallet card by ID
         getWalletCardById: builder.query({
-            query: (id) => `/api/custom-wallet-card/${id}`,
+            query: (id) => `/custom-wallet-card/${id}`,
             providesTags: (result, error, id) => [{ type: 'WalletCard', id }],
         }),
 
         // Update an existing wallet card
         updateWalletCard: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/custom-wallet-card/${id}`,
+                url: `/custom-wallet-card/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -64,7 +64,7 @@ export const customWalletCardsApi = createApi({
         // Delete a wallet card
         deleteWalletCard: builder.mutation({
             query: (id) => ({
-                url: `/api/custom-wallet-card/${id}`,
+                url: `/custom-wallet-card/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: (result, error, id) => [
@@ -76,7 +76,7 @@ export const customWalletCardsApi = createApi({
         // Generate Apple Wallet pass for a customer
         generateWalletPass: builder.mutation({
             query: ({ cardId, passData }) => ({
-                url: `/api/custom-wallet-card/${cardId}/generate-pass`,
+                url: `/custom-wallet-card/${cardId}/generate-pass`,
                 method: 'POST',
                 body: passData,
             }),
@@ -86,7 +86,7 @@ export const customWalletCardsApi = createApi({
         // Toggle wallet card active/inactive status
         toggleWalletCardStatus: builder.mutation({
             query: (id) => ({
-                url: `/api/custom-wallet-card/${id}/toggle-status`,
+                url: `/custom-wallet-card/${id}/toggle-status`,
                 method: 'PATCH',
             }),
             invalidatesTags: (result, error, id) => [
@@ -98,7 +98,7 @@ export const customWalletCardsApi = createApi({
         // Duplicate a wallet card
         duplicateWalletCard: builder.mutation({
             query: ({ id, cardName }) => ({
-                url: `/api/custom-wallet-card/${id}/duplicate`,
+                url: `/custom-wallet-card/${id}/duplicate`,
                 method: 'POST',
                 body: { cardName },
             }),
@@ -107,20 +107,20 @@ export const customWalletCardsApi = createApi({
 
         // Get all wallet passes for a specific card
         getWalletPasses: builder.query({
-            query: (cardId) => `/api/custom-wallet-card/${cardId}/passes`,
+            query: (cardId) => `/custom-wallet-card/${cardId}/passes`,
             providesTags: ['WalletPass'],
         }),
 
         // Get wallet pass by ID
         getWalletPassById: builder.query({
-            query: (passId) => `/api/wallet-passes/${passId}`,
+            query: (passId) => `/wallet-passes/${passId}`,
             providesTags: (result, error, passId) => [{ type: 'WalletPass', id: passId }],
         }),
 
         // Update wallet pass (for dynamic content updates)
         updateWalletPass: builder.mutation({
             query: ({ passId, dynamicFields }) => ({
-                url: `/api/wallet-passes/${passId}`,
+                url: `/wallet-passes/${passId}`,
                 method: 'PUT',
                 body: { dynamicFields },
             }),
@@ -133,7 +133,7 @@ export const customWalletCardsApi = createApi({
         // Revoke a wallet pass
         revokeWalletPass: builder.mutation({
             query: (passId) => ({
-                url: `/api/wallet-passes/${passId}/revoke`,
+                url: `/wallet-passes/${passId}/revoke`,
                 method: 'PATCH',
             }),
             invalidatesTags: (result, error, passId) => [
@@ -144,14 +144,14 @@ export const customWalletCardsApi = createApi({
 
         // Get wallet card analytics
         getWalletCardAnalytics: builder.query({
-            query: () => '/api/custom-wallet-card/analytics',
+            query: () => '/custom-wallet-card/analytics',
             providesTags: ['WalletCard', 'WalletPass'],
         }),
 
         // Bulk operations
         bulkUpdateWalletCards: builder.mutation({
             query: ({ cardIds, updates }) => ({
-                url: '/api/custom-wallet-card/bulk-update',
+                url: '/custom-wallet-card/bulk-update',
                 method: 'PATCH',
                 body: { cardIds, updates },
             }),
@@ -161,7 +161,7 @@ export const customWalletCardsApi = createApi({
         // Export wallet card data
         exportWalletCardData: builder.mutation({
             query: (params) => ({
-                url: '/api/custom-wallet-card/export',
+                url: '/custom-wallet-card/export',
                 method: 'POST',
                 body: params,
             }),
@@ -170,7 +170,7 @@ export const customWalletCardsApi = createApi({
         // Import wallet card template
         importWalletCardTemplate: builder.mutation({
             query: (formData) => ({
-                url: '/api/custom-wallet-card/import',
+                url: '/custom-wallet-card/import',
                 method: 'POST',
                 body: formData,
             }),
@@ -179,7 +179,7 @@ export const customWalletCardsApi = createApi({
 
         // Get wallet card templates
         getWalletCardTemplates: builder.query({
-            query: () => '/api/custom-wallet-card/templates',
+            query: () => '/custom-wallet-card/templates',
         }),
     }),
 });

@@ -43,19 +43,19 @@ export const authApi = createApi({
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponse, LoginRequest>({
             query: (credentials) => ({
-                url: '/api/auth/login',
+                url: '/auth/login',
                 method: 'POST',
                 body: credentials,
             }),
             invalidatesTags: ['Auth'],
         }),
         verifyToken: builder.query<VerifyTokenResponse, void>({
-            query: () => '/api/users/profile',
+            query: () => '/users/profile',
             providesTags: ['Auth'],
         }),
         logout: builder.mutation<void, void>({
             query: () => ({
-                url: '/api/auth/logout',
+                url: '/auth/logout',
                 method: 'POST',
             }),
             invalidatesTags: ['Auth'],

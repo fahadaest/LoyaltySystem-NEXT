@@ -50,7 +50,7 @@ export const subscriptionApi = createApi({
     endpoints: (builder) => ({
         createSubscription: builder.mutation<Subscription, CreateSubscriptionRequest>({
             query: (body) => ({
-                url: '/api/subscriptions',
+                url: '/subscriptions',
                 method: 'POST',
                 body,
             }),
@@ -58,18 +58,18 @@ export const subscriptionApi = createApi({
         }),
 
         listSubscriptions: builder.query<Subscription[], void>({
-            query: () => '/api/subscriptions',
+            query: () => '/subscriptions',
             providesTags: ['Subscriptions'],
         }),
 
         getSubscriptionById: builder.query<Subscription, number>({
-            query: (id) => `/api/subscriptions/${id}`,
+            query: (id) => `/subscriptions/${id}`,
             providesTags: (result, error, id) => [{ type: 'Subscriptions', id }],
         }),
 
         updateSubscription: builder.mutation<Subscription, { id: number; data: UpdateSubscriptionRequest }>({
             query: ({ id, data }) => ({
-                url: `/api/subscriptions/${id}`,
+                url: `/subscriptions/${id}`,
                 method: 'PUT',
                 body: data,
             }),
@@ -81,7 +81,7 @@ export const subscriptionApi = createApi({
 
         deleteSubscription: builder.mutation<{ message: string }, number>({
             query: (id) => ({
-                url: `/api/subscriptions/${id}`,
+                url: `/subscriptions/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: (result, error, id) => [

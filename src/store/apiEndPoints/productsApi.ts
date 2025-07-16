@@ -18,22 +18,22 @@ export const productsApi = createApi({
     endpoints: (builder) => ({
         createProduct: builder.mutation({
             query: (formData) => ({
-                url: '/api/products',
+                url: '/products',
                 method: 'POST',
                 body: formData,
             }),
             invalidatesTags: ['Products'],
         }),
         getAllProducts: builder.query({
-            query: () => '/api/products',
+            query: () => '/products',
             providesTags: ['Products'],
         }),
         getProductById: builder.query({
-            query: (id: number | string) => `/api/products/${id}`,
+            query: (id: number | string) => `/products/${id}`,
         }),
         updateProduct: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/products/${id}`,
+                url: `/products/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -41,7 +41,7 @@ export const productsApi = createApi({
         }),
         deleteProduct: builder.mutation({
             query: (id: number | string) => ({
-                url: `/api/products/${id}`,
+                url: `/products/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Products'],

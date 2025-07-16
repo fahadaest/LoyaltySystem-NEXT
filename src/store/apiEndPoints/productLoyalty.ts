@@ -18,22 +18,22 @@ export const productLoyaltyApi = createApi({
     endpoints: (builder) => ({
         createProductLoyaltyCampaign: builder.mutation({
             query: (formData) => ({
-                url: '/api/product-loyalty',
+                url: '/product-loyalty',
                 method: 'POST',
                 body: formData,
             }),
             invalidatesTags: ['ProductLoyalty'],
         }),
         getAllProductLoyaltyCampaigns: builder.query({
-            query: () => '/api/product-loyalty',
+            query: () => '/product-loyalty',
             providesTags: ['ProductLoyalty'],
         }),
         getProductLoyaltyCampaignById: builder.query({
-            query: (id) => `/api/product-loyalty/${id}`,
+            query: (id) => `/product-loyalty/${id}`,
         }),
         updateProductLoyaltyCampaign: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/product-loyalty/${id}`,
+                url: `/product-loyalty/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -41,7 +41,7 @@ export const productLoyaltyApi = createApi({
         }),
         deleteProductLoyaltyCampaign: builder.mutation({
             query: (id) => ({
-                url: `/api/product-loyalty/${id}`,
+                url: `/product-loyalty/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['ProductLoyalty'],

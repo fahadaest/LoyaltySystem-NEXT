@@ -18,22 +18,22 @@ export const pointLoyaltyApi = createApi({
     endpoints: (builder) => ({
         createPointLoyaltyCampaign: builder.mutation({
             query: (formData) => ({
-                url: '/api/point-loyalty',
+                url: '/point-loyalty',
                 method: 'POST',
                 body: formData,
             }),
             invalidatesTags: ['PointLoyalty'],
         }),
         getAllPointLoyaltyCampaigns: builder.query({
-            query: (search) => `/api/point-loyalty?search=${search}`,
+            query: (search) => `/point-loyalty?search=${search}`,
             providesTags: ['PointLoyalty'],
         }),
         getPointLoyaltyCampaignById: builder.query({
-            query: (id) => `/api/point-loyalty/${id}`,
+            query: (id) => `/point-loyalty/${id}`,
         }),
         updatePointLoyaltyCampaign: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/point-loyalty/${id}`,
+                url: `/point-loyalty/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -41,7 +41,7 @@ export const pointLoyaltyApi = createApi({
         }),
         deletePointLoyaltyCampaign: builder.mutation({
             query: (id) => ({
-                url: `/api/point-loyalty/${id}`,
+                url: `/point-loyalty/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['PointLoyalty'],

@@ -19,22 +19,22 @@ export const settingsApi = createApi({
         // Address API endpoints
         createAddress: builder.mutation({
             query: (formData) => ({
-                url: '/api/settings/address',
+                url: '/settings/address',
                 method: 'POST',
                 body: formData,
             }),
             invalidatesTags: ['Address'],
         }),
         getAllAddresses: builder.query({
-            query: () => '/api/settings/address',
+            query: () => '/settings/address',
             providesTags: ['Address'],
         }),
         getAddressById: builder.query({
-            query: (id) => `/api/settings/address/${id}`,
+            query: (id) => `/settings/address/${id}`,
         }),
         updateAddress: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/settings/address/${id}`,
+                url: `/settings/address/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -42,7 +42,7 @@ export const settingsApi = createApi({
         }),
         deleteAddress: builder.mutation({
             query: (id) => ({
-                url: `/api/settings/address/${id}`,
+                url: `/settings/address/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Address'],
@@ -50,12 +50,12 @@ export const settingsApi = createApi({
 
         // Social Links API endpoints
         getAllSocialLinks: builder.query({
-            query: () => '/api/settings/social-links',
+            query: () => '/settings/social-links',
             providesTags: ['SocialLinks'],
         }),
         updateSocialLinks: builder.mutation({
             query: ({ formData }) => ({
-                url: `/api/settings/social-links`,
+                url: `/settings/social-links`,
                 method: 'POST',
                 body: formData,
             }),
@@ -65,22 +65,22 @@ export const settingsApi = createApi({
         // Beacons API endpoints
         createBeacon: builder.mutation({
             query: (formData) => ({
-                url: '/api/settings/beacons',
+                url: '/settings/beacons',
                 method: 'POST',
                 body: formData,
             }),
             invalidatesTags: ['Beacons'],
         }),
         getAllBeacons: builder.query({
-            query: () => '/api/settings/beacons',
+            query: () => '/settings/beacons',
             providesTags: ['Beacons'],
         }),
         getBeaconById: builder.query({
-            query: (id) => `/api/settings/beacons/${id}`,
+            query: (id) => `/settings/beacons/${id}`,
         }),
         updateBeacon: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/settings/beacons/${id}`,
+                url: `/settings/beacons/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -88,7 +88,7 @@ export const settingsApi = createApi({
         }),
         deleteBeacon: builder.mutation({
             query: (id) => ({
-                url: `/api/settings/beacons/${id}`,
+                url: `/settings/beacons/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Beacons'],
@@ -96,12 +96,12 @@ export const settingsApi = createApi({
 
         // Support Details API endpoints
         getSupportDetails: builder.query({
-            query: () => '/api/settings/support-details',
+            query: () => '/settings/support-details',
             providesTags: ['SupportDetails'],
         }),
         updateSupportDetails: builder.mutation({
             query: ({ formData }) => ({
-                url: `/api/settings/support-details`,
+                url: `/settings/support-details`,
                 method: 'POST',
                 body: formData,
             }),
@@ -110,12 +110,12 @@ export const settingsApi = createApi({
 
         // Terms API endpoints
         getAllTerms: builder.query({
-            query: () => '/api/settings/terms',
+            query: () => '/settings/terms',
             providesTags: ['Terms'],
         }),
         updateTerms: builder.mutation({
             query: ({ formData }) => ({
-                url: `/api/settings/terms`,
+                url: `/settings/terms`,
                 method: 'POST',
                 body: formData,
             }),

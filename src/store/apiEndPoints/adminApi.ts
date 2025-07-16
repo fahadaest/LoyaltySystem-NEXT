@@ -51,23 +51,23 @@ export const adminApi = createApi({
     endpoints: (builder) => ({
         createAdmin: builder.mutation<Admin, CreateAdminRequest>({
             query: (newAdmin) => ({
-                url: '/api/admins',
+                url: '/admins',
                 method: 'POST',
                 body: newAdmin,
             }),
             invalidatesTags: ['Admins'],
         }),
         listAdmins: builder.query<Admin[], void>({
-            query: () => '/api/admins',
+            query: () => '/admins',
             providesTags: ['Admins'],
         }),
         getAdminById: builder.query<Admin, string>({
-            query: (id) => `/api/admins/${id}`,
+            query: (id) => `/admins/${id}`,
             providesTags: (result, error, id) => [{ type: 'Admins', id }],
         }),
         updateAdmin: builder.mutation<Admin, { id: string; data: UpdateAdminRequest }>({
             query: ({ id, data }) => ({
-                url: `/api/admins/${id}`,
+                url: `/admins/${id}`,
                 method: 'PUT',
                 body: data,
             }),
@@ -78,7 +78,7 @@ export const adminApi = createApi({
         }),
         deleteAdmin: builder.mutation<{ message: string }, string>({
             query: (id) => ({
-                url: `/api/admins/${id}`,
+                url: `/admins/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: (result, error, id) => [

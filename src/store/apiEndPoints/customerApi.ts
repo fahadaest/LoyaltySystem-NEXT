@@ -57,7 +57,7 @@ export const customersApi = createApi({
             adminId: number;
         }>({
             query: (formData) => ({
-                url: '/api/customers',
+                url: '/customers',
                 method: 'POST',
                 body: formData,
             }),
@@ -66,19 +66,19 @@ export const customersApi = createApi({
 
         // Get all customers
         getAllCustomers: builder.query({
-            query: () => '/api/customers',
+            query: () => '/customers',
             providesTags: ['Customer'],
         }),
 
         // Get a customer by ID
         getCustomerById: builder.query({
-            query: (id) => `/api/customers/${id}`,
+            query: (id) => `/customers/${id}`,
         }),
 
         // Update an existing customer
         updateCustomer: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/customers/${id}`,
+                url: `/customers/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -88,7 +88,7 @@ export const customersApi = createApi({
         // Delete a customer by ID
         deleteCustomer: builder.mutation({
             query: (id) => ({
-                url: `/api/customers/${id}`,
+                url: `/customers/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Customer'],

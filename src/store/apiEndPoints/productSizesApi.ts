@@ -18,22 +18,22 @@ export const productSizesApi = createApi({
     endpoints: (builder) => ({
         createProductSize: builder.mutation({
             query: (formData) => ({
-                url: '/api/product-sizes',
+                url: '/product-sizes',
                 method: 'POST',
                 body: formData,
             }),
             invalidatesTags: ['ProductSizes'],
         }),
         getAllProductSizes: builder.query({
-            query: () => '/api/product-sizes',
+            query: () => '/product-sizes',
             providesTags: ['ProductSizes'],
         }),
         getProductSizeById: builder.query({
-            query: (id) => `/api/product-sizes/${id}`,
+            query: (id) => `/product-sizes/${id}`,
         }),
         updateProductSize: builder.mutation({
             query: ({ id, formData }) => ({
-                url: `/api/product-sizes/${id}`,
+                url: `/product-sizes/${id}`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -41,7 +41,7 @@ export const productSizesApi = createApi({
         }),
         deleteProductSize: builder.mutation({
             query: (id) => ({
-                url: `/api/product-sizes/${id}`,
+                url: `/product-sizes/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['ProductSizes'],

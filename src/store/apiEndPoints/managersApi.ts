@@ -18,22 +18,22 @@ export const managersApi = createApi({
     endpoints: (builder) => ({
         createManager: builder.mutation({
             query: (managerData) => ({
-                url: '/api/managers',
+                url: '/managers',
                 method: 'POST',
                 body: managerData,
             }),
             invalidatesTags: ['Managers'],
         }),
         getAllManagers: builder.query({
-            query: () => '/api/managers',
+            query: () => '/managers',
             providesTags: ['Managers'],
         }),
         getManagerById: builder.query({
-            query: (id: number | string) => `/api/managers/${id}`,
+            query: (id: number | string) => `/managers/${id}`,
         }),
         updateManager: builder.mutation({
             query: ({ id, managerData }) => ({
-                url: `/api/managers/${id}`,
+                url: `/managers/${id}`,
                 method: 'PUT',
                 body: managerData,
             }),
@@ -41,7 +41,7 @@ export const managersApi = createApi({
         }),
         deleteManager: builder.mutation({
             query: (id: number | string) => ({
-                url: `/api/managers/${id}`,
+                url: `/managers/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Managers'],

@@ -19,7 +19,7 @@ export const appleWalletApi = createApi({
         // Download Apple Wallet pass by serial number
         downloadAppleWalletPass: builder.query<Blob, string>({
             query: (serialNumber) => ({
-                url: `/api/apple-wallet/download/${serialNumber}`,
+                url: `/apple-wallet/download/${serialNumber}`,
                 responseHandler: (response) => response.blob(),
             }),
         }),
@@ -27,7 +27,7 @@ export const appleWalletApi = createApi({
         // Download Apple Wallet pass as mutation (for triggering downloads)
         downloadAppleWalletPassMutation: builder.mutation<Blob, string>({
             query: (serialNumber) => ({
-                url: `/api/apple-wallet/download/${serialNumber}`,
+                url: `/apple-wallet/download/${serialNumber}`,
                 method: 'GET',
                 responseHandler: (response) => response.blob(),
             }),
@@ -53,7 +53,7 @@ export const appleWalletApi = createApi({
                 updatedAt: string;
             };
         }, string>({
-            query: (serialNumber) => `/api/apple-wallet/status/${serialNumber}`,
+            query: (serialNumber) => `/apple-wallet/status/${serialNumber}`,
             providesTags: (result, error, serialNumber) => [
                 { type: 'AppleWalletPass', id: serialNumber }
             ],
@@ -78,7 +78,7 @@ export const appleWalletApi = createApi({
                 createdAt: string;
             }>;
         }, number>({
-            query: (customerId) => `/api/apple-wallet/customer/${customerId}`,
+            query: (customerId) => `/apple-wallet/customer/${customerId}`,
             providesTags: (result, error, customerId) => [
                 { type: 'AppleWalletPass', id: `customer-${customerId}` }
             ],
@@ -95,7 +95,7 @@ export const appleWalletApi = createApi({
             };
         }, string>({
             query: (serialNumber) => ({
-                url: `/api/apple-wallet/revoke/${serialNumber}`,
+                url: `/apple-wallet/revoke/${serialNumber}`,
                 method: 'PUT',
             }),
             invalidatesTags: (result, error, serialNumber) => [

@@ -18,22 +18,22 @@ export const salespersonsApi = createApi({
     endpoints: (builder) => ({
         createSalesperson: builder.mutation({
             query: (salespersonData) => ({
-                url: '/api/salespersons',
+                url: '/salespersons',
                 method: 'POST',
                 body: salespersonData,
             }),
             invalidatesTags: ['Salespersons'],
         }),
         getAllSalespersons: builder.query({
-            query: () => '/api/salespersons',
+            query: () => '/salespersons',
             providesTags: ['Salespersons'],
         }),
         getSalespersonById: builder.query({
-            query: (id: number | string) => `/api/salespersons/${id}`,
+            query: (id: number | string) => `/salespersons/${id}`,
         }),
         updateSalesperson: builder.mutation({
             query: ({ id, salespersonData }) => ({
-                url: `/api/salespersons/${id}`,
+                url: `/salespersons/${id}`,
                 method: 'PUT',
                 body: salespersonData,
             }),
@@ -41,7 +41,7 @@ export const salespersonsApi = createApi({
         }),
         deleteSalesperson: builder.mutation({
             query: (id: number | string) => ({
-                url: `/api/salespersons/${id}`,
+                url: `/salespersons/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Salespersons'],
