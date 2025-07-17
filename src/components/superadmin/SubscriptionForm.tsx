@@ -1,249 +1,165 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Subscription } from 'utils/types';
+import React from 'react';
 import Button from 'components/button/Button';
-import { MdSave, MdCancel, MdAdd } from 'react-icons/md';
-import { useCreateSubscriptionMutation, useUpdateSubscriptionMutation } from 'store/apiEndPoints/subscriptionApi';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'store/store';
-import { showAlert } from 'store/apiEndPoints/alertSlice';
+import { MdSave, MdCancel, MdAdd, MdSubscriptions, MdAttachMoney, MdSchedule, MdToggleOn, MdDescription, MdDateRange } from 'react-icons/md';
+import AnimatedInput from 'components/ui/AnimatedInput';
+import AnimatedSelect from 'components/ui/AnimatedSelect';
+import AnimatedDateInput from 'components/ui/AnimatedDateInput';
+import AnimatedTextarea from 'components/ui/AnimatedTextarea';
+import { billingCycleOptions } from 'utils/billingCycle';
 
 type SubscriptionFormProps = {
   mode: 'create' | 'edit' | 'view';
-  subscription?: Subscription;
-  onSuccess?: () => void;
+  formData: any;
+  formErrors: { [key: string]: string };
+  isLoading: boolean;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
 };
 
 const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   mode,
-  subscription,
-  onSuccess,
+  formData,
+  formErrors,
+  isLoading,
+  onInputChange,
+  onSubmit,
+  onCancel,
 }) => {
-  const [createSubscription, { isLoading }] = useCreateSubscriptionMutation();
-  const [updateSubscription, { isLoading: isUpdating }] = useUpdateSubscriptionMutation();
-  const dispatch = useDispatch();
   const isReadOnly = mode === 'view';
-  const title =
-    mode === 'create'
-      ? 'Create New Subscription'
-      : mode === 'edit'
-        ? 'Edit Subscription'
-        : 'Subscription Details';
 
-  const [formData, setFormData] = useState<any>(
-    subscription || {
-      id: 0,
-      name: '',
-      price: null,
-      billingCycle: 'monthly',
-      status: 'active',
-      description: '',
-      features: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  );
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const statusOptions = [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' }
+  ];
 
-  useEffect(() => {
-    if (subscription && mode !== 'create') {
-      setFormData(subscription);
-    }
-  }, [subscription, mode]);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'price' ? parseFloat(value) || 0 : value,
-    }));
-    setErrors((prev) => ({ ...prev, [name]: '' }));
+  // Handle input changes for AnimatedInput components
+  const handleAnimatedInputChange = (name: string) => (value: string) => {
+    const syntheticEvent = {
+      target: {
+        name,
+        value: name === 'price' ? parseFloat(value) || 0 : value,
+      }
+    } as React.ChangeEvent<HTMLInputElement>;
+    onInputChange(syntheticEvent);
   };
 
-  const validate = () => {
-    let newErrors: { [key: string]: string } = {};
-    if (!formData.name.trim()) {
-      newErrors.name = 'Subscription name is required';
-    }
-    if (formData.price === null || formData.price < 0) {
-      newErrors.price = 'Price must be a non-negative number';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) {
-      console.log('Form has errors');
-      return;
-    }
-
-    try {
-      if (mode === 'create') {
-        await createSubscription(formData).unwrap();
-        dispatch(showAlert({ message: 'Subscription created successfully!', severity: 'success', duration: 2000 }));
-      } else if (mode === 'edit' && subscription?.id) {
-        await updateSubscription({
-          id: subscription.id,
-          data: {
-            name: formData.name,
-            price: String(formData.price),
-            billingCycle: formData.billingCycle,
-            status: formData.status,
-            description: formData.description,
-          },
-        }).unwrap();
-        dispatch(showAlert({ message: 'Subscription Updated successfully!', severity: 'success', duration: 2000 }));
+  // Handle textarea changes for AnimatedTextarea
+  const handleTextareaChange = (value: string) => {
+    const syntheticEvent = {
+      target: {
+        name: 'description',
+        value: value,
       }
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error('Failed to submit subscription form:', error);
-    }
+    } as React.ChangeEvent<HTMLTextAreaElement>;
+    onInputChange(syntheticEvent);
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
       className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-6 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none"
     >
-      <div className="col-span-8 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800">
-        <div className="mb-3">
-          <label
-            htmlFor="name"
-            className="text-sm font-bold text-navy-700 dark:text-white"
-          >
-            Subscription Name *
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
+      <div className="col-span-8 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800 space-y-4">
+        {/* Subscription Name and Price in one row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <AnimatedInput
+            label="Subscription Name"
+            icon={MdSubscriptions}
             value={formData.name}
-            onChange={handleInputChange}
-            disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${errors.name ? 'border-red-500' : 'border-gray-200'
-              } dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-              }`}
+            onChange={handleAnimatedInputChange('name')}
+            error={formErrors.name}
             placeholder="Enter subscription name"
-          />
-          {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <label
-            htmlFor="price"
-            className="text-sm font-bold text-navy-700 dark:text-white"
-          >
-            Price *
-          </label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={formData.price || ""}
-            onChange={handleInputChange}
+            required
             disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${errors.price ? 'border-red-500' : 'border-gray-200'
-              } dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-              }`}
+          />
+
+          <AnimatedInput
+            label="Price"
+            icon={MdAttachMoney}
+            type="number"
+            value={formData.price || ''}
+            onChange={handleAnimatedInputChange('price')}
+            error={formErrors.price}
             placeholder="0.00"
             step="0.01"
+            required
+            disabled={isReadOnly}
           />
-          {errors.price && (
-            <p className="mt-1 text-sm text-red-600">{errors.price}</p>
-          )}
         </div>
 
-        <div className="mb-3">
-          <label
-            htmlFor="billingCycle"
-            className="text-sm font-bold text-navy-700 dark:text-white"
-          >
-            Billing Cycle *
-          </label>
-          <select
-            id="billingCycle"
-            name="billingCycle"
+        {/* Billing Cycle and Status in one row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <AnimatedSelect
+            label="Billing Cycle"
+            icon={MdSchedule}
             value={formData.billingCycle}
-            onChange={handleInputChange}
+            onChange={handleAnimatedInputChange('billingCycle')}
+            options={billingCycleOptions}
+            placeholder="Select billing cycle"
+            required
             disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-              }`}
-          >
-            <option value="monthly">Monthly</option>
-            <option value="quarterly">Quarterly</option>
-            <option value="yearly">Annually</option>
-          </select>
-        </div>
+            error={formErrors.billingCycle}
+          />
 
-        <div className="mb-3">
-          <label
-            htmlFor="status"
-            className="text-sm font-bold text-navy-700 dark:text-white"
-          >
-            Status *
-          </label>
-          <select
-            id="status"
-            name="status"
+          <AnimatedSelect
+            label="Status"
+            icon={MdToggleOn}
             value={formData.status}
-            onChange={handleInputChange}
+            onChange={handleAnimatedInputChange('status')}
+            options={statusOptions}
+            placeholder="Select status"
+            required
             disabled={isReadOnly}
-            className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''
-              }`}
-          >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="col-span-8">
-        <label htmlFor="description" className="text-sm font-bold text-navy-700 dark:text-white"  >
-          Description
-        </label>
-        <textarea id="description" name="description" value={formData.description || ''} onChange={handleInputChange} disabled={isReadOnly} className={`mt-2 flex min-h-[100px] w-full resize-y items-center justify-center rounded-xl border border-gray-200 bg-white/0 p-3 text-sm outline-none dark:!border-white/10 dark:text-white ${isReadOnly ? 'bg-gray-50 dark:bg-navy-700' : ''}`} placeholder="Enter subscription description" />
-      </div>
-
-      {!isReadOnly && (
-        <div className="col-span-8 flex justify-end gap-3 pt-4">
-          <Button
-            type="button"
-            icon={MdCancel}
-            text="Cancel"
-            size="md"
-            color="bg-gray-200"
-            hoverColor="hover:bg-gray-300"
-            onClick={onSuccess}
-          />
-          <Button
-            type="submit"
-            icon={mode === 'create' ? MdAdd : MdSave}
-            text={
-              isLoading
-                ? 'Saving...'
-                : mode === 'create'
-                  ? 'Create Subscription'
-                  : 'Save Changes'
-            }
-            size="md"
-            color="bg-brandGreen"
-            hoverColor="hover:bg-brandGreenDark"
-            onClick={() => { }}
+            error={undefined}
           />
         </div>
-      )}
+
+        {/* Start Date and End Date in one row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <AnimatedDateInput
+            label="Start Date"
+            icon={MdDateRange}
+            value={formData.startDate}
+            onChange={handleAnimatedInputChange('startDate')}
+            error={formErrors.startDate}
+            placeholder="Select start date"
+            required
+            disabled={isReadOnly}
+            min={undefined}
+            max={undefined}
+          />
+
+          <AnimatedDateInput
+            label="End Date"
+            icon={MdDateRange}
+            value={formData.endDate}
+            onChange={handleAnimatedInputChange('endDate')}
+            error={formErrors.endDate}
+            placeholder="Select end date"
+            disabled={isReadOnly}
+            min={formData.startDate}
+            max={undefined}
+          />
+        </div>
+
+        {/* Description using AnimatedTextarea */}
+        <div className="col-span-full">
+          <AnimatedTextarea
+            label="Description"
+            icon={MdDescription}
+            value={formData.description}
+            onChange={handleTextareaChange}
+            error={formErrors.description}
+            placeholder="Enter subscription description"
+            disabled={isReadOnly}
+            rows={4}
+            maxLength={500}
+          />
+        </div>
+      </div>
     </form>
   );
 };

@@ -14,7 +14,12 @@ import SubscriptionForm from 'components/superadmin/SubscriptionForm';
 import HeadingCard from 'components/card/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
-import { useListSubscriptionsQuery, useDeleteSubscriptionMutation } from 'store/apiEndPoints/subscriptionApi';
+import {
+  useListSubscriptionsQuery,
+  useDeleteSubscriptionMutation,
+  useCreateSubscriptionMutation,
+  useUpdateSubscriptionMutation
+} from 'store/apiEndPoints/subscriptionApi';
 import { useState } from 'react';
 import SubscriptionDetails from 'components/superadmin/SubscriptionDetails';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,9 +31,46 @@ export default function SubscriptionsPage() {
   const [mode, setMode] = useState<'create' | 'edit' | 'view'>('create');
   const { data: subscriptions = [], isLoading, isError, refetch } = useListSubscriptionsQuery();
   const [deleteSubscription, { isLoading: isDeleting }] = useDeleteSubscriptionMutation();
+  const [createSubscription, { isLoading: isCreating }] = useCreateSubscriptionMutation();
+  const [updateSubscription, { isLoading: isUpdating }] = useUpdateSubscriptionMutation();
   const dispatch = useDispatch();
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
+
+  // Form state management
+  const [formData, setFormData] = useState<any>({
+    id: 0,
+    name: '',
+    price: null,
+    billingCycle: 'monthly',
+    status: 'active',
+    description: '',
+    startDate: '',
+    endDate: '',
+    features: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+  console.log("formData", formData)
+
+  const resetForm = () => {
+    setFormData({
+      id: 0,
+      name: '',
+      price: null,
+      billingCycle: 'monthly',
+      status: 'active',
+      description: '',
+      startDate: '',
+      endDate: '',
+      features: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    setFormErrors({});
+  };
 
   const handleDeleteClick = (subscription: Subscription) => {
     setSelectedSubscription(subscription);
@@ -51,12 +93,111 @@ export default function SubscriptionsPage() {
     }
   };
 
-
   const handleCreateClick = () => {
     setSelectedSubscription(null);
     setIsDeleteMode(false);
     setMode('create');
+    resetForm();
     onOpen();
+  };
+
+  const handleEditClick = (subscription: Subscription) => {
+    setSelectedSubscription(subscription);
+    setIsDeleteMode(false);
+    setMode('edit');
+    setFormData(subscription);
+    setFormErrors({});
+    onOpen();
+  };
+
+  const handleViewClick = (subscription: Subscription) => {
+    setSelectedSubscription(subscription);
+    setIsDeleteMode(false);
+    setMode('view');
+    onOpen();
+  };
+
+  const handleFormInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'price' ? parseFloat(value) || 0 : value,
+    }));
+    setFormErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const validateForm = () => {
+    let newErrors: { [key: string]: string } = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Subscription name is required';
+    }
+
+    if (formData.price === null || formData.price < 0) {
+      newErrors.price = 'Price must be a non-negative number';
+    }
+
+    if (!formData.startDate) {
+      newErrors.startDate = 'Start date is required';
+    }
+
+    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+      newErrors.endDate = 'End date cannot be before start date';
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+
+    setFormErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      console.log('Form has errors');
+      return;
+    }
+
+    try {
+      if (mode === 'create') {
+        await createSubscription(formData).unwrap();
+        dispatch(showAlert({ message: 'Subscription created successfully!', severity: 'success', duration: 2000 }));
+      } else if (mode === 'edit' && selectedSubscription?.id) {
+        await updateSubscription({
+          id: selectedSubscription.id,
+          data: {
+            name: formData.name,
+            price: String(formData.price),
+            billingCycle: formData.billingCycle,
+            status: formData.status,
+            description: formData.description,
+          },
+        }).unwrap();
+        dispatch(showAlert({ message: 'Subscription Updated successfully!', severity: 'success', duration: 2000 }));
+      }
+
+      refetch();
+      onClose();
+      resetForm();
+    } catch (error) {
+      console.error('Failed to submit subscription form:', error);
+      dispatch(showAlert({
+        message: 'Failed to save subscription. Please try again.',
+        severity: 'error',
+        duration: 2000
+      }));
+    }
+  };
+
+  const handleModalClose = () => {
+    onClose();
+    resetForm();
+    setSelectedSubscription(null);
+    setIsDeleteMode(false);
   };
 
   if (isLoading) {
@@ -144,19 +285,9 @@ export default function SubscriptionsPage() {
                   createdAt: subscription.createdAt,
                   updatedAt: subscription.updatedAt,
                 }}
-                onEdit={() => {
-                  setSelectedSubscription(subscription);
-                  setIsDeleteMode(false);
-                  setMode('edit');
-                  onOpen();
-                }}
+                onEdit={() => handleEditClick(subscription)}
                 onDelete={() => handleDeleteClick(subscription)}
-                onView={() => {
-                  setSelectedSubscription(subscription);
-                  setIsDeleteMode(false);
-                  setMode('view');
-                  onOpen();
-                }}
+                onView={() => handleViewClick(subscription)}
               />
             ))}
           </div>
@@ -165,7 +296,7 @@ export default function SubscriptionsPage() {
         {isDeleteMode ? (
           <DeleteConfirmationModal
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleModalClose}
             onConfirm={handleDeleteConfirm}
             itemName={selectedSubscription?.name || 'this subscription'}
             title="Delete Subscription"
@@ -173,23 +304,44 @@ export default function SubscriptionsPage() {
         ) : selectedSubscription && mode === 'view' ? (
           <CustomModal
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleModalClose}
             title="Subscription Details"
             size="2xl"
-            handlePrint={undefined} showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}          >
+            handlePrint={undefined}
+            showModalBackButton={undefined}
+            handleClickBack={undefined}
+            headerTitle={undefined}
+            headerDescription={undefined}
+            showFooter={undefined}
+            showFooterCancelButton={undefined}
+            footerConfirmation={undefined}
+            footerConfirmButtonIcon={undefined}
+          >
             <SubscriptionDetails subscription={selectedSubscription} />
           </CustomModal>
         ) : (
           <CustomModal
             isOpen={isOpen}
-            onClose={onClose}
-            title={selectedSubscription ? 'Edit Subscription' : 'Create New Subscription'}
-            size="2xl"
-            handlePrint={undefined} showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}         >
+            onClose={handleModalClose}
+            headerTitle={selectedSubscription ? 'Edit Subscription' : 'Create Subscription'}
+            headerDescription={selectedSubscription ? 'Edit your current subscription' : 'These subscriptions will be used while adding new admins'}
+            size="xl"
+            handlePrint={undefined}
+            showModalBackButton={undefined}
+            handleClickBack={undefined}
+            showFooter={true}
+            showFooterCancelButton={onClose}
+            footerConfirmation={handleFormSubmit}
+            footerConfirmButtonIcon={undefined}
+          >
             <SubscriptionForm
-              mode={selectedSubscription ? 'edit' : 'create'}
-              subscription={selectedSubscription}
-              onSuccess={onClose}
+              mode={mode}
+              formData={formData}
+              formErrors={formErrors}
+              isLoading={isCreating || isUpdating}
+              onInputChange={handleFormInputChange}
+              onSubmit={handleFormSubmit}
+              onCancel={handleModalClose}
             />
           </CustomModal>
         )}
