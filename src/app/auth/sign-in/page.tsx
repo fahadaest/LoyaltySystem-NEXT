@@ -1,48 +1,77 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import InputField from 'components/fields/InputField';
+import AnimatedInput from 'components/ui/AnimatedInput';
+import AnimatedButton from 'components/ui/AnimatedButton';
 import Default from 'components/auth/variants/DefaultAuthLayout';
 import Checkbox from 'components/checkbox';
-import Button from 'components/button/Button';
-import { Eye, EyeOff } from 'lucide-react';
-import { useLoginMutation } from 'store/apiEndPoints/authApi';
-import Cookies from 'js-cookie';
+import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from 'hooks/useAuth';
 
 function SignInDefault() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [localError, setLocalError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  // const [login, { isLoading: loginLoading, error: loginError, data: loginData }] = useLoginMutation();
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [rememberPassword, setRememberPassword] = useState(false);
 
-  const {
-    login,
-    isAuthenticated,
-    isLoginLoading,
-    loginError,
-    user,
-    isSuperAdmin,
-    isAdmin
-  } = useAuth();
+  const { login, isAuthenticated, isLoginLoading, loginError, user, isSuperAdmin, isAdmin } = useAuth();
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      return 'Email is required';
+    }
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address';
+    }
+    return '';
+  };
+
+  const validatePassword = (password) => {
+    if (!password) {
+      return 'Password is required';
+    }
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    return '';
+  };
+
+  const handleEmailChange = (value) => {
+    setEmail(value);
+    setEmailError('');
+    setLocalError('');
+  };
+
+  const handlePasswordChange = (value) => {
+    setPassword(value);
+    setPasswordError('');
+    setLocalError('');
+  };
 
   const handleSignIn = async () => {
-    setLocalError(''); // Clear any previous errors
+    setLocalError('');
+
+    // Validate inputs
+    const emailValidationError = validateEmail(email);
+    const passwordValidationError = validatePassword(password);
+
+    setEmailError(emailValidationError);
+    setPasswordError(passwordValidationError);
+
+    if (emailValidationError || passwordValidationError) {
+      return;
+    }
 
     try {
       const result = await login(email, password);
 
       if (result.success) {
-        // The useAuth hook automatically handles:
-        // - Setting cookies
-        // - Updating Redux state
-        // - Token management
-
-        // Navigation will be handled by useEffect below
-        // based on the user role from Redux state
+        // Success handling - router redirect will be handled by useEffect
       } else {
         setLocalError(result.error || 'Invalid email or password. Please try again.');
       }
@@ -55,7 +84,6 @@ function SignInDefault() {
     setShowPassword(!showPassword);
   };
 
-  // Handle navigation based on authentication state and user role
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.role === 'superadmin') {
@@ -65,41 +93,6 @@ function SignInDefault() {
       }
     }
   }, [isAuthenticated, user, router]);
-
-
-  // const handleSignIn = async () => {
-  //   const response = await login({ email, password });
-  //   // Cookies.set('token', response?.data?.token, { expires: 7 });
-  //   console.log('Login response:', response);
-  //   if (response?.data?.role === 'superadmin' && response?.data?.token) {
-  //     setError('');
-  //     localStorage.setItem('superadmin_session', 'true');
-  //     router.push('/superadmin/manage-admin');
-  //   } else if (response?.data.role === 'admin' && response?.data?.token) {
-  //     setError('');
-  //     localStorage.setItem('admin_session', 'true');
-  //     router.push('/admin/default');
-  //   } else {
-  //     setError('Invalid email or password. Please try again.');
-  //   }
-  // };
-
-  // const togglePasswordVisibility = () => {
-  //   setShowPassword(!showPassword);
-  // };
-
-  // useEffect(() => {
-  //   const adminSession = localStorage.getItem('admin_session');
-  //   const superAdminSession = localStorage.getItem('superadmin_session');
-
-  //   if (adminSession) {
-  //     router.replace('/admin/default');
-  //   }
-
-  //   if (superAdminSession) {
-  //     router.replace('/superadmin/manage-admin/list');
-  //   }
-  // }, [router]);
 
   return (
     <Default
@@ -113,32 +106,33 @@ function SignInDefault() {
               Enter your email and password to sign in!
             </p>
 
-            <InputField
-              variant="auth"
-              extra="mb-3"
-              label="Email*"
-              placeholder="mail@simmmple.com"
-              id="email"
-              type="text"
-              state={email}
-              onChange={(e) => setEmail(e.target.value)}
+            <AnimatedInput
+              label="Email"
+              icon={Mail}
+              type="email"
+              placeholder="mail@example.com"
+              value={email}
+              onChange={handleEmailChange}
+              error={emailError}
+              required
+              className="mb-4"
             />
 
-            <div className="relative mb-3">
-              <InputField
-                variant="auth"
-                extra=""
-                label="Password*"
-                placeholder="Min. 8 characters"
-                id="password"
+            <div className="relative mb-4">
+              <AnimatedInput
+                label="Password"
+                icon={Lock}
                 type={showPassword ? "text" : "password"}
-                state={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Min. 8 characters"
+                value={password}
+                onChange={handlePasswordChange}
+                error={passwordError}
+                required
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute right-3 top-12 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="absolute right-3 top-11 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200"
               >
                 {showPassword ? (
                   <EyeOff size={20} />
@@ -148,25 +142,69 @@ function SignInDefault() {
               </button>
             </div>
 
-            {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+            {/* General error message */}
+            {localError && (
+              <div className="mb-4 animate-slideDown">
+                <p className="text-sm text-red-500 flex items-center gap-2 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  {localError}
+                </p>
+              </div>
+            )}
 
             <div className="mb-4 flex items-center justify-between px-2">
               <div className="mt-2 flex items-center">
-                <Checkbox />
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    id="rememberPassword"
+                    checked={rememberPassword}
+                    onChange={(e) => setRememberPassword(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <label
+                    htmlFor="rememberPassword"
+                    className={`flex items-center justify-center w-5 h-5 rounded border-2 cursor-pointer transition-all duration-200 ${rememberPassword
+                      ? 'bg-brandGreen border-brandGreen'
+                      : 'bg-white border-gray-300 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-600'
+                      }`}
+                  >
+                    {rememberPassword && (
+                      <svg
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </label>
+                </div>
                 <p className="ml-2 text-sm font-medium text-navy-700 dark:text-white">
                   Remember Password
                 </p>
               </div>
             </div>
 
-            <Button
-              text="Sign In"
-              color="bg-brandGreen"
-              className="w-full"
+            <AnimatedButton
+              variant="primary"
               size="lg"
-              icon={undefined}
+              loading={isLoginLoading}
+              disabled={isLoginLoading}
+              icon={LogIn}
               onClick={handleSignIn}
-            />
+              className="w-full"
+            >
+              {isLoginLoading ? "Signing In" : "Sign In"}
+            </AnimatedButton>
           </div>
         </div>
       }
@@ -174,4 +212,4 @@ function SignInDefault() {
   );
 }
 
-export default SignInDefault;
+export default SignInDefault; 
