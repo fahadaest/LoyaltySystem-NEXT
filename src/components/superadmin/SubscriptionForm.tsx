@@ -7,6 +7,7 @@ import AnimatedInput from 'components/ui/AnimatedInput';
 import AnimatedSelect from 'components/ui/AnimatedSelect';
 import AnimatedDateInput from 'components/ui/AnimatedDateInput';
 import AnimatedTextarea from 'components/ui/AnimatedTextarea';
+import AnimatedPriceField from 'components/ui/AnimatedPriceField';
 import { billingCycleOptions } from 'utils/billingCycle';
 
 type SubscriptionFormProps = {
@@ -29,13 +30,13 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   onCancel,
 }) => {
   const isReadOnly = mode === 'view';
+  const isCustomBilling = formData.billingCycle === 'custom';
 
   const statusOptions = [
     { value: 'active', label: 'Active' },
     { value: 'inactive', label: 'Inactive' }
   ];
 
-  // Handle input changes for AnimatedInput components
   const handleAnimatedInputChange = (name: string) => (value: string) => {
     const syntheticEvent = {
       target: {
@@ -46,7 +47,6 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     onInputChange(syntheticEvent);
   };
 
-  // Handle textarea changes for AnimatedTextarea
   const handleTextareaChange = (value: string) => {
     const syntheticEvent = {
       target: {
@@ -57,13 +57,30 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     onInputChange(syntheticEvent);
   };
 
+  const handlePriceChange = (value: string) => {
+    const syntheticEvent = {
+      target: {
+        name: 'price',
+        value: parseFloat(value) || 0,
+      }
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+    onInputChange(syntheticEvent);
+  };
+
+  const handleCurrencyChange = (currency: string) => {
+    const syntheticEvent = {
+      target: {
+        name: 'currency',
+        value: currency,
+      }
+    } as React.ChangeEvent<HTMLInputElement>;
+    onInputChange(syntheticEvent);
+  };
+
   return (
-    <form
-      onSubmit={onSubmit}
-      className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-6 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none"
-    >
+    <form onSubmit={onSubmit} className="grid h-full w-full grid-cols-1 gap-3 rounded-[20px] bg-white bg-clip-border p-6 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none" >
       <div className="col-span-8 flex h-full w-full flex-col justify-center overflow-hidden rounded-xl bg-white dark:!bg-navy-800 space-y-4">
-        {/* Subscription Name and Price in one row */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AnimatedInput
             label="Subscription Name"
@@ -76,12 +93,13 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             disabled={isReadOnly}
           />
 
-          <AnimatedInput
-            label="Price"
+          <AnimatedPriceField
+            label="Subscription Price"
             icon={MdAttachMoney}
-            type="number"
             value={formData.price || ''}
-            onChange={handleAnimatedInputChange('price')}
+            currency={formData.currency || 'AED'}
+            onPriceChange={handlePriceChange}
+            onCurrencyChange={handleCurrencyChange}
             error={formErrors.price}
             placeholder="0.00"
             step="0.01"
@@ -90,7 +108,6 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
           />
         </div>
 
-        {/* Billing Cycle and Status in one row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AnimatedSelect
             label="Billing Cycle"
@@ -117,16 +134,15 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
           />
         </div>
 
-        {/* Start Date and End Date in one row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AnimatedDateInput
             label="Start Date"
             icon={MdDateRange}
             value={formData.startDate}
             onChange={handleAnimatedInputChange('startDate')}
-            error={formErrors.startDate}
+            error={isCustomBilling ? formErrors.startDate : undefined}
             placeholder="Select start date"
-            required
+            required={isCustomBilling}
             disabled={isReadOnly}
             min={undefined}
             max={undefined}
@@ -137,15 +153,15 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             icon={MdDateRange}
             value={formData.endDate}
             onChange={handleAnimatedInputChange('endDate')}
-            error={formErrors.endDate}
+            error={isCustomBilling ? formErrors.endDate : undefined}
             placeholder="Select end date"
+            required={isCustomBilling}
             disabled={isReadOnly}
             min={formData.startDate}
             max={undefined}
           />
         </div>
 
-        {/* Description using AnimatedTextarea */}
         <div className="col-span-full">
           <AnimatedTextarea
             label="Description"

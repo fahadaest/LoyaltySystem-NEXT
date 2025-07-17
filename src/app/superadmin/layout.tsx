@@ -16,30 +16,6 @@ export default function Admin({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
-  // useEffect(() => {
-  //   const adminSession = localStorage.getItem('admin_session');
-  //   const superAdminSession = localStorage.getItem('superadmin_session');
-
-  //   if (adminSession) {
-  //     router.replace('/admin/default');
-  //   } else if (!superAdminSession) {
-  //     router.replace('/auth/sign-in/');
-  //   } else {
-  //     setIsAuthorized(true);
-  //   }
-  // }, [router]);
-
-  // if (!isAuthorized) {
-  //   return (
-  //     <div className="flex min-h-screen items-center justify-center bg-background-100 dark:bg-background-900">
-  //       <p className="text-lg font-medium">Loading & Verifying Session...</p>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="flex h-full w-full bg-background-100 dark:bg-background-900">
       <Sidebar

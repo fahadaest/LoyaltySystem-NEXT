@@ -15,6 +15,8 @@ import TaskCard from 'components/admin/default/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 
+import { useGetGrowthAnalyticsQuery } from 'store/apiEndPoints/dashboardApi';
+
 const Dashboard = () => {
   return (
     <div>
@@ -52,6 +54,12 @@ const Dashboard = () => {
         />
       </div>
 
+      <div className="mt-5 grid grid-cols-1 gap-5 ">
+        <TotalSpent />
+      </div>
+
+
+
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div>
           <CheckTable tableData={tableDataCheck} />
@@ -61,11 +69,6 @@ const Dashboard = () => {
           <DailyTraffic />
           <PieChartCard />
         </div>
-      </div>
-
-
-      <div className="mt-5 grid grid-cols-1 gap-5 ">
-        <TotalSpent />
       </div>
 
 

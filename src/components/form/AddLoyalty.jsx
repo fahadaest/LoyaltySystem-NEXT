@@ -38,6 +38,7 @@ const AddLoyalty = ({
   };
 
   return (
+    // <div className={`transform transition-all duration-500 ${loyaltyFormData.isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
     <div className={`transform transition-all duration-500 ${loyaltyFormData.isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
       <AnimatedCard>
         <AnimatedCardContent>

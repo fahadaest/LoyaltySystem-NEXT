@@ -39,14 +39,14 @@ export default function SubscriptionsPage() {
 
   // Form state management
   const [formData, setFormData] = useState<any>({
-    id: 0,
+    id: null,
     name: '',
     price: null,
     billingCycle: 'monthly',
     status: 'active',
     description: '',
-    startDate: '',
-    endDate: '',
+    startDate: null,
+    endDate: null,
     features: [],
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -57,14 +57,14 @@ export default function SubscriptionsPage() {
 
   const resetForm = () => {
     setFormData({
-      id: 0,
+      id: null,
       name: '',
       price: null,
       billingCycle: 'monthly',
       status: 'active',
       description: '',
-      startDate: '',
-      endDate: '',
+      startDate: null,
+      endDate: null,
       features: [],
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -131,20 +131,34 @@ export default function SubscriptionsPage() {
   const validateForm = () => {
     let newErrors: { [key: string]: string } = {};
 
+    // Name is always required
     if (!formData.name.trim()) {
       newErrors.name = 'Subscription name is required';
     }
 
+    // Price is always required
     if (formData.price === null || formData.price < 0) {
       newErrors.price = 'Price must be a non-negative number';
     }
 
-    if (!formData.startDate) {
-      newErrors.startDate = 'Start date is required';
+    // Billing cycle is always required
+    if (!formData.billingCycle) {
+      newErrors.billingCycle = 'Billing cycle is required';
     }
 
-    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
-      newErrors.endDate = 'End date cannot be before start date';
+    // Start date and end date are only required for custom billing cycle
+    if (formData.billingCycle === 'custom') {
+      if (!formData.startDate) {
+        newErrors.startDate = 'Start date is required for custom billing cycle';
+      }
+
+      if (!formData.endDate) {
+        newErrors.endDate = 'End date is required for custom billing cycle';
+      }
+
+      if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+        newErrors.endDate = 'End date cannot be before start date';
+      }
     }
 
     if (!formData.description.trim()) {
@@ -164,7 +178,8 @@ export default function SubscriptionsPage() {
 
     try {
       if (mode === 'create') {
-        await createSubscription(formData).unwrap();
+        const { id, ...createData } = formData;
+        await createSubscription(createData).unwrap();
         dispatch(showAlert({ message: 'Subscription created successfully!', severity: 'success', duration: 2000 }));
       } else if (mode === 'edit' && selectedSubscription?.id) {
         await updateSubscription({

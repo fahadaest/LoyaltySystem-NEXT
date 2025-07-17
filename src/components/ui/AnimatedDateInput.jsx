@@ -49,6 +49,7 @@ const AnimatedDateInput = ({
                     disabled={disabled}
                     min={min}
                     max={max}
+                    placeholder={placeholder}
                     className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 
                         ${hasError
                             ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
@@ -56,48 +57,41 @@ const AnimatedDateInput = ({
                         }  
                         focus:outline-none focus:ring-2 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white
                         transform ${disabled ? 'bg-gray-50 dark:bg-navy-700 cursor-not-allowed opacity-60' : 'cursor-pointer'}
+                        text-gray-900 dark:text-white
                         
                         [&::-webkit-calendar-picker-indicator]:cursor-pointer
-                        [&::-webkit-calendar-picker-indicator]:bg-brandGreen
-                        [&::-webkit-calendar-picker-indicator]:rounded-md
-                        [&::-webkit-calendar-picker-indicator]:p-1
-                        [&::-webkit-calendar-picker-indicator]:hover:bg-brandGreenDark
-                        [&::-webkit-calendar-picker-indicator]:transition-colors
+                        [&::-webkit-calendar-picker-indicator]:opacity-60
+                        [&::-webkit-calendar-picker-indicator]:hover:opacity-100
+                        [&::-webkit-calendar-picker-indicator]:transition-opacity
                         [&::-webkit-calendar-picker-indicator]:duration-200
+                        [&::-webkit-calendar-picker-indicator]:w-5
+                        [&::-webkit-calendar-picker-indicator]:h-5
                         
-                        ${!hasValue ? 'text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-white'}
+                        [&::-webkit-datetime-edit]:text-gray-900
+                        [&::-webkit-datetime-edit]:dark:text-white
+                        [&::-webkit-datetime-edit-text]:text-gray-400
+                        [&::-webkit-datetime-edit-month-field]:text-gray-900
+                        [&::-webkit-datetime-edit-month-field]:dark:text-white
+                        [&::-webkit-datetime-edit-day-field]:text-gray-900
+                        [&::-webkit-datetime-edit-day-field]:dark:text-white
+                        [&::-webkit-datetime-edit-year-field]:text-gray-900
+                        [&::-webkit-datetime-edit-year-field]:dark:text-white
+                        
+                        ${!hasValue ? '[&::-webkit-datetime-edit-text]:text-gray-400 [&::-webkit-datetime-edit-month-field]:text-gray-400 [&::-webkit-datetime-edit-day-field]:text-gray-400 [&::-webkit-datetime-edit-year-field]:text-gray-400' : ''}
                     `}
                     {...props}
                 />
 
-                {/* Custom placeholder when no value */}
-                {!hasValue && placeholder && (
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none text-sm">
-                        {placeholder}
-                    </div>
-                )}
-
                 {/* Focus Ring Animation */}
                 <div className="absolute inset-0 rounded-xl bg-brandGreen opacity-0 group-focus-within:opacity-10 transition-opacity duration-200 pointer-events-none"></div>
-
-                {/* Custom calendar icon overlay */}
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg
-                        className={`w-5 h-5 transition-colors duration-200 ${hasValue ? 'text-brandGreen' : 'text-gray-400 dark:text-gray-500'
-                            }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                    </svg>
-                </div>
             </div>
+
+            {/* Helper text when no value is selected */}
+            {!hasValue && placeholder && (
+                <div className="text-xs text-gray-500 dark:text-gray-400 animate-fadeIn">
+                    {placeholder}
+                </div>
+            )}
 
             {/* Error Message */}
             {hasError && (
