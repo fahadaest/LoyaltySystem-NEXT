@@ -3,8 +3,6 @@ const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const imageBaseUrl = baseUrl?.replace('/api', '');
 
 export const getImageUrl = (imagePath, defaultImage) => {
-    console.log("baseUrl------>", baseUrl);
-    console.log("imageBaseUrl------>", imageBaseUrl);
     console.log("imagePath------>", imagePath);
     console.log("defaultImage------>", defaultImage);
 
@@ -29,6 +27,8 @@ export const getImageUrl = (imagePath, defaultImage) => {
         return pathString;
     }
 
+
+    console.log(imageBaseUrl + pathString)
     // If it's a relative path from API, prepend the base URL
     return imageBaseUrl + pathString;
 };

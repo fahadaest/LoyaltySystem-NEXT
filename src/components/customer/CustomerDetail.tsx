@@ -1,6 +1,6 @@
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import Table from "components/settings/walletAddress/Table";
+import Table from "components/ui/Table";
 import Card from "components/card";
 
 interface LoyaltyProgram {

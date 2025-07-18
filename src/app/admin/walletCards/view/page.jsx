@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd } from "react-icons/md";
 import { FaWallet } from "react-icons/fa";
@@ -45,7 +45,7 @@ const Dashboard = () => {
     backgroundImage: null,
     stampCollectedImg: null,
     noStampCollectedImg: null,
-    rewardQuantity: 10,
+    rewardQuantity: 12,
     rewardsCount: 0,
     pointsSpendAmount: 100,
     pointsAmount: 100,

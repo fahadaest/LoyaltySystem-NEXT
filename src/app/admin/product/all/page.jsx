@@ -4,23 +4,17 @@ import ProductCard from 'components/card/ProductCard';
 import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
 import AddProductForm from 'components/product/AddProductForm';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd, MdEdit } from 'react-icons/md';
 import { FaBox } from "react-icons/fa";
-import {
-  useGetAllProductsQuery,
-  useDeleteProductMutation,
-  useCreateProductMutation,
-  useUpdateProductMutation
-} from 'store/apiEndPoints/productsApi';
+import { useGetAllProductsQuery, useDeleteProductMutation, useCreateProductMutation, useUpdateProductMutation } from 'store/apiEndPoints/productsApi';
 import { useGetAllProductSizesQuery } from 'store/apiEndPoints/productSizesApi';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/apiEndPoints/alertSlice';
 import CircularProgress from '@mui/material/CircularProgress';
-
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getImageUrl } from 'utils/imageUtils';
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -68,7 +62,7 @@ const Dashboard = () => {
     setProductName(product.name);
     setDescription(product.description);
     setSize(product.size ? product.size.id : '');
-    const fullImageUrl = baseUrl + product?.image;
+    const fullImageUrl = getImageUrl(product?.image);
     setPreviewImage(fullImageUrl || null);
     setImageBlob(null); // Reset image blob for editing
   };

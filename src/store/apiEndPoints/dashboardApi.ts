@@ -6,7 +6,7 @@ interface GrowthAnalyticsParams {
     isAllCustomers?: boolean;
     isPointCustomers?: boolean;
     isProductCustomers?: boolean;
-    filter?: 'week' | 'month' | 'year';
+    filter?: 'today' | 'week' | 'month' | 'year';
     startDate?: string;
     endDate?: string;
 }

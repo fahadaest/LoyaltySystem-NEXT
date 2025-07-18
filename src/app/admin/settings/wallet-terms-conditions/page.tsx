@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdAdd, MdEdit, MdCancel } from 'react-icons/md';
 import { useGetAllTermsQuery, useUpdateTermsMutation } from 'store/apiEndPoints/settingsApi';

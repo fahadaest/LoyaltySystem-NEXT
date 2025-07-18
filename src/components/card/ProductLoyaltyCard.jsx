@@ -3,13 +3,11 @@ import { useState } from "react";
 import Card from "components/card";
 import { IoEyeOutline, IoCreateOutline, IoTrashOutline, IoCopyOutline } from "react-icons/io5";
 import Button from "components/button/Button";
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getImageUrl } from "utils/imageUtils";
 
 const ProductLoyaltyCard = ({ product, extra, onDelete, onEdit, onView, onCopy }) => {
   const [heart, setHeart] = useState(true);
-  const fullImageUrl = baseUrl + product?.product?.image;
-
-  console.log("product", product)
+  const fullImageUrl = getImageUrl(product?.product?.image);
 
   const handleView = () => {
     onView(product)

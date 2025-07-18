@@ -32,6 +32,8 @@ const AddLoyalty = ({
     value: product.id,
   }));
 
+  console.log("selectedLoyaltyData", selectedLoyaltyData)
+
   // Handler for wallet card selection
   const handleWalletCardSelect = (cardId) => {
     updateLoyaltyFormField('cardId', cardId);

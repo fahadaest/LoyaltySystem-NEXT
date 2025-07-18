@@ -202,4 +202,15 @@ const superAdminroutes = [
     icon: <MdOutlineSubscriptions className="h-6 w-6" />,
   },
 ];
-export default { superAdminroutes, routes };
+
+const salesRoutes = [
+  {
+    heading: 'Admin',
+    name: 'Manage Admin',
+    icon: <MdInventory2 className="h-6 w-6" />,
+    layout: '/superadmin',
+    path: 'manage-admin',
+  },
+];
+
+export default { superAdminroutes, routes, salesRoutes };

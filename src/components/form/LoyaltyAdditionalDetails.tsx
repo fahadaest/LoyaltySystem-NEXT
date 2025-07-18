@@ -13,6 +13,9 @@ const LoyaltyAdditionalDetails = ({
     updateFormField,
     selectedLoyaltyData
 }) => {
+
+    console.log("formData", formData);
+
     // Handle blob URL creation for preview
     useEffect(() => {
         if (formData.templateImageBlob) {

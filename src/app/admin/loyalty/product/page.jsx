@@ -7,21 +7,17 @@ import { useDisclosure } from '@chakra-ui/react';
 import ProductLoyaltyCard from 'components/card/ProductLoyaltyCard';
 import AddLoyalty from 'components/form/AddLoyalty';
 import { MdAdd, MdPrint } from "react-icons/md";
-import {
-  useCreateProductLoyaltyCampaignMutation,
-  useGetAllProductLoyaltyCampaignsQuery,
-  useUpdateProductLoyaltyCampaignMutation,
-  useDeleteProductLoyaltyCampaignMutation
-} from 'store/apiEndPoints/productLoyalty';
+import { useCreateProductLoyaltyCampaignMutation, useGetAllProductLoyaltyCampaignsQuery, useUpdateProductLoyaltyCampaignMutation, useDeleteProductLoyaltyCampaignMutation } from 'store/apiEndPoints/productLoyalty';
 import { useGetAllProductsQuery } from 'store/apiEndPoints/productsApi';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { FaGift } from "react-icons/fa";
 import { MdCardGiftcard } from 'react-icons/md';
 import LoyaltyBannerPreview from 'components/banner/LoyaltyBannerPreview';
+import { getImageUrl } from 'utils/imageUtils';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -117,6 +113,8 @@ const Dashboard = () => {
   const populateFormFromLoyaltyData = useCallback((data) => {
     if (!data) return;
 
+    console.log("data", data)
+
     setLoyaltyFormData({
       loyaltyTemplates: data.loyaltyTemplates || '',
       rewardTitle: data.rewardTitle || '',
@@ -125,10 +123,10 @@ const Dashboard = () => {
       productId: data.productId || '',
       rewardProductId: data.rewardProductId || '',
       templateColor: data.templateColor || '#4a5568',
-      logo: data.logo ? baseUrl + data.logo : null,
+      logo: data.logo ? getImageUrl(data?.logo) : null,
       bannerTitle: data.bannerTitle || '',
       logoBlob: null,
-      templateImage: data.templateImage ? baseUrl + data.templateImage : null,
+      templateImage: data.templateImage ? getImageUrl(data?.templateImage) : null,
       icon1Text: data.icon1Text || 'Scan QR with your mobile phone',
       icon2Text: data.icon2Text || 'Download the Point Pass into your mobile',
       icon3Text: data.icon3Text || 'Enter Your promotion',

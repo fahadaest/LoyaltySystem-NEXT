@@ -17,7 +17,7 @@ const AnimatedButton = ({
         primary: 'bg-brandGreen hover:bg-brandGreen text-white focus:ring-brandGreen',
         secondary: 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white focus:ring-gray-500',
         outline: 'border-2 border-brandGreen text-brandGreen hover:bg-brandGreen dark:hover:bg-brandGreen focus:ring-brandGreen',
-        warning: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white focus:ring-red-500 shadow-red-200 hover:shadow-red-300'
+        warning: 'bg-brandRed text-white focus:ring-red-500 shadow-red-200 hover:shadow-red-300'
     };
 
     const sizes = {

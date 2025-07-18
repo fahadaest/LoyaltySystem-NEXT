@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef } from 'react';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { MdEdit } from 'react-icons/md';
 import { useGetAllSocialLinksQuery, useUpdateSocialLinksMutation } from 'store/apiEndPoints/settingsApi';

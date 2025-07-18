@@ -6,7 +6,7 @@ import { useDisclosure } from '@chakra-ui/react';
 import AddProductSizeComponent from 'components/product-size/AddProductSize';
 import { useGetAllProductSizesQuery, useCreateProductSizeMutation, useGetProductSizeByIdQuery, useUpdateProductSizeMutation, useDeleteProductSizeMutation } from 'store/apiEndPoints/productSizesApi';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/apiEndPoints/alertSlice';

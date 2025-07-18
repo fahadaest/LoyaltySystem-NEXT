@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import CustomModal from 'components/modal/CustomModal';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { IoPeopleOutline } from 'react-icons/io5';
 import AdminListTable from 'components/tables/AdminListTable';

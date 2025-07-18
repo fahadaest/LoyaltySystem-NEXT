@@ -15,6 +15,7 @@ import { salespersonsApi } from './apiEndPoints/salesPersonApi';
 import { managersApi } from './apiEndPoints/managersApi';
 import { permissionsApi } from './apiEndPoints/permissionsApi';
 import { dashboardApi } from './apiEndPoints/dashboardApi';
+import { loyaltyApi } from './apiEndPoints/loyaltyManagement';
 import alertReducer from './apiEndPoints/alertSlice';
 import authReducer from './slices/authSlice'
 
@@ -37,6 +38,7 @@ export const store = configureStore({
         [managersApi.reducerPath]: managersApi.reducer,
         [permissionsApi.reducerPath]: permissionsApi.reducer,
         [dashboardApi.reducerPath]: dashboardApi.reducer,
+        [loyaltyApi.reducerPath]: loyaltyApi.reducer,
         alert: alertReducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -60,7 +62,8 @@ export const store = configureStore({
             .concat(salespersonsApi.middleware)
             .concat(managersApi.middleware)
             .concat(permissionsApi.middleware)
-            .concat(dashboardApi.middleware),
+            .concat(dashboardApi.middleware)
+            .concat(loyaltyApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

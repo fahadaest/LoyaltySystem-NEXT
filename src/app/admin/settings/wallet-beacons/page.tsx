@@ -1,11 +1,11 @@
 'use client';
 import React, { useState, useRef } from 'react';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDisclosure } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { useCreateBeaconMutation, useGetAllBeaconsQuery, useGetBeaconByIdQuery, useUpdateBeaconMutation, useDeleteBeaconMutation } from 'store/apiEndPoints/settingsApi';
-import Table from 'components/settings/walletAddress/Table';
+import Table from 'components/ui/Table';
 import CustomModal from 'components/modal/CustomModal';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';

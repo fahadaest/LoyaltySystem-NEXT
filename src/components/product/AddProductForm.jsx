@@ -1,13 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import {
-  MdAdd,
-  MdDriveFileRenameOutline,
-  MdDescription,
-  MdPhotoSizeSelectActual,
-  MdCategory,
-  MdInfo,
-  MdImage
-} from "react-icons/md";
+import { MdAdd, MdDriveFileRenameOutline, MdDescription, MdPhotoSizeSelectActual, MdCategory, MdInfo, MdImage } from "react-icons/md";
 import { Package, Edit3, Image as ImageIcon } from "lucide-react";
 import Button from "components/button/Button";
 import ImageSelector from "components/ui/ImageSelector";
@@ -17,26 +9,12 @@ import FormSection from "components/ui/FormSection";
 import AnimatedButton from "components/ui/AnimatedButton";
 import { AnimatedCard, AnimatedCardContent } from "components/ui/AnimatedCard";
 
-const AddProductForm = ({
-  productName,
-  setProductName,
-  description,
-  setDescription,
-  size,
-  setSize,
-  previewImage,
-  setPreviewImage,
-  imageBlob,
-  setImageBlob,
-  sizeOptions,
-  selectedProduct,
-  isLoading,
-  onSubmit,
-  onClose,
-}) => {
+const AddProductForm = ({ productName, setProductName, description, setDescription, size, setSize, previewImage, setPreviewImage, imageBlob, setImageBlob, sizeOptions, selectedProduct, isLoading, onSubmit, onClose, }) => {
   const canvasRef = useRef(null);
   const [errors, setErrors] = useState({});
   const [isVisible, setIsVisible] = useState(false);
+
+  console.log("previewImage", previewImage)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 50);

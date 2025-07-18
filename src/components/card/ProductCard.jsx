@@ -1,11 +1,12 @@
 import Card from "components/card";
 import { IoCreateOutline, IoTrashOutline } from "react-icons/io5";
 import Button from "components/button/Button";
-
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getImageUrl } from "utils/imageUtils";
 
 const ProductCard = ({ title, price, image, size, product, onEdit, onDelete, extra }) => {
-    const fullImageUrl = baseUrl + image;
+    const fullImageUrl = getImageUrl(image);
+
+    console.log("fullImageUrl", fullImageUrl)
     return (
         <Card extra={`flex flex-col w-full !p-0 bg-white shadow-lg transition-transform duration-300 hover:scale-[1.02] rounded-2xl overflow-hidden ${extra}`} >
             <div className="relative w-full aspect-[4/3]">

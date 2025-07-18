@@ -14,7 +14,7 @@ import {
   useDeletePointLoyaltyCampaignMutation
 } from 'store/apiEndPoints/pointLoyalty';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/apiEndPoints/alertSlice';

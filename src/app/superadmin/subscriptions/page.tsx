@@ -11,7 +11,7 @@ import { FaCogs } from 'react-icons/fa';
 import { IoPeopleOutline } from 'react-icons/io5';
 import SubscriptionCard from 'components/card/SubscriptionCard';
 import SubscriptionForm from 'components/superadmin/SubscriptionForm';
-import HeadingCard from 'components/card/HeadingCard';
+import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import {
