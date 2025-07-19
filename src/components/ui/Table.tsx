@@ -27,7 +27,7 @@ export default function Table({ data, columns, isLoading, onEdit, onDelete, onVi
           <Button
             icon={IoCreateOutline}
             text="Edit"
-            size="sm"
+            size="xs"
             color="bg-brandGreen"
             onClick={() => onEdit(row.original)}
           />
@@ -36,7 +36,7 @@ export default function Table({ data, columns, isLoading, onEdit, onDelete, onVi
           <Button
             icon={IoTrashOutline}
             text="Delete"
-            size="sm"
+            size="xs"
             color="bg-brandRed"
             onClick={() => onDelete(row.original)}
           />
@@ -45,7 +45,7 @@ export default function Table({ data, columns, isLoading, onEdit, onDelete, onVi
           <Button
             icon={IoEyeOutline}
             text="View"
-            size="sm"
+            size="xs"
             color="bg-brandBlue"
             onClick={() => onView(row.original)}
           />
@@ -54,7 +54,7 @@ export default function Table({ data, columns, isLoading, onEdit, onDelete, onVi
           <Button
             icon={IoEyeOutline}
             text="Detail"
-            size="sm"
+            size="xs"
             color="bg-brandBlue"
             onClick={() => onDetail(row.original)}
           />
@@ -86,7 +86,7 @@ export default function Table({ data, columns, isLoading, onEdit, onDelete, onVi
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className={`px-4 py-3 text-left text-xs font-semibold uppercase cursor-pointer ${header.column.id === "actions" ? "text-right" : ""}`}
+                    className={`px-4 py-3 text-left text-[10px] font-semibold uppercase cursor-pointer ${header.column.id === "actions" ? "text-right" : ""}`}
                     style={header.column.id === "actions" ? { width: '120px' } : {}}
                   >
                     <div className="flex items-center">

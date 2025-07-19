@@ -5,33 +5,23 @@ import { MdPersonAdd } from 'react-icons/md';
 import { ChevronLeft, Save, Eye } from 'lucide-react';
 
 const CustomModal = ({
-    showModalBackButton,
-    handleClickBack,
+    showModalBackButton = false,
+    handleClickBack = null,
     headerTitle,
     headerDescription,
-    showFooter,
+    showFooter = true,
     showFooterCancelButton,
     footerConfirmation,
     footerConfirmButtonText = "Confirm",
-    footerConfirmButtonIcon,
-
-
-
-
-
-
+    footerConfirmButtonIcon = MdPersonAdd,
+    icon,
+    size = "xl",
     isOpen,
     onClose,
-    title = "",
-    size = "xl",
     children,
-    handlePrint,
+    handlePrint = false,
     noScroll = false,
-
-
     isLoading = false,
-
-    footerButtonIcon = MdPersonAdd
 }) => {
     if (!isOpen) return null;
 
@@ -67,13 +57,23 @@ const CustomModal = ({
                                     <div className="w-px h-8 bg-gray-300" />
                                 </>
                             )}
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900">
-                                    {headerTitle}
-                                </h2>
-                                <p className="text-gray-600">
-                                    {headerDescription}
-                                </p>
+                            <div className="flex gap-4">
+                                {icon && (
+                                    <div className="w-12 h-12 min-w-12 min-h-12 flex items-center justify-center text-brandGreen dark:text-white transition-colors duration-200 bg-white rounded-full shadow-sm border border-gray-200 dark:border-gray-600 dark:bg-gray-700 flex-shrink-0">
+                                        {React.cloneElement(icon, {
+                                            className: "w-6 h-6",
+                                            size: 24
+                                        })}
+                                    </div>
+                                )}
+                                <div>
+                                    <h2 className="text-xl font-bold text-gray-900">
+                                        {headerTitle}
+                                    </h2>
+                                    <p className="text-gray-600">
+                                        {headerDescription}
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
