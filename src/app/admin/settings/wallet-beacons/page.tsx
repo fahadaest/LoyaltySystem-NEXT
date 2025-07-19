@@ -122,9 +122,9 @@ const Dashboard = () => {
       <CustomModal
         isOpen={isOpen}
         onClose={onClose}
-        title={editRowData ? 'Edit Beacon' : 'Add Beacon'}
+        headerTitle={editRowData ? 'Edit Beacon' : 'Add Beacon'}
         size="lg"
-        handlePrint={undefined} showModalBackButton={undefined} handleClickBack={undefined} headerTitle={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}      >
+        handlePrint={undefined} showModalBackButton={undefined} handleClickBack={undefined} icon={undefined} headerDescription={undefined} showFooter={undefined} showFooterCancelButton={undefined} footerConfirmation={undefined} footerConfirmButtonIcon={undefined}      >
         <AddBeacons
           onClose={onClose}
           editRowData={editRowData}

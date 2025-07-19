@@ -426,6 +426,7 @@ const Dashboard = () => {
         handleClickBack={undefined}
         headerDescription={undefined}
         handlePrint={undefined}
+        icon={null}
       >
         <AddLoyalty
           sourcePage="points"
@@ -453,17 +454,16 @@ const Dashboard = () => {
         isOpen={isViewModalOpen}
         onClose={closeViewModal}
         handlePrint={handlePrint}
-        title="Real-Time Banner Preview"
+        headerTitle="Real-Time Banner Preview"
         size="lg"
         showModalBackButton={undefined}
         handleClickBack={undefined}
-        headerTitle={undefined}
         headerDescription={undefined}
         showFooter={undefined}
         showFooterCancelButton={undefined}
         footerConfirmation={undefined}
         footerConfirmButtonIcon={undefined}
-      >
+        icon={undefined}     >
         <div ref={printRef}>
           <LoyaltyBannerPreview
             registerCustomerLink={registerCustomerLink}

@@ -72,17 +72,17 @@ const Dashboard = () => {
       <CustomModal
         isOpen={isOpen}
         onClose={onClose}
-        title={'Customer Detail'}
+        headerTitle={'Customer Detail'}
         size="4xl"
         handlePrint={undefined}
         showModalBackButton={undefined}
         handleClickBack={undefined}
-        headerTitle={undefined}
         headerDescription={undefined}
         showFooter={undefined}
         showFooterCancelButton={undefined}
         footerConfirmation={undefined}
         footerConfirmButtonIcon={undefined}
+        icon={null}
       >
         <CustomerDetail
           customer={editRowData}

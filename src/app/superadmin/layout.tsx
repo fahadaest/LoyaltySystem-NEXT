@@ -32,7 +32,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
             <Navbar
               onOpenSidenav={() => setOpen(!open)}
               brandText={getActiveRoute(routes.superAdminroutes, pathname)}
-              secondary={getActiveNavbar(routes.superAdminroutes, pathname)}
+            // secondary={getActiveNavbar(routes.superAdminroutes, pathname)}
             />
             <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">
               {children}

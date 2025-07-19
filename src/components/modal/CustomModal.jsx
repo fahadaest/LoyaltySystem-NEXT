@@ -19,7 +19,7 @@ const CustomModal = ({
     isOpen,
     onClose,
     children,
-    handlePrint = false,
+    handlePrint = null,
     noScroll = false,
     isLoading = false,
 }) => {

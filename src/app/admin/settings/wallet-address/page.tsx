@@ -113,7 +113,6 @@ const Dashboard = () => {
       <CustomModal
         isOpen={isOpen}
         onClose={onClose}
-        title={editRowData ? "Edit Address" : "Add Address"}
         handlePrint={null}
         size="2xl"
         showModalBackButton={false}
@@ -122,7 +121,9 @@ const Dashboard = () => {
         headerDescription=""
         showFooter={false}
         showFooterCancelButton={false}
-        footerConfirmation={false} footerConfirmButtonIcon={undefined}      >
+        footerConfirmation={false} footerConfirmButtonIcon={undefined}
+        icon={null}
+      >
         <AddressSelectionComponent
           onClose={onClose}
           editRowData={editRowData}

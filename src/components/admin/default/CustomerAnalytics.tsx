@@ -8,7 +8,7 @@ import LineChart from "components/charts/LineChart";
 import { useGetGrowthAnalyticsQuery } from "store/apiEndPoints/dashboardApi";
 
 const TotalSpent = () => {
-  const [selectedTimeFrame, setSelectedTimeFrame] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('week');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [customDateRange, setCustomDateRange] = useState({
     startDate: '2024-07-01',

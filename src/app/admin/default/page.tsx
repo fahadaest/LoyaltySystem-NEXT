@@ -21,32 +21,32 @@ const Dashboard = () => {
       <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-6">
         <Widget
           icon={<MdBarChart className="h-7 w-7" />}
-          title={'Loyalty Points Today'}
-          subtitle={'1200 Points'}
+          title={'Total Customers'}
+          subtitle={'1256'}
         />
         <Widget
           icon={<MdBarChart className="h-7 w-7" />}
-          title={'Total Earnings'}
-          subtitle={'$1,250.75'}
+          title={'Total Products'}
+          subtitle={'156'}
         />
         <Widget
           icon={<IoDocuments className="h-6 w-6" />}
-          title={'Points Redeemed This Month'}
-          subtitle={'$380.00'}
+          title={'Loyalty Programs'}
+          subtitle={'36'}
         />
         <Widget
           icon={<MdBarChart className="h-7 w-7" />}
-          title={'New Referrals'}
+          title={'TODO'}
           subtitle={'25'}
         />
         <Widget
           icon={<MdDashboard className="h-6 w-6" />}
-          title={'Your Reward Balance'}
+          title={'TODO'}
           subtitle={'$500'}
         />
         <Widget
           icon={<IoMdHome className="h-6 w-6" />}
-          title={'Total Users'}
+          title={'TODO'}
           subtitle={'2,340'}
         />
       </div>

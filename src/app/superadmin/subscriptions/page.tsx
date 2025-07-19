@@ -320,12 +320,12 @@ export default function SubscriptionsPage() {
           <CustomModal
             isOpen={isOpen}
             onClose={handleModalClose}
-            title="Subscription Details"
+            headerTitle="Subscription Details"
             size="2xl"
             handlePrint={undefined}
             showModalBackButton={undefined}
             handleClickBack={undefined}
-            headerTitle={undefined}
+            icon={undefined}
             headerDescription={undefined}
             showFooter={undefined}
             showFooterCancelButton={undefined}
@@ -348,6 +348,7 @@ export default function SubscriptionsPage() {
             showFooterCancelButton={onClose}
             footerConfirmation={handleFormSubmit}
             footerConfirmButtonIcon={undefined}
+            icon={null}
           >
             <SubscriptionForm
               mode={mode}
