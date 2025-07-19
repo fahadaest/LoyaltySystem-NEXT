@@ -2,19 +2,11 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import NavLink from 'components/link/NavLink';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-// Replace DashIcon with a valid icon or import your custom DashIcon below
-import { LayoutDashboard } from 'lucide-react'; // Example icon
 
-export const SidebarLinks = ({
-  routes,
-}: {
-  routes: RoutesType[];
-}): JSX.Element => {
+export const SidebarLinks = ({ routes, }: { routes: RoutesType[]; }): JSX.Element => {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-  const [submenuHeights, setSubmenuHeights] = useState<Record<string, number>>(
-    {},
-  );
+  const [submenuHeights, setSubmenuHeights] = useState<Record<string, number>>({},);
 
   const activeRoute = useCallback(
     (routePath: string) => {
@@ -41,15 +33,8 @@ export const SidebarLinks = ({
     return routes.map((route, index) => {
       const submenuRef = useRef<HTMLDivElement>(null);
       const isSubmenu = route.submenu && route.submenu.length > 0;
-      const isActiveSub =
-        isSubmenu &&
-        route.submenu?.some((r: { layout: any; path: any }) =>
-          activeRoute(`${r.layout}/${r.path}`),
-        );
-      const isOpen =
-        openMenus[route.name] !== undefined
-          ? openMenus[route.name]
-          : isActiveSub;
+      const isActiveSub = isSubmenu && route.submenu?.some((r: { layout: any; path: any }) => activeRoute(`${r.layout}/${r.path}`),);
+      const isOpen = openMenus[route.name] !== undefined ? openMenus[route.name] : isActiveSub;
       const isActive = isOpen;
 
       useEffect(() => {
@@ -78,16 +63,10 @@ export const SidebarLinks = ({
 
           {isSubmenu ? (
             <>
-              <div
-                onClick={() => toggleMenu(route.name)}
-                className={`relative flex cursor-pointer items-center rounded-lg px-6 py-3 transition-all duration-200 
-              ${isActive
-                    ? 'bg-white/10 font-semibold text-white'
-                    : 'text-white hover:bg-white/10'
-                  }`}
+              <div onClick={() => toggleMenu(route.name)} className={`relative flex cursor-pointer items-center rounded-lg px-6 py-3 transition-all duration-200 
+              ${isActive ? 'bg-white/10 font-semibold text-white' : 'text-white hover:bg-white/10'}`}
               >
                 <span className="flex h-5 w-5 items-center justify-center text-lg">
-                  {/* {route.icon || <DashIcon />} */}
                   {route.icon}
                 </span>
                 <p className="ml-4 font-medium">{route.name}</p>
@@ -95,31 +74,20 @@ export const SidebarLinks = ({
                   {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </span>
 
-                {/* Main vertical line - stops before the last submenu item */}
                 {isOpen &&
                   lineHeight > 0 &&
                   route.submenu &&
                   route.submenu.length > 0 && (
                     <span
                       className="absolute left-8 top-full z-0 w-0.5 bg-white/30"
-                      style={{
-                        height:
-                          lineHeight -
-                          (route.submenu.length > 0 ? 24 : 0) +
-                          'px', // Subtract height of last item
-                      }}
+                      style={{ height: lineHeight - (route.submenu.length > 0 ? 24 : 0) + 'px', }}
                     />
                   )}
               </div>
 
-              <div
-                ref={submenuRef}
-                className={`ml-6 mt-2 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-              >
+              <div ref={submenuRef} className={`ml-6 mt-2 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}  >
                 {route.submenu.map((sub, subIndex) => (
                   <div key={subIndex} className="relative">
-                    {/* Curved line for each submenu item */}
                     {isOpen && (
                       <div className="pointer-events-none absolute left-2 top-1/2 z-0 h-4 w-6">
                         <svg
@@ -145,12 +113,11 @@ export const SidebarLinks = ({
                     )}
 
                     <NavLink href={`${sub.layout}/${sub.path}`}>
-                      <li
-                        className={`relative z-10 my-2 ml-4 flex cursor-pointer items-center rounded-md py-2 transition-colors
+                      <li className={`relative z-10 my-2 ml-4 flex cursor-pointer items-center rounded-md py-2 transition-colors  
                       ${activeRoute(`${sub.layout}/${sub.path}`)
-                            ? 'bg-white/10 px-4 font-semibold text-white'
-                            : 'px-4 text-white hover:bg-white/10'
-                          }`}
+                          ? 'bg-white/10 px-4 font-semibold text-white'
+                          : 'px-4 text-white hover:bg-white/10'
+                        }`}
                       >
                         <p className="ml-3">{sub.name}</p>
                       </li>
@@ -169,7 +136,6 @@ export const SidebarLinks = ({
                       : 'text-white hover:bg-white/10'
                     }`}
                 >
-                  {/* {route.icon || <DashIcon />} */}
                   <p className="ml-4">{route.name}</p>
                 </li>
               </div>

@@ -1,11 +1,6 @@
 import React from 'react';
-import { MdHome, MdOutlineShoppingCart, MdBarChart, MdPerson, MdLock, MdInventory2, MdCardGiftcard, MdPeopleAlt, MdListAlt, MdLineStyle, MdLoyalty, MdStar, MdSupervisorAccount, MdReport, MdSettings, MdAccountBalanceWallet, MdLink, MdWifiTethering, MdSupport, MdGavel, } from 'react-icons/md';
-
-import {
-  MdAdminPanelSettings,
-  MdOutlineSubscriptions,
-  MdOutlineCreate,
-} from 'react-icons/md';
+import { MdHome, MdInventory2, MdPeopleAlt, MdLoyalty, MdSupervisorAccount } from 'react-icons/md';
+import { MdOutlineSubscriptions, } from 'react-icons/md';
 
 const routes = [
   {
@@ -132,57 +127,6 @@ const routes = [
       },
     ],
   },
-
-  // {
-  //   name: 'Managers',
-  //   layout: '/customer',
-  //   path: 'default',
-  //   icon: <MdPerson className="h-6 w-6" />,
-  // },
-  // {
-  //   name: 'Report',
-  //   layout: '/customer',
-  //   path: 'default',
-  //   icon: <MdReport className="h-6 w-6" />,
-  // },
-  // {
-  //   name: 'Settings',
-  //   icon: <MdSettings className="h-6 w-6" />,
-  //   layout: '/loyalty',
-  //   path: '',
-  //   submenu: [
-  //     {
-  //       name: 'Wallet Address',
-  //       layout: '/loyalty',
-  //       path: 'product',
-  //       icon: <MdHome className="h-6 w-6" />,
-  //     },
-  //     {
-  //       name: 'Wallet Social Links',
-  //       layout: '/loyalty',
-  //       path: 'point',
-  //       icon: <MdHome className="h-6 w-6" />,
-  //     },
-  //     {
-  //       name: 'Wallet Beacons',
-  //       layout: '/loyalty',
-  //       path: 'point',
-  //       icon: <MdHome className="h-6 w-6" />,
-  //     },
-  //     {
-  //       name: 'Wallet Support',
-  //       layout: '/loyalty',
-  //       path: 'point',
-  //       icon: <MdHome className="h-6 w-6" />,
-  //     },
-  //     {
-  //       name: 'Terms & Conditions',
-  //       layout: '/loyalty',
-  //       path: 'point',
-  //       icon: <MdHome className="h-6 w-6" />,
-  //     },
-  //   ],
-  // },
 ];
 
 const superAdminroutes = [
