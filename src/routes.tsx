@@ -211,6 +211,7 @@ const salesRoutes = [
     layout: '/superadmin',
     path: 'manage-admin',
   },
+
 ];
 
 export default { superAdminroutes, routes, salesRoutes };

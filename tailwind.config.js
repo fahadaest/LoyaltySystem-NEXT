@@ -163,8 +163,8 @@ module.exports = {
       '4xl-max': { max: '1850px' },
     },
     colors: {
-      // brandGreen: '#36a18f',
-      brandGreen: '#000000',
+      brandGreen: '#36a18f',
+      // brandGreen: '#000000',
       brandGreenGradient1: '#1a5d54',
       brandGreenGradient2: '#2d8a7a',
       brandGreenGradient3: '#4db3a3',
