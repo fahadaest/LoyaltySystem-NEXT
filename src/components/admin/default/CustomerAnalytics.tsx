@@ -33,7 +33,7 @@ const TotalSpent = () => {
 
   const { data: customersData, isLoading, error } = useGetGrowthAnalyticsQuery(apiParams);
 
-  console.log("customersData", customersData)
+  // console.log("customersData", customersData)
 
   const handleDropdownToggle = () => {
     setDropdownOpen((prev) => !prev);

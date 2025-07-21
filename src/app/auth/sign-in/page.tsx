@@ -89,7 +89,7 @@ function SignInDefault() {
       if (user.role === 'superadmin') {
         router.replace('/superadmin/manage-admin');
       } else if (user.role === 'admin') {
-        router.replace('/admin/default');
+        router.replace('/admin/dashboard');
       }
     }
   }, [isAuthenticated, user, router]);

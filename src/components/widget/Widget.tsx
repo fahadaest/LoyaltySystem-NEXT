@@ -6,24 +6,21 @@ const Widget = (props: {
   subtitle: string;
 }) => {
   const { icon, title, subtitle } = props;
-  const titleFontSizeClass = title.length > 10 ? "text-xs" : "text-lg";
-  const subtitleFontSizeClass = subtitle.length > 10 ? "text-sm" : "text-lg";
 
   return (
-    <Card extra="!flex-row flex-grow items-center rounded-[20px]">
-      <div className="ml-[18px] flex h-[90px] w-auto flex-row items-center">
-        <div className="rounded-full bg-lightPrimary p-3 dark:bg-navy-700">
+    <Card extra="!flex-row flex-grow gap-3 px-2 items-center rounded-[20px]">
+      <div className=" flex h-[80px] w-auto flex-row items-center">
+        <div className="rounded-full bg-lightPrimary p-2.5 dark:bg-navy-700 flex-shrink-0">
           <span className="flex items-center text-brandGreen dark:text-white">
             {icon}
           </span>
         </div>
       </div>
-
-      <div className="h-50 ml-4 flex w-auto flex-col justify-center">
-        <p className={`font-dm text-sm font-medium text-gray-600 ${titleFontSizeClass}`}>
+      <div className="h-50 flex w-auto flex-col justify-center min-w-0 flex-1">
+        <p className="font-dm text-xs font-medium text-gray-600">
           {title}
         </p>
-        <h4 className={`font-bold text-navy-700 dark:text-white ${subtitleFontSizeClass}`}>
+        <h4 className="font-bold text-navy-700 dark:text-white text-lg truncate">
           {subtitle}
         </h4>
       </div>

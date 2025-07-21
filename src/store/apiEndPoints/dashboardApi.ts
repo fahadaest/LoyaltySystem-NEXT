@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
 
-// Types for the API parameters
 interface GrowthAnalyticsParams {
     isAllCustomers?: boolean;
     isPointCustomers?: boolean;
@@ -9,6 +8,14 @@ interface GrowthAnalyticsParams {
     filter?: 'today' | 'week' | 'month' | 'year';
     startDate?: string;
     endDate?: string;
+}
+
+interface WidgetDataResponse {
+    data: any;
+    totalCustomers: number;
+    totalProducts: number;
+    totalLoyaltyPrograms: number;
+    totalCustomWalletCards: number;
 }
 
 export const dashboardApi = createApi({
@@ -24,7 +31,7 @@ export const dashboardApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ['DashboardGrowth'],
+    tagTypes: ['DashboardGrowth', 'DashboardWidgets'],
     endpoints: (builder) => ({
         getGrowthAnalytics: builder.query({
             query: (params: GrowthAnalyticsParams = {}) => ({
@@ -37,9 +44,16 @@ export const dashboardApi = createApi({
             }),
             providesTags: ['DashboardGrowth'],
         }),
+        getWidgetData: builder.query<WidgetDataResponse, void>({
+            query: () => ({
+                url: '/dashboard/widget-data',
+            }),
+            providesTags: ['DashboardWidgets'],
+        }),
     }),
 });
 
 export const {
     useGetGrowthAnalyticsQuery,
+    useGetWidgetDataQuery,
 } = dashboardApi;

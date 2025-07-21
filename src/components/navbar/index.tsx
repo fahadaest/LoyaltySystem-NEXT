@@ -171,13 +171,13 @@ const Navbar = ({ onOpenSidenav, brandText }) => {
                 Profile Settings
               </a>
 
-              <a
+              {/* <a
                 href="/settings"
                 className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-navy-600 rounded-lg transition-colors"
               >
                 <FiSettings className="h-4 w-4" />
                 Account Settings
-              </a>
+              </a> */}
 
               <div className="border-t border-gray-200 dark:border-gray-600 my-2"></div>
 

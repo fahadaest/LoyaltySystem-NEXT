@@ -252,7 +252,7 @@ export default function SubscriptionsPage() {
           <HeaderButton
             icon={MdAdd}
             text="Add Subscription"
-            size="lg"
+            size="md"
             color="bg-brandGreen"
             onClick={handleCreateClick}
             variant={undefined}

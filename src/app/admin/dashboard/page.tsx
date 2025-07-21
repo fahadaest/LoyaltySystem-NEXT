@@ -3,9 +3,9 @@ import MiniCalendar from 'components/calendar/MiniCalendar';
 import WeeklyRevenue from 'components/admin/default/WeeklyRevenue';
 import CustomerAnalytics from 'components/admin/default/CustomerAnalytics';
 import PieChartCard from 'components/admin/default/PieChartCard';
-import { IoMdHome } from 'react-icons/io';
-import { IoDocuments } from 'react-icons/io5';
-import { MdBarChart, MdDashboard } from 'react-icons/md';
+import { MdBarChart, MdDashboard, MdInventory, MdLoyalty, MdStars } from 'react-icons/md';
+import { IoMdHome, IoMdPeople } from 'react-icons/io';
+import { IoDocuments, IoCard, IoGift } from 'react-icons/io5';
 import Widget from 'components/widget/Widget';
 import CheckTable from 'components/admin/default/CheckTable';
 import ComplexTable from 'components/admin/default/ComplexTable';
@@ -13,40 +13,58 @@ import DailyTraffic from 'components/admin/default/DailyTraffic';
 import TaskCard from 'components/admin/default/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
+import { useGetWidgetDataQuery } from 'store/apiEndPoints/dashboardApi';
 
 const Dashboard = () => {
+  const { data: widgetsData, isLoading, error } = useGetWidgetDataQuery();
+
+  console.log("widgetsData", widgetsData);
+
+  // Handle loading state
+  if (isLoading) {
+    return <div className="p-4">Loading dashboard data...</div>;
+  }
+
+  // Handle error state
+  if (error) {
+    return <div className="p-4 text-red-500">Error loading dashboard data</div>;
+  }
+
+  // Extract data for easier access
+  const data = widgetsData?.data;
+
   return (
     <div>
-      <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 ">
+      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 ">
         <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
+          icon={<IoMdPeople className="h-5 w-5" />}
           title={'Total Customers'}
-          subtitle={'1256'}
+          subtitle={data?.totalCustomers || '0'}
         />
         <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
+          icon={<MdInventory className="h-5 w-5" />}
           title={'Total Products'}
-          subtitle={'156'}
+          subtitle={data?.totalProducts || '0'}
         />
         <Widget
-          icon={<IoDocuments className="h-6 w-6" />}
+          icon={<MdLoyalty className="h-5 w-5" />}
           title={'Loyalty Programs'}
-          subtitle={'36'}
+          subtitle={data?.totalLoyaltyPrograms || '0'}
         />
         <Widget
-          icon={<MdBarChart className="h-7 w-7" />}
-          title={'TODO'}
-          subtitle={'25'}
+          icon={<IoCard className="h-5 w-5" />}
+          title={'Custom Wallet Cards'}
+          subtitle={data?.totalCustomWalletCards || '0'}
         />
         <Widget
-          icon={<MdDashboard className="h-6 w-6" />}
-          title={'TODO'}
-          subtitle={'$500'}
+          icon={<IoGift className="h-5 w-5" />}
+          title={'Product Loyalties'}
+          subtitle={data?.breakdown?.productLoyalties || '0'}
         />
         <Widget
-          icon={<IoMdHome className="h-6 w-6" />}
-          title={'TODO'}
-          subtitle={'2,340'}
+          icon={<MdStars className="h-5 w-5" />}
+          title={'Point Loyalties'}
+          subtitle={data?.breakdown?.pointLoyalties || '0'}
         />
       </div>
 
