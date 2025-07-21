@@ -4,7 +4,7 @@ import { MdOutlineSubscriptions, } from 'react-icons/md';
 
 const routes = [
   {
-    heading: 'Dashboard',
+    heading: 'Overview',
     name: 'Main Dashboard',
     layout: '/admin',
     path: 'default',
@@ -68,25 +68,26 @@ const routes = [
     ],
   },
   {
-    heading: 'Customer Management',
+    heading: 'Management',
     name: 'Customers',
     layout: '/admin/customer',
     path: 'view',
     icon: <MdPeopleAlt className="h-6 w-6" />,
+    showDivider: false,
   },
   {
-    heading: 'Sales Person',
     name: 'Sales Person',
     layout: '/admin',
     path: 'sales-person',
     icon: <MdSupervisorAccount className="h-6 w-6" />,
+    showDivider: false,
   },
   {
-    heading: 'Managers',
     name: 'Managers',
     layout: '/admin',
     path: 'managers',
     icon: <MdSupervisorAccount className="h-6 w-6" />,
+    showDivider: false,
   },
   {
     heading: 'Settings',

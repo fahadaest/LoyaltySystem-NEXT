@@ -18,7 +18,7 @@ export default function Admin({ children }: { children: React.ReactNode }) {
       <Sidebar routes={routes.routes} open={open} setOpen={setOpen} variant="admin" />
 
       <div className="h-full w-full font-dm dark:bg-navy-900">
-        <main className={`mx-2.5  flex-none transition-all dark:bg-navy-900  md:pr-2 xl:ml-[323px]`} >
+        <main className={`mx-2.5 flex-none transition-all dark:bg-navy-900 md:pr-2 xl:ml-[290px]`} >
           <div>
             <Navbar onOpenSidenav={() => setOpen(!open)} brandText={getActiveRoute(routes.routes, pathname)} />
             <div className="mx-auto min-h-screen p-2 !pt-[10px] md:p-2">

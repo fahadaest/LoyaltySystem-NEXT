@@ -35,7 +35,7 @@ const Navbar = ({ onOpenSidenav, brandText }) => {
   };
 
   return (
-    <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
+    <nav className=" mx-2 sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       {/* Left Section - Welcome Message */}
       <div className="ml-[6px]">
         <div className="hidden sm:inline">

@@ -54,16 +54,18 @@ export const SidebarLinks = ({ routes, }: { routes: RoutesType[]; }): JSX.Elemen
       const lineHeight = submenuHeights[route.name] || 0;
 
       return (
-        <div key={index} className="relative mb-2">
+        <div key={index} className="relative">
           {route.heading && (
-            <div className="text-white font-semibold uppercase text-md mt-4 mb-2 ml-4">
-              {route.heading}
+            <div className=" px-4 py-3 mt-3">
+              <h3 className="text-xs font-semibold text-white/60 uppercase tracking-wider">
+                {route.heading}
+              </h3>
             </div>
           )}
 
           {isSubmenu ? (
             <>
-              <div onClick={() => toggleMenu(route.name)} className={`relative flex cursor-pointer items-center rounded-lg px-6 py-3 transition-all duration-200 
+              <div onClick={() => toggleMenu(route.name)} className={` relative flex cursor-pointer items-center rounded-lg px-6 py-3 transition-all duration-200 
               ${isActive ? 'bg-white/10 font-semibold text-white' : 'text-white hover:bg-white/10'}`}
               >
                 <span className="flex h-5 w-5 items-center justify-center text-lg">
