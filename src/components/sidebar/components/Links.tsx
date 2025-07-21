@@ -8,6 +8,8 @@ export const SidebarLinks = ({ routes, }: { routes: RoutesType[]; }): JSX.Elemen
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
   const [submenuHeights, setSubmenuHeights] = useState<Record<string, number>>({},);
 
+  console.log("routes", routes)
+
   const activeRoute = useCallback(
     (routePath: string) => {
       const fullPath = pathname || '';

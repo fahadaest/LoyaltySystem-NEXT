@@ -90,6 +90,8 @@ function SignInDefault() {
         router.replace('/superadmin/manage-admin');
       } else if (user.role === 'admin') {
         router.replace('/admin/dashboard');
+      } else if (user.role === 'salesperson') {
+        router.replace('/sales/dashboard');
       }
     }
   }, [isAuthenticated, user, router]);

@@ -84,20 +84,25 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                 >
                     {/* Header */}
                     <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-                        <h1 className="text-sm font-semibold">
-                            {cardData.organizationName || cardData.title || 'Barber Shop'}
-                        </h1>
+                        <div className='flex gap-2 items-center'>
+                            <div className="text-xs">
+                                {(cardData.logoImageUrl || cardData.logoImage) ? (
+                                    <img
+                                        src={getImageUrl(cardData.logoImageUrl || cardData.logoImage)}
+                                        alt="Logo"
+                                        className="w-6 h-6 object-contain rounded"
+                                    />
+                                ) : (
+                                    'logo'
+                                )}
+                            </div>
+                            <h1 className="text-sm font-semibold">
+                                {cardData.organizationName || cardData.title || 'Barber Shop'}
+                            </h1>
+                        </div>
 
-                        <div className="text-xs">
-                            {(cardData.logoImageUrl || cardData.logoImage) ? (
-                                <img
-                                    src={getImageUrl(cardData.logoImageUrl || cardData.logoImage)}
-                                    alt="Logo"
-                                    className="w-6 h-6 object-contain rounded"
-                                />
-                            ) : (
-                                'logo'
-                            )}
+                        <div>
+                            <p>3/10</p>
                         </div>
                     </div>
 

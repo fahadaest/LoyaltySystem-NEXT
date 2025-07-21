@@ -150,11 +150,19 @@ const superAdminroutes = [
 
 const salesRoutes = [
   {
-    heading: 'Admin',
-    name: 'Manage Admin',
+    heading: 'Dashboard',
+    name: 'Dashboard',
     icon: <MdInventory2 className="h-6 w-6" />,
-    layout: '/superadmin',
-    path: 'manage-admin',
+    layout: '/sales',
+    path: 'dashboard',
+  },
+  {
+    heading: 'Sales',
+    name: 'Scan Card',
+    icon: <MdInventory2 className="h-6 w-6" />,
+    layout: '/sales',
+    path: 'card-scanner',
+    showDivider: false,
   },
 
 ];
