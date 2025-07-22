@@ -1,18 +1,24 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
-const publicRoutes = ['/login', '/register', '/forgot-password'];
+const publicRoutes = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/register-customer'
+];
 
 export const AuthWrapper = ({ children }) => {
     const { isAuthenticated, isInitialized } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
-        if (isInitialized && !isAuthenticated && !publicRoutes.includes(router.pathname)) {
+        if (isInitialized && !isAuthenticated && !publicRoutes.includes(pathname)) {
             router.push('/auth/sign-in');
         }
-    }, [isAuthenticated, isInitialized, router]);
+    }, [isAuthenticated, isInitialized, router, pathname]);
 
     if (!isInitialized) {
         return (

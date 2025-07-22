@@ -77,13 +77,13 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
 
     if (isIOS) {
         return (
-            <div className="relative transform hover:scale-105 transition-transform duration-300 max-w-[280px] mx-auto">
+            <div className="relative transform hover:scale-105 transition-transform duration-300 max-w-[320px] mx-auto">
                 <div
                     className="rounded-xl shadow-xl text-white relative overflow-hidden w-full aspect-[5/7]"
                     style={getBackgroundStyle()}
                 >
                     {/* Header */}
-                    <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                    <div className="px-4 py-2 flex items-center justify-between">
                         <div className='flex gap-2 items-center'>
                             <div className="text-xs">
                                 {(cardData.logoImageUrl || cardData.logoImage) ? (
@@ -101,7 +101,8 @@ const WalletCard = ({ cardData, platform = 'ios' }) => {
                             </h1>
                         </div>
 
-                        <div>
+                        <div className='text-right'>
+                            <p className='text-xs'>Stamps</p>
                             <p>3/10</p>
                         </div>
                     </div>

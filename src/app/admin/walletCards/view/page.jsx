@@ -46,7 +46,7 @@ const Dashboard = () => {
     stampCollectedImg: null,
     noStampCollectedImg: null,
     rewardQuantity: 12,
-    rewardsCount: 0,
+    rewardsCount: 1,
     pointsSpendAmount: 100,
     pointsAmount: 100,
     pointsRewardAmount: 10,
@@ -226,7 +226,7 @@ const Dashboard = () => {
   const handleEdit = (card) => {
     setSelectedCard(card);
     setEditMode(true);
-    populateCardData(card); // Populate form with card data
+    populateCardData(card);
     setCurrentModalView('editor');
     onOpen();
   };
@@ -304,7 +304,7 @@ const Dashboard = () => {
     setCurrentModalView('selection');
     setSelectedCard(null);
     setEditMode(false);
-    resetCardData(); // Reset form data for new card
+    resetCardData();
     onOpen();
   };
 
