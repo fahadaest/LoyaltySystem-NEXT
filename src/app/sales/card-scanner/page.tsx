@@ -7,7 +7,9 @@ import {
   useScanLoyaltyCardMutation,
   useAddStampMutation,
   useRedeemRewardMutation,
-  useRemoveStampMutation
+  useRemoveStampMutation,
+  useLogSpendingMutation,
+  useRedeemPointsMutation
 } from 'store/apiEndPoints/loyaltyManagement';
 import { RiQrScanLine } from 'react-icons/ri';
 
@@ -23,8 +25,10 @@ const CardScanner = () => {
   const [addStamp, { isLoading: isAddStampLoading }] = useAddStampMutation();
   const [redeemReward, { isLoading: isRedeemLoading }] = useRedeemRewardMutation();
   const [removeStamp, { isLoading: isRemoveStampLoading }] = useRemoveStampMutation();
+  const [logSpending, { isLoading: isLogSpendingLoading }] = useLogSpendingMutation();
+  const [redeemPoints, { isLoading: isRedeemPointsLoading }] = useRedeemPointsMutation();
 
-  const loading = isScanLoading || isAddStampLoading || isRedeemLoading || isRemoveStampLoading;
+  const loading = isScanLoading || isAddStampLoading || isRedeemLoading || isRemoveStampLoading || isLogSpendingLoading || isRedeemPointsLoading;
 
   const handleScan = async (qrData) => {
     if (!qrData) return;
@@ -144,6 +148,60 @@ const CardScanner = () => {
     }
   };
 
+  const handleLogSpending = async (amountSpent) => {
+    if (!scannedData || !scannedData.scannedLoyalty) return;
+    setError('');
+    setSuccess('');
+
+    try {
+      const result = await logSpending({
+        customerLoyaltyId: scannedData.scannedLoyalty.id,
+        amountUserSpent: parseFloat(amountSpent)
+      }).unwrap();
+
+      console.log('Log spending result:', result); // Debug log
+
+      if (result.success) {
+        setSuccess(result.message || 'Points added successfully!');
+
+        // Re-scan to get the latest data
+        await refreshScanData();
+      } else {
+        setError(result.message || 'Failed to log spending');
+      }
+    } catch (err) {
+      setError('Error logging spending. Please try again.');
+      console.error('Log spending error:', err);
+    }
+  };
+
+  const handleRedeemPoints = async (pointsToRedeem) => {
+    if (!scannedData || !scannedData.scannedLoyalty) return;
+    setError('');
+    setSuccess('');
+
+    try {
+      const result = await redeemPoints({
+        customerLoyaltyId: scannedData.scannedLoyalty.id,
+        pointsToRedeem: parseInt(pointsToRedeem)
+      }).unwrap();
+
+      console.log('Redeem points result:', result); // Debug log
+
+      if (result.success) {
+        setSuccess(result.message || 'Points redeemed successfully!');
+
+        // Re-scan to get the latest data
+        await refreshScanData();
+      } else {
+        setError(result.message || 'Failed to redeem points');
+      }
+    } catch (err) {
+      setError('Error redeeming points. Please try again.');
+      console.error('Redeem points error:', err);
+    }
+  };
+
   const handleManualInput = () => {
     if (qrInput.trim()) {
       handleScan(qrInput.trim());
@@ -189,9 +247,13 @@ const CardScanner = () => {
         handleAddStamp={handleAddStamp}
         handleRemoveStamp={handleRemoveStamp}
         handleRedeemReward={handleRedeemReward}
+        handleLogSpending={handleLogSpending}
+        handleRedeemPoints={handleRedeemPoints}
         resetScan={resetScan}
         loading={loading}
         isRemoveStampLoading={isRemoveStampLoading}
+        isLogSpendingLoading={isLogSpendingLoading}
+        isRedeemPointsLoading={isRedeemPointsLoading}
       />
     </div>
   );

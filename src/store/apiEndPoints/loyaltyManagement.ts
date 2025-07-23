@@ -14,7 +14,7 @@ export const loyaltyApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ['LoyaltyCard', 'CustomerLoyalty'],
+    tagTypes: ['LoyaltyCard', 'CustomerLoyalty', 'PointLoyalty'],
     endpoints: (builder) => ({
         scanLoyaltyCard: builder.mutation({
             query: (scanData) => ({
@@ -48,6 +48,22 @@ export const loyaltyApi = createApi({
             }),
             invalidatesTags: ['LoyaltyCard', 'CustomerLoyalty'],
         }),
+        logSpending: builder.mutation({
+            query: (spendingData) => ({
+                url: '/loyaltyManagement/logSpending',
+                method: 'POST',
+                body: spendingData,
+            }),
+            invalidatesTags: ['LoyaltyCard', 'CustomerLoyalty', 'PointLoyalty'],
+        }),
+        redeemPoints: builder.mutation({
+            query: (redeemData) => ({
+                url: '/loyaltyManagement/redeem-points',
+                method: 'POST',
+                body: redeemData,
+            }),
+            invalidatesTags: ['LoyaltyCard', 'CustomerLoyalty', 'PointLoyalty'],
+        }),
         getLoyaltyHistory: builder.query({
             query: (customerLoyaltyId) => `/loyaltyManagement/${customerLoyaltyId}/history`,
             providesTags: (result, error, customerLoyaltyId) => [
@@ -66,6 +82,8 @@ export const {
     useAddStampMutation,
     useRemoveStampMutation,
     useRedeemRewardMutation,
+    useLogSpendingMutation,
+    useRedeemPointsMutation,
     useGetLoyaltyHistoryQuery,
     useGetWalletPassStatusQuery,
 } = loyaltyApi;

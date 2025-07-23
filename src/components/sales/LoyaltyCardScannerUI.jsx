@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, User, Gift, Plus, Minus, CheckCircle, AlertCircle, QrCode, CreditCard, Package, Star } from 'lucide-react';
+import { Camera, User, Gift, Plus, Minus, CheckCircle, AlertCircle, QrCode, CreditCard, Package, Star, DollarSign, Coins } from 'lucide-react';
 import AnimatedButton from 'components/ui/AnimatedButton';
 import AnimatedInput from 'components/ui/AnimatedInput';
 import Table from 'components/ui/Table';
@@ -16,15 +16,30 @@ const LoyaltyCardScannerUI = ({
     handleAddStamp,
     handleRemoveStamp,
     handleRedeemReward,
+    handleLogSpending,
+    handleRedeemPoints,
     resetScan,
     loading,
-    isRemoveStampLoading
+    isRemoveStampLoading,
+    isLogSpendingLoading,
+    isRedeemPointsLoading
 }) => {
     const dispatch = useDispatch();
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
     const [removeReason, setRemoveReason] = useState('');
     const [selectedLoyalty, setSelectedLoyalty] = useState(null);
-    const canRemoveStamp = scannedData && scannedData.scannedLoyalty.progress.collectedStamps > 0;
+
+    // Point system modals state
+    const [showAddPointsModal, setShowAddPointsModal] = useState(false);
+    const [showRedeemPointsModal, setShowRedeemPointsModal] = useState(false);
+    const [spendingAmount, setSpendingAmount] = useState('');
+    const [pointsToRedeem, setPointsToRedeem] = useState('');
+    const [redeemByAmount, setRedeemByAmount] = useState(false);
+    const [redeemAmount, setRedeemAmount] = useState('');
+
+    const canRemoveStamp = scannedData && scannedData.scannedLoyalty.progress.currentCollectedStamps > 0;
+
+    console.log("scannedData", scannedData)
 
     useEffect(() => {
         if (success) {
@@ -57,7 +72,89 @@ const LoyaltyCardScannerUI = ({
         setRemoveReason('');
     };
 
-    // Function to get icon and styling based on loyalty type
+    // Point system handlers
+    const handleAddPointsConfirm = async () => {
+        if (!spendingAmount || parseFloat(spendingAmount) <= 0) {
+            dispatch(showAlert({
+                message: 'Please enter a valid spending amount',
+                severity: "error",
+                duration: 3000
+            }));
+            return;
+        }
+
+        await handleLogSpending(spendingAmount);
+        setShowAddPointsModal(false);
+        setSpendingAmount('');
+    };
+
+    const handleRedeemPointsConfirm = async () => {
+        let pointsToRedeemValue;
+
+        if (redeemByAmount) {
+            if (!redeemAmount || parseFloat(redeemAmount) <= 0) {
+                dispatch(showAlert({
+                    message: 'Please enter a valid reward amount',
+                    severity: "error",
+                    duration: 3000
+                }));
+                return;
+            }
+
+            // Calculate points needed for the desired reward amount
+            const pointLoyalty = scannedData.scannedLoyalty.program;
+            const rewardPerPoint = pointLoyalty.rewardPointsEquivalent / pointLoyalty.rewardPoints;
+            pointsToRedeemValue = Math.ceil(parseFloat(redeemAmount) / rewardPerPoint);
+        } else {
+            if (!pointsToRedeem || parseInt(pointsToRedeem) <= 0) {
+                dispatch(showAlert({
+                    message: 'Please enter a valid number of points',
+                    severity: "error",
+                    duration: 3000
+                }));
+                return;
+            }
+            pointsToRedeemValue = pointsToRedeem;
+        }
+
+        // Check if user has enough points
+        if (pointsToRedeemValue > scannedData.scannedLoyalty.progress.currentCollectedPoints) {
+            dispatch(showAlert({
+                message: `Insufficient points. Available: ${scannedData.scannedLoyalty.progress.currentCollectedPoints}, Required: ${pointsToRedeemValue}`,
+                severity: "error",
+                duration: 3000
+            }));
+            return;
+        }
+
+        await handleRedeemPoints(pointsToRedeemValue);
+        setShowRedeemPointsModal(false);
+        setPointsToRedeem('');
+        setRedeemAmount('');
+        setRedeemByAmount(false);
+    };
+
+    const calculatePointsFromAmount = (amount) => {
+        if (!amount || !scannedData?.scannedLoyalty?.program) return 0;
+        const program = scannedData.scannedLoyalty.program;
+        const pointsPerAED = program.rewardPoints / program.spendingAmount;
+        return Math.floor(parseFloat(amount) * pointsPerAED);
+    };
+
+    const calculateRewardFromPoints = (points) => {
+        if (!points || !scannedData?.scannedLoyalty?.program) return 0;
+        const program = scannedData.scannedLoyalty.program;
+        const rewardPerPoint = program.rewardPointsEquivalent / program.rewardPoints;
+        return (parseInt(points) * rewardPerPoint).toFixed(2);
+    };
+
+    const calculatePointsFromReward = (amount) => {
+        if (!amount || !scannedData?.scannedLoyalty?.program) return 0;
+        const program = scannedData.scannedLoyalty.program;
+        const rewardPerPoint = program.rewardPointsEquivalent / program.rewardPoints;
+        return Math.ceil(parseFloat(amount) / rewardPerPoint);
+    };
+
     const getTypeConfig = (type) => {
         const typeUpper = type?.toUpperCase();
 
@@ -69,7 +166,7 @@ const LoyaltyCardScannerUI = ({
                     textColor: 'text-blue-800',
                     iconColor: 'text-blue-600'
                 };
-            case 'POINTS':
+            case 'POINT':
                 return {
                     icon: Star,
                     bgColor: 'bg-yellow-100',
@@ -112,32 +209,61 @@ const LoyaltyCardScannerUI = ({
             )
         },
         {
-            accessorKey: 'progress.collectedStamps',
+            accessorKey: 'progress',
             header: 'Progress',
-            cell: ({ row }) => (
-                <div className="text-center">
-                    <div className="text-sm font-medium">
-                        {row.original.progress.collectedStamps}/{row.original.progress.totalRequired}
-                    </div>
-                    <div className="w-16 bg-gray-200 rounded-full h-1.5 mt-1">
-                        <div
-                            className="bg-green-500 h-1.5 rounded-full"
-                            style={{ width: `${row.original.progress.progressPercentage}%` }}
-                        ></div>
-                    </div>
-                </div>
-            )
+            cell: ({ row }) => {
+                const loyalty = row.original;
+                if (loyalty.type.toUpperCase() === 'POINT') {
+                    return (
+                        <div className="text-center">
+                            <div className="text-sm font-medium text-yellow-600">
+                                {loyalty.progress.currentCollectedPoints || 0} points
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Available: {(loyalty.progress.currentAvailableReward || 0).toFixed(2)} AED
+                            </div>
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div className="text-center">
+                            <div className="text-sm font-medium">
+                                {loyalty.progress.currentCollectedStamps}/{loyalty.progress.totalRequired}
+                            </div>
+                            <div className="w-16 bg-gray-200 rounded-full h-1.5 mt-1">
+                                <div
+                                    className="bg-green-500 h-1.5 rounded-full"
+                                    style={{ width: `${loyalty.progress.progressPercentage}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    );
+                }
+            }
         },
         {
-            accessorKey: 'progress.availableRewards',
+            accessorKey: 'progress.currentAvailableReward',
             header: 'Rewards',
-            cell: ({ row }) => (
-                <div className="text-center">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        {row.original.progress.availableRewards}
-                    </span>
-                </div>
-            )
+            cell: ({ row }) => {
+                const loyalty = row.original;
+                if (loyalty.type.toUpperCase() === 'POINT') {
+                    return (
+                        <div className="text-center">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                {(loyalty.progress.currentAvailableReward || 0).toFixed(2)} AED
+                            </span>
+                        </div>
+                    );
+                } else {
+                    return (
+                        <div className="text-center">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                {loyalty.progress.currentAvailableReward}
+                            </span>
+                        </div>
+                    );
+                }
+            }
         },
         {
             accessorKey: 'type',
@@ -247,23 +373,40 @@ const LoyaltyCardScannerUI = ({
                                         );
                                     })()}
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-2xl font-bold text-green-600">
-                                        {scannedData.scannedLoyalty.progress.collectedStamps}
-                                    </span>
-                                    <span className="text-gray-600">
-                                        / {scannedData.scannedLoyalty.progress.totalRequired} stamps
-                                    </span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                    <div
-                                        className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                                        style={{ width: `${scannedData.scannedLoyalty.progress.progressPercentage}%` }}
-                                    ></div>
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                    {scannedData.scannedLoyalty.progress.availableRewards} rewards available
-                                </div>
+
+                                {scannedData.scannedLoyalty.type.toUpperCase() === 'POINT' ? (
+                                    <>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-2xl font-bold text-yellow-600">
+                                                {scannedData.scannedLoyalty.progress.currentCollectedPoints || 0}
+                                            </span>
+                                            <span className="text-gray-600">points</span>
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            Available Reward: {(scannedData.scannedLoyalty.progress.currentAvailableReward || 0).toFixed(2)} AED
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-2xl font-bold text-green-600">
+                                                {scannedData.scannedLoyalty.progress.currentCollectedStamps}
+                                            </span>
+                                            <span className="text-gray-600">
+                                                / {scannedData.scannedLoyalty.progress.totalRequired} stamps
+                                            </span>
+                                        </div>
+                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                            <div
+                                                className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                                                style={{ width: `${scannedData.scannedLoyalty.progress.progressPercentage}%` }}
+                                            ></div>
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {scannedData.scannedLoyalty.progress.currentAvailableReward} rewards available
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -288,7 +431,7 @@ const LoyaltyCardScannerUI = ({
                                 </div>
                                 <div className="text-center">
                                     <div className="text-xl font-bold text-purple-600">
-                                        {scannedData.summary.totalLifetimeStamps}
+                                        {scannedData.summary.totalStampsAcrossPrograms}
                                     </div>
                                     <div className="text-xs text-gray-600">Total Stamps</div>
                                 </div>
@@ -302,52 +445,84 @@ const LoyaltyCardScannerUI = ({
                         </div>
                     </div>
 
-                    {/* Action Buttons for Scanned Card */}
                     <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="text-lg font-semibold mb-3 text-gray-800">Scanned Card Actions</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <AnimatedButton
-                                onClick={handleAddStamp}
-                                disabled={loading || !scannedData.scannedLoyalty.actions.canAddStamp}
-                                loading={loading}
-                                icon={Plus}
-                                variant="primary"
-                                size="lg"
-                                className="w-full h-12 text-base font-medium"
-                            >
-                                Add Stamp
-                            </AnimatedButton>
+                        {scannedData && scannedData.scannedLoyalty.type.toUpperCase() === 'POINT' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <AnimatedButton
+                                    onClick={() => setShowAddPointsModal(true)}
+                                    disabled={loading}
+                                    loading={isLogSpendingLoading}
+                                    icon={DollarSign}
+                                    variant="primary"
+                                    size="lg"
+                                    className="w-full h-12 text-base font-medium"
+                                >
+                                    Log Spending
+                                </AnimatedButton>
 
-                            <AnimatedButton
-                                onClick={() => setShowRemoveConfirm(true)}
-                                disabled={loading || !canRemoveStamp}
-                                loading={isRemoveStampLoading}
-                                icon={Minus}
-                                variant="warning"
-                                size="lg"
-                                className="w-full h-12 text-base font-medium"
-                            >
-                                Remove Stamp
-                                {!canRemoveStamp && (
-                                    <span className="ml-1 text-xs">(No stamps)</span>
-                                )}
-                            </AnimatedButton>
+                                <AnimatedButton
+                                    onClick={() => setShowRedeemPointsModal(true)}
+                                    // disabled={loading || (scannedData.scannedLoyalty.progress.currentCollectedPoints || 0) <= 0}
+                                    loading={isRedeemPointsLoading}
+                                    icon={Coins}
+                                    variant="secondary"
+                                    size="lg"
+                                    className="w-full h-12 text-base font-medium"
+                                >
+                                    Redeem Points
+                                    {(scannedData.scannedLoyalty.progress.currentCollectedPoints || 0) <= 0 && (
+                                        <span className="ml-1 text-xs">(No points)</span>
+                                    )}
+                                </AnimatedButton>
+                            </div>
+                        )}
 
-                            <AnimatedButton
-                                onClick={handleRedeemReward}
-                                disabled={loading || !scannedData.scannedLoyalty.actions.canRedeemReward}
-                                loading={loading}
-                                icon={Gift}
-                                variant="secondary"
-                                size="lg"
-                                className="w-full h-12 text-base font-medium"
-                            >
-                                Redeem Reward
-                                {!scannedData.scannedLoyalty.actions.canRedeemReward && (
-                                    <span className="ml-1 text-xs">(No rewards)</span>
-                                )}
-                            </AnimatedButton>
-                        </div>
+                        {scannedData && scannedData.scannedLoyalty.type.toUpperCase() === 'PRODUCT' && (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <AnimatedButton
+                                    onClick={handleAddStamp}
+                                    disabled={loading || !scannedData.scannedLoyalty.actions.canAddStamp}
+                                    loading={loading}
+                                    icon={Plus}
+                                    variant="primary"
+                                    size="lg"
+                                    className="w-full h-12 text-base font-medium"
+                                >
+                                    Add Stamp
+                                </AnimatedButton>
+
+                                <AnimatedButton
+                                    onClick={() => setShowRemoveConfirm(true)}
+                                    disabled={loading || !canRemoveStamp}
+                                    loading={isRemoveStampLoading}
+                                    icon={Minus}
+                                    variant="warning"
+                                    size="lg"
+                                    className="w-full h-12 text-base font-medium"
+                                >
+                                    Remove Stamp
+                                    {!canRemoveStamp && (
+                                        <span className="ml-1 text-xs">(No stamps)</span>
+                                    )}
+                                </AnimatedButton>
+
+                                <AnimatedButton
+                                    onClick={handleRedeemReward}
+                                    disabled={loading || !scannedData.scannedLoyalty.actions.canRedeemReward}
+                                    loading={loading}
+                                    icon={Gift}
+                                    variant="secondary"
+                                    size="lg"
+                                    className="w-full h-12 text-base font-medium"
+                                >
+                                    Redeem Reward
+                                    {!scannedData.scannedLoyalty.actions.canRedeemReward && (
+                                        <span className="ml-1 text-xs">(No rewards)</span>
+                                    )}
+                                </AnimatedButton>
+                            </div>
+                        )}
                     </div>
 
                     {/* All Loyalty Programs Table */}
@@ -361,6 +536,194 @@ const LoyaltyCardScannerUI = ({
                             isLoading={false}
                             onView={handleLoyaltyView}
                         />
+                    </div>
+                </div>
+            )}
+
+            {/* Add Points Modal */}
+            {showAddPointsModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                        <h3 className="text-lg font-semibold mb-4 text-green-800 flex items-center">
+                            <DollarSign className="mr-2" size={20} />
+                            Log Customer Spending
+                        </h3>
+
+                        <div className="mb-4">
+                            <AnimatedInput
+                                label="Spending Amount (AED)"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={spendingAmount}
+                                onChange={setSpendingAmount}
+                                placeholder="Enter amount spent by customer"
+                                icon={DollarSign}
+                            />
+
+                            {spendingAmount && scannedData?.scannedLoyalty?.program && (
+                                <div className="mt-2 p-3 bg-green-50 rounded-lg">
+                                    <div className="text-sm text-green-800">
+                                        <div className="font-medium">Points to be earned:</div>
+                                        <div className="text-lg font-bold">
+                                            {calculatePointsFromAmount(spendingAmount)} points
+                                        </div>
+                                        <div className="text-xs text-gray-600 mt-1">
+                                            Rate: {(scannedData.scannedLoyalty.program.rewardPoints / scannedData.scannedLoyalty.program.spendingAmount).toFixed(4)} points per AED
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex gap-3">
+                            <AnimatedButton
+                                onClick={() => {
+                                    setShowAddPointsModal(false);
+                                    setSpendingAmount('');
+                                }}
+                                variant="outline"
+                                size="md"
+                                className="flex-1"
+                            >
+                                Cancel
+                            </AnimatedButton>
+                            <AnimatedButton
+                                onClick={handleAddPointsConfirm}
+                                disabled={isLogSpendingLoading || !spendingAmount || parseFloat(spendingAmount) <= 0}
+                                loading={isLogSpendingLoading}
+                                variant="primary"
+                                size="md"
+                                className="flex-1"
+                            >
+                                Add Points
+                            </AnimatedButton>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Redeem Points Modal */}
+            {showRedeemPointsModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                        <h3 className="text-lg font-semibold mb-4 text-yellow-800 flex items-center">
+                            <Coins className="mr-2" size={20} />
+                            Redeem Points
+                        </h3>
+
+                        <div className="mb-4">
+                            <div className="bg-yellow-50 p-3 rounded-lg mb-4">
+                                <div className="text-sm text-yellow-800">
+                                    <div className="font-medium">Available Points:</div>
+                                    <div className="text-lg font-bold">
+                                        {scannedData?.scannedLoyalty?.progress?.currentCollectedPoints || 0} points
+                                    </div>
+                                    <div className="text-xs text-gray-600 mt-1">
+                                        Current Reward Value: {(scannedData?.scannedLoyalty?.progress?.currentAvailableReward || 0).toFixed(2)} AED
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mb-4">
+                                <div className="flex gap-2 mb-3">
+                                    <button
+                                        onClick={() => setRedeemByAmount(false)}
+                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${!redeemByAmount
+                                            ? 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
+                                            : 'bg-gray-100 text-gray-600 border-2 border-gray-200'
+                                            }`}
+                                    >
+                                        By Points
+                                    </button>
+                                    <button
+                                        onClick={() => setRedeemByAmount(true)}
+                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${redeemByAmount
+                                            ? 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
+                                            : 'bg-gray-100 text-gray-600 border-2 border-gray-200'
+                                            }`}
+                                    >
+                                        By Amount
+                                    </button>
+                                </div>
+
+                                {!redeemByAmount ? (
+                                    <>
+                                        <AnimatedInput
+                                            label="Points to Redeem"
+                                            type="number"
+                                            min="1"
+                                            max={scannedData?.scannedLoyalty?.progress?.currentCollectedPoints || 0}
+                                            value={pointsToRedeem}
+                                            onChange={setPointsToRedeem}
+                                            placeholder="Enter number of points"
+                                            icon={Coins}
+                                        />
+
+                                        {pointsToRedeem && scannedData?.scannedLoyalty?.program && (
+                                            <div className="mt-2 p-3 bg-yellow-50 rounded-lg">
+                                                <div className="text-sm text-yellow-800">
+                                                    <div className="font-medium">Reward Amount:</div>
+                                                    <div className="text-lg font-bold">
+                                                        {calculateRewardFromPoints(pointsToRedeem)} AED
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <AnimatedInput
+                                            label="Reward Amount (AED)"
+                                            type="number"
+                                            step="0.01"
+                                            min="0.01"
+                                            value={redeemAmount}
+                                            onChange={setRedeemAmount}
+                                            placeholder="Enter reward amount"
+                                            icon={DollarSign}
+                                        />
+
+                                        {redeemAmount && scannedData?.scannedLoyalty?.program && (
+                                            <div className="mt-2 p-3 bg-yellow-50 rounded-lg">
+                                                <div className="text-sm text-yellow-800">
+                                                    <div className="font-medium">Points Required:</div>
+                                                    <div className="text-lg font-bold">
+                                                        {calculatePointsFromReward(redeemAmount)} points
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <AnimatedButton
+                                onClick={() => {
+                                    setShowRedeemPointsModal(false);
+                                    setPointsToRedeem('');
+                                    setRedeemAmount('');
+                                    setRedeemByAmount(false);
+                                }}
+                                variant="outline"
+                                size="md"
+                                className="flex-1"
+                            >
+                                Cancel
+                            </AnimatedButton>
+                            <AnimatedButton
+                                onClick={handleRedeemPointsConfirm}
+                                disabled={isRedeemPointsLoading || (!pointsToRedeem && !redeemAmount)}
+                                loading={isRedeemPointsLoading}
+                                variant="primary"
+                                size="md"
+                                className="flex-1"
+                            >
+                                Redeem
+                            </AnimatedButton>
+                        </div>
                     </div>
                 </div>
             )}
@@ -389,23 +752,40 @@ const LoyaltyCardScannerUI = ({
                                 <span className="ml-2 capitalize">{selectedLoyalty.type.toLowerCase()}</span>
                             </div>
 
-                            <div>
-                                <span className="font-medium">Progress:</span>
-                                <span className="ml-2">
-                                    {selectedLoyalty.progress.collectedStamps}/{selectedLoyalty.progress.totalRequired}
-                                    ({selectedLoyalty.progress.progressPercentage}%)
-                                </span>
-                            </div>
-
-                            <div>
-                                <span className="font-medium">Available Rewards:</span>
-                                <span className="ml-2">{selectedLoyalty.progress.availableRewards}</span>
-                            </div>
-
-                            <div>
-                                <span className="font-medium">Total Stamps Collected:</span>
-                                <span className="ml-2">{selectedLoyalty.progress.totalStampsCollected}</span>
-                            </div>
+                            {selectedLoyalty.type.toUpperCase() === 'POINT' ? (
+                                <>
+                                    <div>
+                                        <span className="font-medium">Current Points:</span>
+                                        <span className="ml-2">{selectedLoyalty.progress.currentCollectedPoints || 0}</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">Available Reward:</span>
+                                        <span className="ml-2">{(selectedLoyalty.progress.currentAvailableReward || 0).toFixed(2)} AED</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">Total Points Collected:</span>
+                                        <span className="ml-2">{selectedLoyalty.progress.totalCollectedPoints || 0}</span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div>
+                                        <span className="font-medium">Progress:</span>
+                                        <span className="ml-2">
+                                            {selectedLoyalty.progress.currentCollectedStamps}/{selectedLoyalty.progress.totalRequired}
+                                            ({selectedLoyalty.progress.progressPercentage}%)
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">Available Rewards:</span>
+                                        <span className="ml-2">{selectedLoyalty.progress.currentAvailableReward}</span>
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">Total Stamps Collected:</span>
+                                        <span className="ml-2">{selectedLoyalty.progress.totalCollectedStamps}</span>
+                                    </div>
+                                </>
+                            )}
 
                             <div>
                                 <span className="font-medium">Total Rewards Earned:</span>
