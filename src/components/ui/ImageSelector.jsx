@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { MdFileUpload, MdClose, MdCrop, MdCheck, MdImage } from "react-icons/md";
@@ -8,7 +9,7 @@ const ImageSelector = ({
     value,
     onChange,
     onBlobChange,
-    aspectRatio = 1, // Default to square (1:1)
+    aspectRatio,
     error,
     required = false,
     placeholder = "Upload an image",
@@ -60,9 +61,7 @@ const ImageSelector = ({
         };
     }, [cropModalOpen]);
 
-    const handleUploadClick = (e) => {
-        e.preventDefault(); // Prevent form submission
-        e.stopPropagation(); // Stop event bubbling
+    const handleUploadClick = () => {
         fileInputRef.current?.click();
         setIsAnimating(true);
         setTimeout(() => setIsAnimating(false), 150);
@@ -144,8 +143,7 @@ const ImageSelector = ({
     };
 
     const handleRemoveImage = (e) => {
-        e?.preventDefault(); // Prevent form submission
-        e?.stopPropagation(); // Stop event bubbling
+        e?.stopPropagation(); // Prevent any parent click handlers
 
         // Clean up the existing blob URL to prevent memory leaks
         if (value && value.startsWith('blob:')) {
@@ -330,7 +328,6 @@ const ImageSelector = ({
                         </span>
                     </h3>
                     <button
-                        type="button"
                         onClick={() => {
                             setCropModalOpen(false);
                             setCurrentImageToCrop(null);
@@ -468,7 +465,6 @@ const ImageSelector = ({
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
                                 <AnimatedButton
-                                    type="button"
                                     size="sm"
                                     variant="secondary"
                                     onClick={handleUploadClick}
@@ -477,10 +473,12 @@ const ImageSelector = ({
                                     Change
                                 </AnimatedButton>
                                 <AnimatedButton
-                                    type="button"
                                     size="sm"
                                     variant="secondary"
-                                    onClick={handleRemoveImage}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleRemoveImage(e);
+                                    }}
                                     className="bg-red-500 bg-opacity-90 text-white hover:bg-red-600 hover:bg-opacity-100"
                                     icon={MdClose}
                                 >

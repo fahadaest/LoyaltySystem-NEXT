@@ -1,15 +1,36 @@
 import React, { useRef, useState, useEffect } from "react";
-import { MdAdd, MdDriveFileRenameOutline, MdDescription, MdPhotoSizeSelectActual, MdCategory, MdInfo, MdImage } from "react-icons/md";
-import { Package, Edit3, Image as ImageIcon } from "lucide-react";
+import { MdAdd, MdDriveFileRenameOutline, MdDescription, MdPhotoSizeSelectActual, MdCategory, MdInfo, MdImage, MdAttachMoney } from "react-icons/md";
+import { Package, Edit3, Image as ImageIcon, DollarSign } from "lucide-react";
 import Button from "components/button/Button";
 import ImageSelector from "components/ui/ImageSelector";
 import AnimatedInput from "components/ui/AnimatedInput";
 import AnimatedSelect from "components/ui/AnimatedSelect";
+import AnimatedPriceField from "components/ui/AnimatedPriceField";
 import FormSection from "components/ui/FormSection";
 import AnimatedButton from "components/ui/AnimatedButton";
 import { AnimatedCard, AnimatedCardContent } from "components/ui/AnimatedCard";
 
-const AddProductForm = ({ productName, setProductName, description, setDescription, size, setSize, previewImage, setPreviewImage, imageBlob, setImageBlob, sizeOptions, selectedProduct, isLoading, onSubmit, onClose, }) => {
+const AddProductForm = ({
+  productName,
+  setProductName,
+  description,
+  setDescription,
+  price,
+  setPrice,
+  currency,
+  setCurrency,
+  size,
+  setSize,
+  previewImage,
+  setPreviewImage,
+  imageBlob,
+  setImageBlob,
+  sizeOptions,
+  selectedProduct,
+  isLoading,
+  onSubmit,
+  onClose
+}) => {
   const canvasRef = useRef(null);
   const [errors, setErrors] = useState({});
   const [isVisible, setIsVisible] = useState(false);
@@ -21,7 +42,6 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
     return () => clearTimeout(timer);
   }, []);
 
-  // Validation logic
   const validateField = (key, value) => {
     switch (key) {
       case 'productName':
@@ -31,6 +51,12 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
       case 'description':
         if (!value?.trim()) return 'Product description is required';
         if (value.trim().length < 10) return 'Description must be at least 10 characters';
+        return '';
+      case 'price':
+        if (!value?.trim()) return 'Price is required';
+        const numPrice = parseFloat(value);
+        if (isNaN(numPrice) || numPrice <= 0) return 'Price must be a positive number';
+        if (numPrice > 999999.99) return 'Price cannot exceed $999,999.99';
         return '';
       case 'size':
         if (!value) return 'Please select a product size';
@@ -50,6 +76,17 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
     }
   };
 
+  const handlePriceChange = (value) => {
+    setPrice(value);
+    if (errors.price) {
+      setErrors(prev => ({ ...prev, price: '' }));
+    }
+  };
+
+  const handleCurrencyChange = (currencyCode) => {
+    setCurrency(currencyCode);
+  };
+
   const handleImageChange = (imageUrl, blob) => {
     setPreviewImage(imageUrl);
     setImageBlob(blob);
@@ -66,6 +103,7 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
     const fields = [
       { key: 'productName', value: productName },
       { key: 'description', value: description },
+      { key: 'price', value: price },
       { key: 'size', value: size },
       { key: 'image', value: previewImage }
     ];
@@ -96,7 +134,6 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
         <AnimatedCardContent>
           <form onSubmit={handleSubmit} className="space-y-8 p-3">
 
-            {/* Basic Information Section */}
             <FormSection
               title="Basic Information"
               icon={Edit3}
@@ -104,7 +141,7 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
               isVisible={isVisible}
             >
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <AnimatedInput
                     label="Product Name"
                     icon={MdDriveFileRenameOutline}
@@ -112,6 +149,18 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
                     onChange={(value) => handleInputChange('productName', value, setProductName)}
                     placeholder="Enter your product name"
                     error={errors.productName}
+                    required
+                  />
+
+                  <AnimatedPriceField
+                    label="Price"
+                    icon={MdAttachMoney}
+                    value={price}
+                    currency={currency}
+                    onPriceChange={handlePriceChange}
+                    onCurrencyChange={handleCurrencyChange}
+                    placeholder="0.00"
+                    error={errors.price}
                     required
                   />
 
@@ -127,7 +176,6 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
                   />
                 </div>
 
-                {/* Updated grid layout: 2/3 width for description, 1/3 width for image */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
                     <div className="flex items-center gap-2 mb-3">
@@ -175,12 +223,12 @@ const AddProductForm = ({ productName, setProductName, description, setDescripti
                       value={previewImage}
                       onChange={handleImageChange}
                       onBlobChange={setImageBlob}
-                      aspectRatio={1.2}
+                      aspectRatio={4 / 3}
                       error={errors.image}
                       placeholder="Upload product image"
                       maxWidth={400}
                       maxHeight={300}
-                      quality={0.9}
+                      quality={0.9} s
                       required
                     />
                   </div>

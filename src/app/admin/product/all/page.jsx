@@ -20,25 +20,23 @@ const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch();
 
-  // Product queries and mutations
   const { data: products, error, isLoading, refetch } = useGetAllProductsQuery();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const { data: productSizes, error: productSizesError, isLoading: productSizesLoading } = useGetAllProductSizesQuery(undefined);
 
-  // Modal and selection states
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [deleteItemId, setDeleteItemId] = useState(null);
 
-  // Form states (moved from AddProductForm)
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
+  const [currency, setCurrency] = useState('');
+  const [price, setPrice] = useState('');
   const [size, setSize] = useState('');
   const [previewImage, setPreviewImage] = useState(null);
   const [imageBlob, setImageBlob] = useState(null);
 
-  // Derived data
   const sizeOptions = productSizes ? productSizes.map((option) => ({
     value: option.id,
     label: option.size,
@@ -48,23 +46,23 @@ const Dashboard = () => {
     refetch();
   }, [refetch]);
 
-  // Reset form states
   const resetFormStates = () => {
     setProductName('');
     setDescription('');
+    setPrice('');
     setSize('');
     setPreviewImage(null);
     setImageBlob(null);
   };
 
-  // Populate form states when editing
   const populateFormStates = (product) => {
     setProductName(product.name);
     setDescription(product.description);
+    setPrice(product.price ? product.price.toString() : '');
     setSize(product.size ? product.size.id : '');
     const fullImageUrl = getImageUrl(product?.image);
     setPreviewImage(fullImageUrl || null);
-    setImageBlob(null); // Reset image blob for editing
+    setImageBlob(null);
   };
 
   const handleEdit = (product) => {
@@ -102,9 +100,8 @@ const Dashboard = () => {
     onClose();
   };
 
-  // Create product handler
   const handleCreateProduct = async () => {
-    if (!productName || !description || !size || !imageBlob) {
+    if (!productName || !description || !price || !size || !imageBlob) {
       dispatch(showAlert({ message: 'Please fill out all fields and upload an image.', severity: 'error', duration: 2000 }));
       return;
     }
@@ -112,6 +109,7 @@ const Dashboard = () => {
     const formData = new FormData();
     formData.append('name', productName);
     formData.append('description', description);
+    formData.append('price', price);
     formData.append('sizeId', size);
     formData.append('image', imageBlob, 'product.jpg');
 
@@ -125,9 +123,8 @@ const Dashboard = () => {
     }
   };
 
-  // Update product handler
   const handleUpdateProduct = async () => {
-    if (!productName || !description || !size) {
+    if (!productName || !description || !price || !size) {
       dispatch(showAlert({ message: 'Please fill out all fields.', severity: 'error', duration: 2000 }));
       return;
     }
@@ -135,6 +132,7 @@ const Dashboard = () => {
     const formData = new FormData();
     formData.append('name', productName);
     formData.append('description', description);
+    formData.append('price', price);
     formData.append('sizeId', size);
 
     if (imageBlob) {
@@ -161,13 +159,13 @@ const Dashboard = () => {
     }
   };
 
-  // Form props to pass to AddProductForm
   const formProps = {
-    // Form states
     productName,
     setProductName,
     description,
     setDescription,
+    price,
+    setPrice,
     size,
     setSize,
     previewImage,
@@ -194,7 +192,7 @@ const Dashboard = () => {
           <HeaderButton
             icon={MdAdd}
             text="Add Product"
-            size="lg"
+            size="md"
             color="bg-brandGreen"
             onClick={handleAddProduct}
           />
@@ -202,7 +200,7 @@ const Dashboard = () => {
       </div>
 
       <div className="">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 z-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 z-20">
           {isLoading ? (
             <div className="flex justify-center items-center min-h-screen">
               <CircularProgress style={{ color: "#36a18f" }} />
