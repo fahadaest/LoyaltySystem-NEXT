@@ -170,13 +170,13 @@ const superAdminroutes = [
 ];
 
 const salesRoutes = [
-  {
-    heading: 'Dashboard',
-    name: 'Dashboard',
-    icon: <MdDashboard className="h-6 w-6" />,
-    layout: '/sales',
-    path: 'dashboard',
-  },
+  // {
+  //   heading: 'Dashboard',
+  //   name: 'Dashboard',
+  //   icon: <MdDashboard className="h-6 w-6" />,
+  //   layout: '/sales',
+  //   path: 'dashboard',
+  // },
   {
     heading: 'Sales',
     name: 'Scan Card',

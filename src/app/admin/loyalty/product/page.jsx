@@ -366,7 +366,7 @@ const Dashboard = () => {
             <HeaderButton
               icon={MdAdd}
               text="Add New Loyalty"
-              size="lg"
+              size="md"
               color="bg-brandGreen"
               onClick={handleOpenAddModal}
               disabled={isLoading}
