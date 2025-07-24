@@ -140,6 +140,9 @@ export const SidebarLinks = ({ routes, }: { routes: RoutesType[]; }): JSX.Elemen
                       : 'text-white hover:bg-white/10'
                     }`}
                 >
+                  <span className="flex h-5 w-5 items-center justify-center text-lg">
+                    {route.icon}
+                  </span>
                   <p className="ml-4">{route.name}</p>
                 </li>
               </div>
@@ -152,7 +155,11 @@ export const SidebarLinks = ({ routes, }: { routes: RoutesType[]; }): JSX.Elemen
     });
   };
 
-  return <div className="space-y-1 px-4">{createLinks(routes)}</div>;
+  return (
+    <div className="space-y-1 px-4 pb-6">
+      {createLinks(routes)}
+    </div>
+  );
 };
 
 export default SidebarLinks;

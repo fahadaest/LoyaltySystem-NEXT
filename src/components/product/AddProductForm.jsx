@@ -223,12 +223,12 @@ const AddProductForm = ({
                       value={previewImage}
                       onChange={handleImageChange}
                       onBlobChange={setImageBlob}
-                      aspectRatio={4 / 3}
+                      aspectRatio={1.3}
                       error={errors.image}
                       placeholder="Upload product image"
                       maxWidth={400}
                       maxHeight={300}
-                      quality={0.9} s
+                      quality={0.9}
                       required
                     />
                   </div>

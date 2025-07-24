@@ -24,7 +24,7 @@ const ImageSelector = ({
     const [crop, setCrop] = useState({
         unit: '%',
         width: 60,
-        height: 60 / aspectRatio,
+        height: 60,
         x: 20,
         y: 20
     });
@@ -33,6 +33,7 @@ const ImageSelector = ({
     const [isResizing, setIsResizing] = useState(null);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [isAnimating, setIsAnimating] = useState(false);
+    const [imageNaturalDimensions, setImageNaturalDimensions] = useState({ width: 0, height: 0 });
 
     const fileInputRef = useRef(null);
     const canvasRef = useRef(null);
@@ -40,13 +41,57 @@ const ImageSelector = ({
     const hasError = !!error;
     const hasValue = value && value.trim() !== '';
 
-    // Reset crop dimensions when aspect ratio changes
+    console.log("crop-----> ", crop)
+
+    // Calculate proper crop dimensions based on aspect ratio and image dimensions
+    const calculateCropDimensions = (imageWidth, imageHeight, aspectRatio) => {
+        const imageAspectRatio = imageWidth / imageHeight;
+
+        let cropWidth, cropHeight;
+
+        if (imageAspectRatio > aspectRatio) {
+            // Image is wider than desired aspect ratio
+            // Base crop size on image height
+            cropHeight = Math.min(60, (imageHeight / Math.max(imageWidth, imageHeight)) * 100);
+            cropWidth = cropHeight * aspectRatio * (imageHeight / imageWidth);
+        } else {
+            // Image is taller than desired aspect ratio
+            // Base crop size on image width
+            cropWidth = Math.min(60, (imageWidth / Math.max(imageWidth, imageHeight)) * 100);
+            cropHeight = cropWidth / aspectRatio * (imageWidth / imageHeight);
+        }
+
+        return {
+            width: Math.min(cropWidth, 80), // Max 80% of image
+            height: Math.min(cropHeight, 80), // Max 80% of image
+            x: Math.max(10, (100 - cropWidth) / 2), // Center horizontally
+            y: Math.max(10, (100 - cropHeight) / 2) // Center vertically
+        };
+    };
+
     useEffect(() => {
-        setCrop(prev => ({
-            ...prev,
-            height: prev.width / aspectRatio
-        }));
-    }, [aspectRatio]);
+        if (imageNaturalDimensions.width && imageNaturalDimensions.height && aspectRatio) {
+            const newCropDimensions = calculateCropDimensions(
+                imageNaturalDimensions.width,
+                imageNaturalDimensions.height,
+                aspectRatio
+            );
+
+            setCrop(prev => {
+                // Only update if the new dimensions are significantly different
+                const widthDiff = Math.abs(prev.width - newCropDimensions.width);
+                const heightDiff = Math.abs(prev.height - newCropDimensions.height);
+
+                if (widthDiff > 1 || heightDiff > 1) {
+                    return {
+                        ...prev,
+                        ...newCropDimensions
+                    };
+                }
+                return prev;
+            });
+        }
+    }, [aspectRatio, imageNaturalDimensions.width, imageNaturalDimensions.height]);
 
     // Prevent body scroll when modal is open
     useEffect(() => {
@@ -74,14 +119,6 @@ const ImageSelector = ({
             reader.onload = (e) => {
                 setCurrentImageToCrop({ file, src: e.target.result, name: file.name });
                 setCropModalOpen(true);
-                // Reset crop to default position
-                setCrop({
-                    unit: '%',
-                    width: 60,
-                    height: 60 / aspectRatio,
-                    x: 20,
-                    y: 20
-                });
             };
             reader.readAsDataURL(file);
         }
@@ -90,6 +127,18 @@ const ImageSelector = ({
 
     const onImageLoadCallback = useCallback((img) => {
         cropImageRef.current = img;
+        if (img && img.naturalWidth && img.naturalHeight) {
+            setImageNaturalDimensions(prev => {
+                // Only update if dimensions actually changed
+                if (prev.width !== img.naturalWidth || prev.height !== img.naturalHeight) {
+                    return {
+                        width: img.naturalWidth,
+                        height: img.naturalHeight
+                    };
+                }
+                return prev;
+            });
+        }
     }, []);
 
     const getCroppedImg = (image, crop) => {
@@ -143,14 +192,12 @@ const ImageSelector = ({
     };
 
     const handleRemoveImage = (e) => {
-        e?.stopPropagation(); // Prevent any parent click handlers
+        e?.stopPropagation();
 
-        // Clean up the existing blob URL to prevent memory leaks
         if (value && value.startsWith('blob:')) {
             URL.revokeObjectURL(value);
         }
 
-        // Clear both the URL and blob
         onChange('');
         if (onBlobChange) {
             onBlobChange(null);
@@ -205,7 +252,7 @@ const ImageSelector = ({
             }));
         }
 
-        if (isResizing) {
+        if (isResizing && imageNaturalDimensions.width && imageNaturalDimensions.height) {
             const deltaX = mouseX - dragStart.x;
             const deltaY = mouseY - dragStart.y;
 
@@ -214,27 +261,31 @@ const ImageSelector = ({
             let newX = crop.x;
             let newY = crop.y;
 
+            // Calculate the actual aspect ratio correction factor based on image dimensions
+            const imageAspectRatio = imageNaturalDimensions.width / imageNaturalDimensions.height;
+            const aspectRatioCorrection = aspectRatio / imageAspectRatio;
+
             if (isResizing === 'se') {
                 newWidth = Math.max(10, Math.min(crop.width + deltaX, 100 - crop.x));
-                newHeight = newWidth / aspectRatio;
+                newHeight = newWidth / aspectRatioCorrection;
 
-                // Ensure height doesn't exceed boundaries
-                if (crop.y + newHeight > 100) {
+                // Ensure height doesn't exceed bounds
+                if (newHeight > 100 - crop.y) {
                     newHeight = 100 - crop.y;
-                    newWidth = newHeight * aspectRatio;
+                    newWidth = newHeight * aspectRatioCorrection;
                 }
             }
 
             if (isResizing === 'sw') {
                 const maxWidthChange = Math.min(deltaX, crop.x);
                 newWidth = Math.max(10, crop.width - maxWidthChange);
-                newHeight = newWidth / aspectRatio;
+                newHeight = newWidth / aspectRatioCorrection;
                 newX = crop.x + crop.width - newWidth;
 
-                // Ensure height doesn't exceed boundaries
-                if (crop.y + newHeight > 100) {
+                // Ensure height doesn't exceed bounds
+                if (newHeight > 100 - crop.y) {
                     newHeight = 100 - crop.y;
-                    newWidth = newHeight * aspectRatio;
+                    newWidth = newHeight * aspectRatioCorrection;
                     newX = crop.x + crop.width - newWidth;
                 }
             }
@@ -242,13 +293,13 @@ const ImageSelector = ({
             if (isResizing === 'ne') {
                 const maxHeightChange = Math.min(-deltaY, crop.y);
                 newHeight = Math.max(10, crop.height - maxHeightChange);
-                newWidth = newHeight * aspectRatio;
+                newWidth = newHeight * aspectRatioCorrection;
                 newY = crop.y + crop.height - newHeight;
 
-                // Ensure width doesn't exceed boundaries
-                if (crop.x + newWidth > 100) {
+                // Ensure width doesn't exceed bounds
+                if (newWidth > 100 - crop.x) {
                     newWidth = 100 - crop.x;
-                    newHeight = newWidth / aspectRatio;
+                    newHeight = newWidth / aspectRatioCorrection;
                     newY = crop.y + crop.height - newHeight;
                 }
             }
@@ -258,25 +309,30 @@ const ImageSelector = ({
                 const maxHeightChange = Math.min(-deltaY, crop.y);
 
                 newWidth = Math.max(10, crop.width - maxWidthChange);
-                newHeight = newWidth / aspectRatio;
-
-                // Check if the new height would exceed the available space
-                const availableHeight = crop.y + crop.height;
-                if (newHeight > availableHeight) {
-                    newHeight = availableHeight;
-                    newWidth = newHeight * aspectRatio;
-                }
+                newHeight = newWidth / aspectRatioCorrection;
 
                 newX = crop.x + crop.width - newWidth;
                 newY = crop.y + crop.height - newHeight;
+
+                // Adjust if exceeding bounds
+                if (newY < 0) {
+                    newY = 0;
+                    newHeight = crop.y + crop.height;
+                    newWidth = newHeight * aspectRatioCorrection;
+                    newX = crop.x + crop.width - newWidth;
+                }
             }
+
+            // Final bounds checking
+            newWidth = Math.min(newWidth, 100 - newX);
+            newHeight = Math.min(newHeight, 100 - newY);
 
             setCrop(prev => ({
                 ...prev,
-                width: newWidth,
-                height: newHeight,
-                x: newX,
-                y: newY
+                width: Math.max(10, newWidth),
+                height: Math.max(10, newHeight),
+                x: Math.max(0, newX),
+                y: Math.max(0, newY)
             }));
 
             setDragStart({ x: mouseX, y: mouseY });
@@ -300,7 +356,7 @@ const ImageSelector = ({
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDragging, isResizing, crop, aspectRatio]);
+    }, [isDragging, isResizing, crop, aspectRatio, imageNaturalDimensions]);
 
     // Modal component to render with createPortal
     const CropModal = () => (
@@ -308,7 +364,6 @@ const ImageSelector = ({
             className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
             style={{ zIndex: 999999 }}
             onClick={(e) => {
-                // Close modal if clicking on the backdrop
                 if (e.target === e.currentTarget) {
                     setCropModalOpen(false);
                     setCurrentImageToCrop(null);
@@ -317,7 +372,7 @@ const ImageSelector = ({
         >
             <div
                 className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-                onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-gray-700 dark:text-white flex items-center gap-2">
@@ -339,14 +394,17 @@ const ImageSelector = ({
                 </div>
 
                 {/* Image Crop Area */}
-                <div className="relative inline-block max-w-full mb-6">
-                    <img
-                        ref={onImageLoadCallback}
-                        src={currentImageToCrop?.src}
-                        alt="Crop preview"
-                        className="max-w-full max-h-[50vh] object-contain select-none rounded-lg"
-                        style={{ cursor: 'default' }}
-                    />
+                <div className="flex justify-center mb-6">
+                    <div className="relative">
+                        <img
+                            ref={onImageLoadCallback}
+                            src={currentImageToCrop?.src}
+                            alt="Crop preview"
+                            className="max-w-full max-h-[50vh] object-contain select-none rounded-lg"
+                            style={{ cursor: 'default' }}
+                        />
+                    </div>
+
 
                     {/* Crop Overlay */}
                     <div
@@ -377,6 +435,13 @@ const ImageSelector = ({
                             onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
                         ></div>
                     </div>
+                </div>
+
+                {/* Debug Info */}
+                <div className="text-xs text-gray-500 mb-4">
+                    <div>Image: {imageNaturalDimensions.width} × {imageNaturalDimensions.height}</div>
+                    <div>Crop: {crop.width.toFixed(1)}% × {crop.height.toFixed(1)}% at ({crop.x.toFixed(1)}%, {crop.y.toFixed(1)}%)</div>
+                    <div>Target Aspect Ratio: {aspectRatio.toFixed(2)}:1</div>
                 </div>
 
                 {/* Modal Actions */}

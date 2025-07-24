@@ -1,6 +1,27 @@
 import React from 'react';
-import { MdHome, MdInventory2, MdPeopleAlt, MdLoyalty, MdSupervisorAccount } from 'react-icons/md';
-import { MdOutlineSubscriptions, } from 'react-icons/md';
+import {
+  MdHome,
+  MdInventory2,
+  MdPeopleAlt,
+  MdLoyalty,
+  MdSupervisorAccount,
+  MdOutlineSubscriptions,
+  MdSettings,
+  MdCreditCard,
+  MdBarChart,
+  MdDashboard,
+  MdQrCodeScanner,
+  MdBusiness
+} from 'react-icons/md';
+import {
+  FaBox,
+  FaThLarge,
+  FaCreditCard,
+  FaUsers,
+  FaBriefcase,
+  FaBuilding,
+  FaCog
+} from 'react-icons/fa';
 
 const routes = [
   {
@@ -8,12 +29,12 @@ const routes = [
     name: 'Main Dashboard',
     layout: '/admin',
     path: 'dashboard',
-    icon: <MdHome className="h-6 w-6" />,
+    icon: <MdBarChart className="h-6 w-6" />,
   },
   {
     heading: 'Product & Loyalties',
     name: 'Products',
-    icon: <MdInventory2 className="h-6 w-6" />,
+    icon: <FaBox className="h-6 w-6" />,
     layout: '/admin/product',
     path: '',
     showDivider: false,
@@ -34,7 +55,7 @@ const routes = [
   },
   {
     name: 'Loyalty',
-    icon: <MdLoyalty className="h-6 w-6" />,
+    icon: <FaThLarge className="h-6 w-6" />,
     layout: '/admin/loyalty',
     path: '',
     showDivider: false,
@@ -55,7 +76,7 @@ const routes = [
   },
   {
     name: 'Cards',
-    icon: <MdLoyalty className="h-6 w-6" />,
+    icon: <FaCreditCard className="h-6 w-6" />,
     layout: '/admin/walletCards',
     path: '',
     submenu: [
@@ -72,29 +93,29 @@ const routes = [
     name: 'Customers',
     layout: '/admin/customer',
     path: 'view',
-    icon: <MdPeopleAlt className="h-6 w-6" />,
+    icon: <FaUsers className="h-6 w-6" />,
     showDivider: false,
   },
   {
     name: 'Sales Person',
     layout: '/admin',
     path: 'sales-person',
-    icon: <MdSupervisorAccount className="h-6 w-6" />,
+    icon: <FaBriefcase className="h-6 w-6" />,
     showDivider: false,
   },
   {
     name: 'Managers',
     layout: '/admin',
     path: 'managers',
-    icon: <MdSupervisorAccount className="h-6 w-6" />,
-    showDivider: false,
+    icon: <FaBuilding className="h-6 w-6" />,
   },
   {
     heading: 'Settings',
     name: 'Settings',
-    icon: <MdLoyalty className="h-6 w-6" />,
+    icon: <FaCog className="h-6 w-6" />,
     layout: '/admin/settings',
     path: '',
+    showDivider: false,
     submenu: [
       {
         name: 'Wallet Address',
@@ -134,7 +155,7 @@ const superAdminroutes = [
   {
     heading: 'Admin',
     name: 'Manage Admin',
-    icon: <MdInventory2 className="h-6 w-6" />,
+    icon: <MdSupervisorAccount className="h-6 w-6" />,
     layout: '/superadmin',
     path: 'manage-admin',
   },
@@ -152,19 +173,18 @@ const salesRoutes = [
   {
     heading: 'Dashboard',
     name: 'Dashboard',
-    icon: <MdInventory2 className="h-6 w-6" />,
+    icon: <MdDashboard className="h-6 w-6" />,
     layout: '/sales',
     path: 'dashboard',
   },
   {
     heading: 'Sales',
     name: 'Scan Card',
-    icon: <MdInventory2 className="h-6 w-6" />,
+    icon: <MdQrCodeScanner className="h-6 w-6" />,
     layout: '/sales',
     path: 'card-scanner',
     showDivider: false,
   },
-
 ];
 
 export default { superAdminroutes, routes, salesRoutes };
