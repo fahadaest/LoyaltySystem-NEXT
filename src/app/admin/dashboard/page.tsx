@@ -18,24 +18,19 @@ import { useGetWidgetDataQuery } from 'store/apiEndPoints/dashboardApi';
 const Dashboard = () => {
   const { data: widgetsData, isLoading, error } = useGetWidgetDataQuery();
 
-  console.log("widgetsData", widgetsData);
-
-  // Handle loading state
   if (isLoading) {
     return <div className="p-4">Loading dashboard data...</div>;
   }
 
-  // Handle error state
   if (error) {
     return <div className="p-4 text-red-500">Error loading dashboard data</div>;
   }
 
-  // Extract data for easier access
   const data = widgetsData?.data;
 
   return (
     <div>
-      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 ">
+      <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 ">
         <Widget
           icon={<IoMdPeople className="h-5 w-5" />}
           title={'Total Customers'}
@@ -68,7 +63,7 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-5 ">
+      <div className="mt-3 grid grid-cols-1 gap-5 ">
         <CustomerAnalytics />
       </div>
 

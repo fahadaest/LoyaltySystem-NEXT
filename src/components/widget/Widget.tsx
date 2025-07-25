@@ -8,7 +8,7 @@ const Widget = (props: {
   const { icon, title, subtitle } = props;
 
   return (
-    <Card extra="!flex-row flex-grow gap-3 px-2 items-center rounded-[20px]">
+    <Card extra="!flex-row flex-grow gap-3 px-2 items-center rounded-[10px]">
       <div className=" flex h-[80px] w-auto flex-row items-center">
         <div className="rounded-full bg-lightPrimary p-2.5 dark:bg-navy-700 flex-shrink-0">
           <span className="flex items-center text-brandGreen dark:text-white">
