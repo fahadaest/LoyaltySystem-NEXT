@@ -18,6 +18,8 @@ import { useGetWidgetDataQuery } from 'store/apiEndPoints/dashboardApi';
 const Dashboard = () => {
   const { data: widgetsData, isLoading, error } = useGetWidgetDataQuery();
 
+  console.log("tableDataComplex", tableDataComplex)
+
   if (isLoading) {
     return <div className="p-4">Loading dashboard data...</div>;
   }
@@ -67,15 +69,15 @@ const Dashboard = () => {
         <CustomerAnalytics />
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-1">
         <div>
-          <CheckTable tableData={tableDataCheck} />
+          <ComplexTable />
         </div>
 
-        <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
+        {/* <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
           <DailyTraffic />
           <PieChartCard />
-        </div>
+        </div> */}
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5">
@@ -83,7 +85,7 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <ComplexTable tableData={tableDataComplex} />
+        <CheckTable tableData={tableDataCheck} />
         <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
           <TaskCard />
           <div className="grid grid-cols-1 rounded-[20px]">

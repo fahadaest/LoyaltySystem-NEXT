@@ -10,6 +10,16 @@ interface GrowthAnalyticsParams {
     endDate?: string;
 }
 
+interface TopCustomersParams {
+    filter?: 'today' | 'week' | 'month' | 'year';
+    startDate?: string;
+    endDate?: string;
+    isPointCustomers?: boolean;
+    isProductCustomers?: boolean;
+    isAllCustomers?: boolean;
+    limit?: number;
+}
+
 interface WidgetDataResponse {
     data: any;
     totalCustomers: number;
@@ -17,6 +27,23 @@ interface WidgetDataResponse {
     totalLoyaltyPrograms: number;
     totalCustomWalletCards: number;
 }
+
+interface Customer {
+    customerId: number;
+    customerName: string;
+    email: string;
+    phoneNumber: string;
+    spendingAmount: number;
+    totalCollectedStamps: number;
+    currentAvailableReward: number;
+    totalRewardsEarned: number;
+    loyaltyPrograms: Array<{
+        type: "POINT" | "PRODUCT";
+        loyaltyId: number;
+    }>;
+}
+
+type TopCustomersResponse = Customer[];
 
 export const dashboardApi = createApi({
     reducerPath: 'dashboardApi',
@@ -31,7 +58,7 @@ export const dashboardApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ['DashboardGrowth', 'DashboardWidgets'],
+    tagTypes: ['DashboardGrowth', 'DashboardWidgets', 'TopCustomers'],
     endpoints: (builder) => ({
         getGrowthAnalytics: builder.query({
             query: (params: GrowthAnalyticsParams = {}) => ({
@@ -50,10 +77,22 @@ export const dashboardApi = createApi({
             }),
             providesTags: ['DashboardWidgets'],
         }),
+        getTopCustomers: builder.query<Customer[], TopCustomersParams>({
+            query: (params: TopCustomersParams = {}) => ({
+                url: '/dashboard/top-customers',
+                params: {
+                    ...Object.fromEntries(
+                        Object.entries(params).filter(([_, value]) => value !== undefined && value !== '')
+                    )
+                }
+            }),
+            providesTags: ['TopCustomers'],
+        }),
     }),
 });
 
 export const {
     useGetGrowthAnalyticsQuery,
     useGetWidgetDataQuery,
+    useGetTopCustomersQuery,
 } = dashboardApi;
