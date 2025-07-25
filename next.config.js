@@ -16,10 +16,9 @@ const nextConfig = {
       'i.ibb.co',
       'scontent.fotp8-1.fna.fbcdn.net',
     ],
-    // Make ENV
     unoptimized: true,
   },
-  output: 'export',
+  ...(process.env.NODE_ENV === 'production' && { output: 'export' }),
 };
 
 module.exports = nextConfig;

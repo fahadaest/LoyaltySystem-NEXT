@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { MdExpandMore, MdExpandLess, MdCheckBox, MdCheckBoxOutlineBlank } from 'react-icons/md';
 
 const AnimatedMultiSelect = forwardRef(({
@@ -9,60 +10,225 @@ const AnimatedMultiSelect = forwardRef(({
     onChange,
     permissionsGrouped = {},
     error,
-    required = false
+    required = false,
+    disabled = false
 }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [expandedModules, setExpandedModules] = useState({});
     const [isVisible, setIsVisible] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+    const [dropdownReady, setDropdownReady] = useState(false);
+    const containerRef = useRef(null);
+    const dropdownRef = useRef(null);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         const timer = setTimeout(() => setIsVisible(true), 100);
         return () => clearTimeout(timer);
     }, []);
 
-    const toggleModule = (module) => {
-        setExpandedModules(prev => ({
-            ...prev,
-            [module]: !prev[module]
-        }));
-    };
-
-    const handlePermissionToggle = (permissionId) => {
-        const newValue = value.includes(permissionId)
-            ? value.filter(id => id !== permissionId)
-            : [...value, permissionId];
-        onChange(newValue);
-    };
-
-    const handleModuleToggle = (module) => {
-        const modulePermissions = permissionsGrouped[module]?.map(p => p.id) || [];
-        const allSelected = modulePermissions.every(id => value.includes(id));
-
-        if (allSelected) {
-            // Remove all module permissions
-            const newValue = value.filter(id => !modulePermissions.includes(id));
-            onChange(newValue);
+    useEffect(() => {
+        if (isOpen && containerRef.current && mounted) {
+            const rect = containerRef.current.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom + 4, // Use viewport-relative position only
+                left: rect.left,
+                width: rect.width
+            });
+            // Add a small delay to ensure position is set before showing
+            setTimeout(() => setDropdownReady(true), 0);
         } else {
-            // Add all module permissions
-            const newValue = [...new Set([...value, ...modulePermissions])];
-            onChange(newValue);
+            setDropdownReady(false);
         }
+    }, [isOpen, mounted]);
+
+    useEffect(() => {
+        const handleScroll = (e) => {
+            // Check if the scroll is happening inside the dropdown
+            const dropdownElement = document.querySelector('[data-dropdown-content="true"]');
+            if (dropdownElement && dropdownElement.contains(e.target)) {
+                // Allow scrolling inside dropdown
+                return;
+            }
+
+            // Prevent scrolling on the background
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        };
+
+        const handleResize = () => {
+            if (isOpen) {
+                closeDropdown();
+            }
+        };
+
+        if (isOpen) {
+            // Prevent background scrolling but allow dropdown scrolling
+            document.body.style.overflow = 'hidden';
+
+            // Add scroll prevention with selective allowing
+            window.addEventListener('wheel', handleScroll, { passive: false, capture: true });
+            window.addEventListener('touchmove', handleScroll, { passive: false, capture: true });
+            window.addEventListener('resize', handleResize);
+
+            return () => {
+                // Restore scrolling
+                document.body.style.overflow = '';
+
+                window.removeEventListener('wheel', handleScroll, true);
+                window.removeEventListener('touchmove', handleScroll, true);
+                window.removeEventListener('resize', handleResize);
+            };
+        }
+    }, [isOpen]);
+
+    // Close dropdown and reset state
+    const closeDropdown = () => {
+        setIsOpen(false);
+        setDropdownReady(false);
+    };
+
+    const handleItemToggle = (itemId, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Preserve scroll position
+        const scrollTop = dropdownRef.current?.scrollTop || 0;
+
+        const newValue = value.includes(itemId)
+            ? value.filter(id => id !== itemId)
+            : [...value, itemId];
+        onChange(newValue);
+
+        // Restore scroll position after state update
+        requestAnimationFrame(() => {
+            if (dropdownRef.current) {
+                dropdownRef.current.scrollTop = scrollTop;
+            }
+        });
     };
 
     const getSelectedCount = () => value.length;
 
-    const getModuleSelectionState = (module) => {
-        const modulePermissions = permissionsGrouped[module]?.map(p => p.id) || [];
-        const selectedCount = modulePermissions.filter(id => value.includes(id)).length;
-
-        if (selectedCount === 0) return 'none';
-        if (selectedCount === modulePermissions.length) return 'all';
-        return 'partial';
+    // Flatten all items from all groups
+    const getAllItems = () => {
+        return Object.values(permissionsGrouped).flat();
     };
+
+    const allItems = getAllItems();
+
+    const handleToggleOpen = () => {
+        if (!disabled) {
+            if (isOpen) {
+                setIsOpen(false);
+                setDropdownReady(false);
+            } else {
+                setIsOpen(true);
+                // Position will be calculated in useEffect
+            }
+        }
+    };
+
+    const DropdownContent = () => (
+        <div
+            ref={dropdownRef}
+            className="fixed z-[9999] bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-80 overflow-y-auto"
+            data-dropdown-content="true"
+            style={{
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+                width: dropdownPosition.width,
+                minWidth: '200px'
+            }}
+        >
+            {/* Direct Product List */}
+            {allItems.length > 0 ? (
+                <>
+                    {allItems.map((item) => (
+                        <button
+                            key={item.id}
+                            type="button"
+                            onClick={(e) => handleItemToggle(item.id, e)}
+                            className="w-full flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-700 text-left border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                        >
+                            {value.includes(item.id) ? (
+                                <MdCheckBox className="text-brandGreen flex-shrink-0" size={20} />
+                            ) : (
+                                <MdCheckBoxOutlineBlank className="text-gray-400 flex-shrink-0" size={20} />
+                            )}
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                    {item.name}
+                                </p>
+                                {item.description && (
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                        {item.description}
+                                    </p>
+                                )}
+                            </div>
+                        </button>
+                    ))}
+
+                    {/* Clear All / Select All Actions */}
+                    <div className="p-3 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-750">
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    // Preserve scroll position for Clear All
+                                    const scrollTop = dropdownRef.current?.scrollTop || 0;
+                                    onChange([]);
+
+                                    requestAnimationFrame(() => {
+                                        if (dropdownRef.current) {
+                                            dropdownRef.current.scrollTop = scrollTop;
+                                        }
+                                    });
+                                }}
+                                className="text-xs text-gray-600 dark:text-gray-400 hover:text-red-500 px-2 py-1 rounded transition-colors"
+                                disabled={getSelectedCount() === 0}
+                            >
+                                Clear All
+                            </button>
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+
+                                    // Preserve scroll position for Select All
+                                    const scrollTop = dropdownRef.current?.scrollTop || 0;
+                                    const allItemIds = allItems.map(item => item.id);
+                                    onChange(allItemIds);
+
+                                    requestAnimationFrame(() => {
+                                        if (dropdownRef.current) {
+                                            dropdownRef.current.scrollTop = scrollTop;
+                                        }
+                                    });
+                                }}
+                                className="text-xs text-gray-600 dark:text-gray-400 hover:text-brandGreen px-2 py-1 rounded transition-colors"
+                            >
+                                Select All
+                            </button>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                    <p className="text-sm">No products available</p>
+                </div>
+            )}
+        </div>
+    );
 
     return (
         <div className={`w-full transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-            <div className="relative">
+            <div className="relative" ref={containerRef}>
                 {/* Label */}
                 <div className="flex items-center gap-2 mb-2">
                     {Icon && <Icon size={16} className="text-brandGreen" />}
@@ -75,10 +241,15 @@ const AnimatedMultiSelect = forwardRef(({
                 {/* Dropdown Toggle */}
                 <button
                     type="button"
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={handleToggleOpen}
+                    disabled={disabled}
                     className={`
                         w-full flex items-center justify-between p-3 rounded-xl border-2 
                         transition-all duration-200 bg-white dark:bg-gray-800
+                        ${disabled
+                            ? 'bg-gray-100 cursor-not-allowed opacity-60'
+                            : ''
+                        }
                         ${error
                             ? 'border-red-300 focus:border-red-500'
                             : 'border-gray-200 dark:border-gray-600 focus:border-brandGreen hover:border-gray-300'
@@ -88,112 +259,29 @@ const AnimatedMultiSelect = forwardRef(({
                 >
                     <span className={`text-sm ${getSelectedCount() === 0 ? 'text-gray-400' : 'text-gray-900 dark:text-white'}`}>
                         {getSelectedCount() === 0
-                            ? 'Select permissions'
-                            : `${getSelectedCount()} permission${getSelectedCount() !== 1 ? 's' : ''} selected`
+                            ? 'Select products'
+                            : `${getSelectedCount()} product${getSelectedCount() !== 1 ? 's' : ''} selected`
                         }
                     </span>
                     {isOpen ? <MdExpandLess size={20} /> : <MdExpandMore size={20} />}
                 </button>
 
-                {/* Dropdown Content */}
-                {isOpen && (
-                    <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl shadow-lg max-h-80 overflow-y-auto">
-                        {Object.keys(permissionsGrouped).map((module) => {
-                            const moduleState = getModuleSelectionState(module);
-                            const isExpanded = expandedModules[module];
-
-                            return (
-                                <div key={module} className="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
-                                    {/* Module Header */}
-                                    <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <button
-                                            type="button"
-                                            onClick={() => handleModuleToggle(module)}
-                                            className="flex items-center gap-2 flex-1"
-                                        >
-                                            {moduleState === 'all' ? (
-                                                <MdCheckBox className="text-brandGreen" size={20} />
-                                            ) : moduleState === 'partial' ? (
-                                                <div className="w-5 h-5 border-2 border-brandGreen rounded bg-brandGreen/20 flex items-center justify-center">
-                                                    <div className="w-2 h-2 bg-brandGreen rounded"></div>
-                                                </div>
-                                            ) : (
-                                                <MdCheckBoxOutlineBlank className="text-gray-400" size={20} />
-                                            )}
-                                            <span className="font-medium text-gray-900 dark:text-white">{module}</span>
-                                            <span className="text-xs text-gray-500 ml-1">
-                                                ({permissionsGrouped[module]?.length || 0})
-                                            </span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => toggleModule(module)}
-                                            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
-                                        >
-                                            {isExpanded ? <MdExpandLess size={16} /> : <MdExpandMore size={16} />}
-                                        </button>
-                                    </div>
-
-                                    {/* Module Permissions */}
-                                    {isExpanded && (
-                                        <div className="bg-gray-50 dark:bg-gray-750">
-                                            {permissionsGrouped[module]?.map((permission) => (
-                                                <button
-                                                    key={permission.id}
-                                                    type="button"
-                                                    onClick={() => handlePermissionToggle(permission.id)}
-                                                    className="w-full flex items-center gap-3 p-3 pl-12 hover:bg-gray-100 dark:hover:bg-gray-700 text-left"
-                                                >
-                                                    {value.includes(permission.id) ? (
-                                                        <MdCheckBox className="text-brandGreen" size={18} />
-                                                    ) : (
-                                                        <MdCheckBoxOutlineBlank className="text-gray-400" size={18} />
-                                                    )}
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                                            {permission.name}
-                                                        </p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                            {permission.description}
-                                                        </p>
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-
-                        {/* Clear All / Select All Actions */}
-                        {Object.keys(permissionsGrouped).length > 0 && (
-                            <div className="p-3 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-750">
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => onChange([])}
-                                        className="text-xs text-gray-600 dark:text-gray-400 hover:text-red-500 px-2 py-1 rounded"
-                                        disabled={getSelectedCount() === 0}
-                                    >
-                                        Clear All
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const allPermissions = Object.values(permissionsGrouped)
-                                                .flat()
-                                                .map(p => p.id);
-                                            onChange(allPermissions);
-                                        }}
-                                        className="text-xs text-gray-600 dark:text-gray-400 hover:text-brandGreen px-2 py-1 rounded"
-                                    >
-                                        Select All
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                {/* Portal Dropdown Content */}
+                {isOpen && dropdownReady && mounted && typeof window !== 'undefined' && createPortal(
+                    <>
+                        {/* Backdrop to close dropdown when clicking outside */}
+                        <div
+                            className="fixed inset-0 z-[9998]"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsOpen(false);
+                                setDropdownReady(false);
+                            }}
+                        />
+                        <DropdownContent />
+                    </>,
+                    document.body
                 )}
 
                 {/* Error Message */}

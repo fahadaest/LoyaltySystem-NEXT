@@ -3,6 +3,8 @@ import { Camera, User, Gift, Plus, Minus, CheckCircle, AlertCircle, QrCode, Cred
 import AnimatedButton from 'components/ui/AnimatedButton';
 import AnimatedInput from 'components/ui/AnimatedInput';
 import Table from 'components/ui/Table';
+import AddPointsModal from './AddPointsModal';
+import RedeemPointsModal from './RedeemPointsModal';
 import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { useDispatch } from 'react-redux';
 
@@ -22,7 +24,8 @@ const LoyaltyCardScannerUI = ({
     loading,
     isRemoveStampLoading,
     isLogSpendingLoading,
-    isRedeemPointsLoading
+    isRedeemPointsLoading,
+    availableProducts = [] // New prop for products list
 }) => {
     const dispatch = useDispatch();
     const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
@@ -32,14 +35,8 @@ const LoyaltyCardScannerUI = ({
     // Point system modals state
     const [showAddPointsModal, setShowAddPointsModal] = useState(false);
     const [showRedeemPointsModal, setShowRedeemPointsModal] = useState(false);
-    const [spendingAmount, setSpendingAmount] = useState('');
-    const [pointsToRedeem, setPointsToRedeem] = useState('');
-    const [redeemByAmount, setRedeemByAmount] = useState(false);
-    const [redeemAmount, setRedeemAmount] = useState('');
 
     const canRemoveStamp = scannedData && scannedData.scannedLoyalty.progress.currentCollectedStamps > 0;
-
-    console.log("scannedData", scannedData)
 
     useEffect(() => {
         if (success) {
@@ -73,72 +70,14 @@ const LoyaltyCardScannerUI = ({
     };
 
     // Point system handlers
-    const handleAddPointsConfirm = async () => {
-        if (!spendingAmount || parseFloat(spendingAmount) <= 0) {
-            dispatch(showAlert({
-                message: 'Please enter a valid spending amount',
-                severity: "error",
-                duration: 3000
-            }));
-            return;
-        }
-
-        await handleLogSpending(spendingAmount);
+    const handleAddPointsConfirm = async (payload) => {
+        await handleLogSpending(payload);
         setShowAddPointsModal(false);
-        setSpendingAmount('');
     };
 
-    const handleRedeemPointsConfirm = async () => {
-        let pointsToRedeemValue;
-
-        if (redeemByAmount) {
-            if (!redeemAmount || parseFloat(redeemAmount) <= 0) {
-                dispatch(showAlert({
-                    message: 'Please enter a valid reward amount',
-                    severity: "error",
-                    duration: 3000
-                }));
-                return;
-            }
-
-            // Calculate points needed for the desired reward amount
-            const pointLoyalty = scannedData.scannedLoyalty.program;
-            const rewardPerPoint = pointLoyalty.rewardPointsEquivalent / pointLoyalty.rewardPoints;
-            pointsToRedeemValue = Math.ceil(parseFloat(redeemAmount) / rewardPerPoint);
-        } else {
-            if (!pointsToRedeem || parseInt(pointsToRedeem) <= 0) {
-                dispatch(showAlert({
-                    message: 'Please enter a valid number of points',
-                    severity: "error",
-                    duration: 3000
-                }));
-                return;
-            }
-            pointsToRedeemValue = pointsToRedeem;
-        }
-
-        // Check if user has enough points
-        if (pointsToRedeemValue > scannedData.scannedLoyalty.progress.currentCollectedPoints) {
-            dispatch(showAlert({
-                message: `Insufficient points. Available: ${scannedData.scannedLoyalty.progress.currentCollectedPoints}, Required: ${pointsToRedeemValue}`,
-                severity: "error",
-                duration: 3000
-            }));
-            return;
-        }
-
+    const handleRedeemPointsConfirm = async (pointsToRedeemValue) => {
         await handleRedeemPoints(pointsToRedeemValue);
         setShowRedeemPointsModal(false);
-        setPointsToRedeem('');
-        setRedeemAmount('');
-        setRedeemByAmount(false);
-    };
-
-    const calculatePointsFromAmount = (amount) => {
-        if (!amount || !scannedData?.scannedLoyalty?.program) return 0;
-        const program = scannedData.scannedLoyalty.program;
-        const pointsPerAED = program.rewardPoints / program.spendingAmount;
-        return Math.floor(parseFloat(amount) * pointsPerAED);
     };
 
     const calculateRewardFromPoints = (points) => {
@@ -421,25 +360,25 @@ const LoyaltyCardScannerUI = ({
                                     <div className="text-xl font-bold text-purple-600">
                                         {scannedData.summary.totalLoyaltyPrograms}
                                     </div>
-                                    <div className="text-xs text-gray-600">Programs</div>
+                                    <div className="text-xs text-gray-600">Total Programs Enrolled</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-xl font-bold text-purple-600">
-                                        {scannedData.summary.totalActiveRewards}
+                                        {scannedData.summary.totalTransactions}
                                     </div>
-                                    <div className="text-xs text-gray-600">Active Rewards</div>
+                                    <div className="text-xs text-gray-600">Total Transactions</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-xl font-bold text-purple-600">
-                                        {scannedData.summary.totalStampsAcrossPrograms}
+                                        {scannedData.summary.totalAmountSpent} AED
                                     </div>
-                                    <div className="text-xs text-gray-600">Total Stamps</div>
+                                    <div className="text-xs text-gray-600">Total Amount Spent</div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-xl font-bold text-purple-600">
-                                        {scannedData.summary.totalLifetimeRewards}
+                                        {scannedData.summary.totalAmountRedeemed} AED
                                     </div>
-                                    <div className="text-xs text-gray-600">Total Rewards</div>
+                                    <div className="text-xs text-gray-600">Total Amount Redeemed</div>
                                 </div>
                             </div>
                         </div>
@@ -541,192 +480,23 @@ const LoyaltyCardScannerUI = ({
             )}
 
             {/* Add Points Modal */}
-            {showAddPointsModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4 text-green-800 flex items-center">
-                            <DollarSign className="mr-2" size={20} />
-                            Log Customer Spending
-                        </h3>
-
-                        <div className="mb-4">
-                            <AnimatedInput
-                                label="Spending Amount (AED)"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={spendingAmount}
-                                onChange={setSpendingAmount}
-                                placeholder="Enter amount spent by customer"
-                                icon={DollarSign}
-                            />
-
-                            {spendingAmount && scannedData?.scannedLoyalty?.program && (
-                                <div className="mt-2 p-3 bg-green-50 rounded-lg">
-                                    <div className="text-sm text-green-800">
-                                        <div className="font-medium">Points to be earned:</div>
-                                        <div className="text-lg font-bold">
-                                            {calculatePointsFromAmount(spendingAmount)} points
-                                        </div>
-                                        <div className="text-xs text-gray-600 mt-1">
-                                            Rate: {(scannedData.scannedLoyalty.program.rewardPoints / scannedData.scannedLoyalty.program.spendingAmount).toFixed(4)} points per AED
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="flex gap-3">
-                            <AnimatedButton
-                                onClick={() => {
-                                    setShowAddPointsModal(false);
-                                    setSpendingAmount('');
-                                }}
-                                variant="outline"
-                                size="md"
-                                className="flex-1"
-                            >
-                                Cancel
-                            </AnimatedButton>
-                            <AnimatedButton
-                                onClick={handleAddPointsConfirm}
-                                disabled={isLogSpendingLoading || !spendingAmount || parseFloat(spendingAmount) <= 0}
-                                loading={isLogSpendingLoading}
-                                variant="primary"
-                                size="md"
-                                className="flex-1"
-                            >
-                                Add Points
-                            </AnimatedButton>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <AddPointsModal
+                isOpen={showAddPointsModal}
+                onClose={() => setShowAddPointsModal(false)}
+                onConfirm={handleAddPointsConfirm}
+                scannedData={scannedData}
+                isLoading={isLogSpendingLoading}
+                availableProducts={availableProducts}
+            />
 
             {/* Redeem Points Modal */}
-            {showRedeemPointsModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4 text-yellow-800 flex items-center">
-                            <Coins className="mr-2" size={20} />
-                            Redeem Points
-                        </h3>
-
-                        <div className="mb-4">
-                            <div className="bg-yellow-50 p-3 rounded-lg mb-4">
-                                <div className="text-sm text-yellow-800">
-                                    <div className="font-medium">Available Points:</div>
-                                    <div className="text-lg font-bold">
-                                        {scannedData?.scannedLoyalty?.progress?.currentCollectedPoints || 0} points
-                                    </div>
-                                    <div className="text-xs text-gray-600 mt-1">
-                                        Current Reward Value: {(scannedData?.scannedLoyalty?.progress?.currentAvailableReward || 0).toFixed(2)} AED
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mb-4">
-                                <div className="flex gap-2 mb-3">
-                                    <button
-                                        onClick={() => setRedeemByAmount(false)}
-                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${!redeemByAmount
-                                            ? 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
-                                            : 'bg-gray-100 text-gray-600 border-2 border-gray-200'
-                                            }`}
-                                    >
-                                        By Points
-                                    </button>
-                                    <button
-                                        onClick={() => setRedeemByAmount(true)}
-                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${redeemByAmount
-                                            ? 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
-                                            : 'bg-gray-100 text-gray-600 border-2 border-gray-200'
-                                            }`}
-                                    >
-                                        By Amount
-                                    </button>
-                                </div>
-
-                                {!redeemByAmount ? (
-                                    <>
-                                        <AnimatedInput
-                                            label="Points to Redeem"
-                                            type="number"
-                                            min="1"
-                                            max={scannedData?.scannedLoyalty?.progress?.currentCollectedPoints || 0}
-                                            value={pointsToRedeem}
-                                            onChange={setPointsToRedeem}
-                                            placeholder="Enter number of points"
-                                            icon={Coins}
-                                        />
-
-                                        {pointsToRedeem && scannedData?.scannedLoyalty?.program && (
-                                            <div className="mt-2 p-3 bg-yellow-50 rounded-lg">
-                                                <div className="text-sm text-yellow-800">
-                                                    <div className="font-medium">Reward Amount:</div>
-                                                    <div className="text-lg font-bold">
-                                                        {calculateRewardFromPoints(pointsToRedeem)} AED
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <>
-                                        <AnimatedInput
-                                            label="Reward Amount (AED)"
-                                            type="number"
-                                            step="0.01"
-                                            min="0.01"
-                                            value={redeemAmount}
-                                            onChange={setRedeemAmount}
-                                            placeholder="Enter reward amount"
-                                            icon={DollarSign}
-                                        />
-
-                                        {redeemAmount && scannedData?.scannedLoyalty?.program && (
-                                            <div className="mt-2 p-3 bg-yellow-50 rounded-lg">
-                                                <div className="text-sm text-yellow-800">
-                                                    <div className="font-medium">Points Required:</div>
-                                                    <div className="text-lg font-bold">
-                                                        {calculatePointsFromReward(redeemAmount)} points
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <AnimatedButton
-                                onClick={() => {
-                                    setShowRedeemPointsModal(false);
-                                    setPointsToRedeem('');
-                                    setRedeemAmount('');
-                                    setRedeemByAmount(false);
-                                }}
-                                variant="outline"
-                                size="md"
-                                className="flex-1"
-                            >
-                                Cancel
-                            </AnimatedButton>
-                            <AnimatedButton
-                                onClick={handleRedeemPointsConfirm}
-                                disabled={isRedeemPointsLoading || (!pointsToRedeem && !redeemAmount)}
-                                loading={isRedeemPointsLoading}
-                                variant="primary"
-                                size="md"
-                                className="flex-1"
-                            >
-                                Redeem
-                            </AnimatedButton>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <RedeemPointsModal
+                isOpen={showRedeemPointsModal}
+                onClose={() => setShowRedeemPointsModal(false)}
+                onConfirm={handleRedeemPointsConfirm}
+                scannedData={scannedData}
+                isLoading={isRedeemPointsLoading}
+            />
 
             {/* Loyalty Detail Modal */}
             {selectedLoyalty && (

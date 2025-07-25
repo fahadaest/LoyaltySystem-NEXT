@@ -7,19 +7,20 @@ import { useDownloadAppleWalletPassMutationMutation } from 'store/apiEndPoints/a
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { CircularProgress } from '@mui/material';
+import AnimatedInput from 'components/ui/AnimatedInput';
+import AnimatedPhoneInput from 'components/ui/AnimatedPhoneInput';
 
 const AnimatedContactForm = () => {
     const [createCustomer, { isLoading, isSuccess, isError, error }] = useCreateCustomerMutation();
     const [downloadPass] = useDownloadAppleWalletPassMutationMutation();
     const [formData, setFormData] = useState({
         firstName: '',
-        lastName: '',
         email: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        countryCode: '+971'
     });
     const [errors, setErrors] = useState({});
     const [isVisible, setIsVisible] = useState(false);
-    const [fieldAnimations, setFieldAnimations] = useState({});
     const [customerResponse, setCustomerResponse] = useState(null);
     const [showSuccessScreen, setShowSuccessScreen] = useState(false);
     const [isDownloadingCard, setIsDownloadingCard] = useState(false);
@@ -116,88 +117,71 @@ const AnimatedContactForm = () => {
         }
     };
 
-    const contactFields = [
-        {
-            name: 'Name',
-            key: 'firstName',
-            icon: MdPerson,
-            placeholder: 'Enter your name',
-            type: 'text',
-            color: 'text-brandGreen',
-            focusColor: 'focus:border-brandGreen focus:ring-brandGreen',
-            validation: (value) => {
-                if (!value.trim()) return 'First name is required';
-                if (value.trim().length < 2) return 'First name must be at least 2 characters';
-                return '';
-            }
-        },
-        {
-            name: 'Email Address',
-            key: 'email',
-            icon: MdEmail,
-            placeholder: 'Enter your email address',
-            type: 'email',
-            color: 'text-brandGreen',
-            focusColor: 'focus:border-brandGreen focus:ring-brandGreen',
-            validation: (value) => {
-                if (!value.trim()) return 'Email address is required';
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return emailRegex.test(value) ? '' : 'Please enter a valid email address';
-            }
-        },
-        {
-            name: 'Phone Number',
-            key: 'phoneNumber',
-            icon: MdPhone,
-            placeholder: 'Enter your phone number',
-            type: 'tel',
-            color: 'text-brandGreen',
-            focusColor: 'focus:border-brandGreen focus:ring-brandGreen',
-            validation: (value) => {
-                if (!value.trim()) return 'Phone number is required';
-                const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-                return phoneRegex.test(value.replace(/[\s\-\(\)]/g, '')) ? '' : 'Please enter a valid phone number';
-            }
-        }
-    ];
+    // Validation functions
+    const validateFirstName = (value) => {
+        if (!value.trim()) return 'Name is required';
+        if (value.trim().length < 2) return 'Name must be at least 2 characters';
+        return '';
+    };
 
-    const handleInputChange = (key, value) => {
+    const validateEmail = (value) => {
+        if (!value.trim()) return 'Email address is required';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(value) ? '' : 'Please enter a valid email address';
+    };
+
+    const validatePhoneNumber = (value) => {
+        if (!value.trim()) return 'Phone number is required';
+        const phoneRegex = /^\d{9}$|^\d{10}$|^\d{11}$/;
+        return phoneRegex.test(value) ? '' : 'Phone number must be 9, 10, or 11 digits';
+    };
+
+    const handleInputChange = (field, value) => {
         setFormData(prev => ({
             ...prev,
-            [key]: value
+            [field]: value
         }));
 
-        if (errors[key]) {
+        // Clear error when user starts typing
+        if (errors[field]) {
             setErrors(prev => ({
                 ...prev,
-                [key]: ''
+                [field]: ''
             }));
         }
+    };
 
-        setFieldAnimations(prev => ({
+    const handleCountryCodeChange = (countryCode) => {
+        setFormData(prev => ({
             ...prev,
-            [key]: true
+            countryCode
         }));
-
-        setTimeout(() => {
-            setFieldAnimations(prev => ({
-                ...prev,
-                [key]: false
-            }));
-        }, 150);
     };
 
     const validateForm = () => {
         const newErrors = {};
         let isValid = true;
 
-        contactFields.forEach(field => {
-            const error = field.validation(formData[field.key]);
-            if (error) {
-                newErrors[field.key] = error;
-                isValid = false;
-            }
-        });
+        // Validate first name
+        const firstNameError = validateFirstName(formData.firstName);
+        if (firstNameError) {
+            newErrors.firstName = firstNameError;
+            isValid = false;
+        }
+
+        // Validate email
+        const emailError = validateEmail(formData.email);
+        if (emailError) {
+            newErrors.email = emailError;
+            isValid = false;
+        }
+
+        // Validate phone number
+        const phoneError = validatePhoneNumber(formData.phoneNumber);
+        if (phoneError) {
+            newErrors.phoneNumber = phoneError;
+            isValid = false;
+        }
 
         setErrors(newErrors);
         return isValid;
@@ -211,9 +195,9 @@ const AnimatedContactForm = () => {
         if (validateForm()) {
             const payload = {
                 firstName: formData.firstName,
-                lastName: formData.lastName,
+                lastName: '', // Empty string for lastName since it's removed
                 email: formData.email,
-                phoneNumber: formData.phoneNumber,
+                phoneNumber: formData.countryCode + formData.phoneNumber,
                 type: type,
                 loyaltyId: loyalty ? parseInt(loyalty) : 0,
                 adminId: adminId ? parseInt(adminId) : 0,
@@ -254,9 +238,9 @@ const AnimatedContactForm = () => {
     const resetForm = () => {
         setFormData({
             firstName: '',
-            lastName: '',
             email: '',
-            phoneNumber: ''
+            phoneNumber: '',
+            countryCode: '+971'
         });
         setCustomerResponse(null);
         setShowSuccessScreen(false);
@@ -393,79 +377,54 @@ const AnimatedContactForm = () => {
                             {showSuccessScreen ? (
                                 <SuccessScreen />
                             ) : (
-                                <div className="space-y-4">
-                                    {contactFields.map((field, index) => {
-                                        const IconComponent = field.icon;
-                                        const hasError = errors[field.key];
-                                        const hasValue = formData[field.key] && formData[field.key].trim() !== '';
-                                        const isAnimating = fieldAnimations[field.key];
+                                <div className="space-y-6">
+                                    {/* Name Field */}
+                                    <div className={`transform transition-all duration-400 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                                        style={{ transitionDelay: '400ms' }}>
+                                        <AnimatedInput
+                                            label="Name"
+                                            icon={MdPerson}
+                                            value={formData.firstName}
+                                            onChange={(value) => handleInputChange('firstName', value)}
+                                            placeholder="Enter your name"
+                                            error={errors.firstName}
+                                            required={true}
+                                        />
+                                    </div>
 
-                                        return (
-                                            <div
-                                                key={field.key}
-                                                className={`space-y-2 transform transition-all duration-400 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
-                                                style={{ transitionDelay: `${400 + index * 100}ms` }}
-                                            >
-                                                {/* Field Label */}
-                                                <div className="flex items-center gap-2">
-                                                    <IconComponent size={16} className="text-brandGreen" />
-                                                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                        {field.name}
-                                                    </label>
-                                                    {hasValue && (
-                                                        <div className="flex items-center animate-fadeIn">
-                                                            <div className="w-2 h-2 bg-brandGreen rounded-full mr-1 animate-pulse"></div>
-                                                            <span className="text-xs text-brandGreen font-medium">✓</span>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                    {/* Email */}
+                                    <div className={`transform transition-all duration-400 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                                        style={{ transitionDelay: '500ms' }}>
+                                        <AnimatedInput
+                                            label="Email Address"
+                                            icon={MdEmail}
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(value) => handleInputChange('email', value)}
+                                            placeholder="Enter your email address"
+                                            error={errors.email}
+                                            required={true}
+                                        />
+                                    </div>
 
-                                                {/* Input Field */}
-                                                <div className="relative group">
-                                                    <input
-                                                        type={field.type}
-                                                        value={formData[field.key]}
-                                                        onChange={(e) => handleInputChange(field.key, e.target.value)}
-                                                        placeholder={field.placeholder}
-                                                        className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 
-                                                            ${hasError
-                                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                                                                : 'border-gray-200 focus:border-brandGreen focus:ring-brandGreen dark:border-gray-600 group-hover:border-gray-300'
-                                                            }  
-                                                            focus:outline-none focus:ring-2 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 
-                                                            ${isAnimating ? 'scale-105' : 'scale-100'}
-                                                            transform`} />
-
-                                                    {/* Input Icon */}
-                                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-150">
-                                                        <IconComponent
-                                                            size={18}
-                                                            className={`${hasError ? 'text-red-500' : hasValue ? 'text-brandGreen' : 'text-gray-400'} 
-                              ${isAnimating ? 'scale-110' : 'scale-100'} transform transition-all duration-150`}
-                                                        />
-                                                    </div>
-
-                                                    {/* Focus Ring Animation */}
-                                                    <div className="absolute inset-0 rounded-xl bg-brandGreen opacity-0 group-focus-within:opacity-10 transition-opacity duration-200 pointer-events-none"></div>
-                                                </div>
-
-                                                {/* Error Message */}
-                                                {hasError && (
-                                                    <div className="animate-slideDown">
-                                                        <p className="text-sm text-red-500 flex items-center gap-2">
-                                                            <svg className="w-4 h-4 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                            </svg>
-                                                            {hasError}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+                                    {/* Phone Number */}
+                                    <div className={`transform transition-all duration-400 ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                                        style={{ transitionDelay: '600ms' }}>
+                                        <AnimatedPhoneInput
+                                            label="Phone Number"
+                                            icon={MdPhone}
+                                            value={formData.phoneNumber}
+                                            onChange={(value) => handleInputChange('phoneNumber', value)}
+                                            countryCode={formData.countryCode}
+                                            onCountryChange={handleCountryCodeChange}
+                                            placeholder="Enter your phone number"
+                                            error={errors.phoneNumber}
+                                            required={true}
+                                        />
+                                    </div>
 
                                     {/* Submit Button */}
-                                    <div className={`pt-4 transform transition-all duration-500 delay-800 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+                                    <div className={`pt-4 transform transition-all duration-500 delay-700 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
                                         <button
                                             onClick={handleSubmit}
                                             disabled={isLoading}
@@ -496,58 +455,6 @@ const AnimatedContactForm = () => {
                 </div>
             </div>
 
-            {/* Enhanced Custom Animations */}
-            <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.8); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        @keyframes slideDown {
-          from { 
-            opacity: 0; 
-            transform: translateY(-10px); 
-            max-height: 0;
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-            max-height: 50px;
-          }
-        }
-        
-        @keyframes slideUp {
-          from { 
-            opacity: 0; 
-            transform: translateY(20px); 
-          }
-          to { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
-        
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-        
-        .animate-slideDown {
-          animation: slideDown 0.15s ease-out;
-        }
-        
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
-        }
-        
-        .animate-pulse {
-          animation: pulse 2s ease-in-out infinite;
-        }
-      `}</style>
         </div>
     );
 };

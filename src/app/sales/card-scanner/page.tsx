@@ -148,16 +148,23 @@ const CardScanner = () => {
     }
   };
 
-  const handleLogSpending = async (amountSpent) => {
+  const handleLogSpending = async (payload) => {
     if (!scannedData || !scannedData.scannedLoyalty) return;
     setError('');
     setSuccess('');
 
     try {
-      const result = await logSpending({
+      // Create the complete payload structure
+      const completePayload = {
         customerLoyaltyId: scannedData.scannedLoyalty.id,
-        amountUserSpent: parseFloat(amountSpent)
-      }).unwrap();
+        amountUserSpent: parseFloat(payload.amount),
+        productIds: payload.productIds || [],
+        comment: payload.comment || undefined
+      };
+
+      console.log('Log spending payload:', completePayload); // Debug log
+
+      const result = await logSpending(completePayload).unwrap();
 
       console.log('Log spending result:', result); // Debug log
 
@@ -214,7 +221,7 @@ const CardScanner = () => {
     setError('');
     setSuccess('');
     setQrInput('');
-    setLastScannedQrData(''); // Clear the stored QR data
+    setLastScannedQrData('');
   };
 
   return (
