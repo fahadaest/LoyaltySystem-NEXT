@@ -83,25 +83,6 @@ const Dashboard = () => {
         <RewardsReport />
       </div>
 
-      {/* <div className="mt-5 grid grid-cols-1 gap-5">
-        <WeeklyRevenue />
-
-        <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
-          <DailyTraffic />
-          <PieChartCard />
-        </div>
-      </div> */}
-
-      <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <CheckTable tableData={tableDataCheck} />
-        <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
-          <TaskCard />
-          <div className="grid grid-cols-1 rounded-[20px]">
-            <MiniCalendar />
-          </div>
-        </div>
-      </div>
-
     </div>
   );
 };
