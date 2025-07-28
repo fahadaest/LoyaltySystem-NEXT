@@ -14,6 +14,7 @@ import TaskCard from 'components/admin/dashboard/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 import { useGetWidgetDataQuery } from 'store/apiEndPoints/dashboardApi';
+import RewardsReport from 'components/admin/dashboard/RewardsReport';
 import TopProductsTable from 'components/admin/dashboard/TopProductsTable';
 
 const Dashboard = () => {
@@ -78,14 +79,18 @@ const Dashboard = () => {
         <TopProductsTable />
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-5">
+      <div className="mt-3 grid grid-cols-1 gap-5 ">
+        <RewardsReport />
+      </div>
+
+      {/* <div className="mt-5 grid grid-cols-1 gap-5">
         <WeeklyRevenue />
 
-        {/* <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
           <DailyTraffic />
           <PieChartCard />
-        </div> */}
-      </div>
+        </div>
+      </div> */}
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
         <CheckTable tableData={tableDataCheck} />

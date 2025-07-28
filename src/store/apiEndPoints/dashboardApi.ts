@@ -14,7 +14,7 @@ export const dashboardApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ['DashboardGrowth', 'DashboardWidgets', 'TopCustomers', 'TopProducts', 'TotalRewards'],
+    tagTypes: ['DashboardGrowth', 'DashboardWidgets', 'TopCustomers', 'TopProducts', 'TotalRewards', 'RewardsAnalytics'],
     endpoints: (builder) => ({
         getGrowthAnalytics: builder.query({
             query: (params = {}) => ({
@@ -55,6 +55,22 @@ export const dashboardApi = createApi({
             }),
             providesTags: ['TopProducts'],
         }),
+        getRewardsAnalytics: builder.query({
+            query: (params) => {
+                const searchParams = new URLSearchParams();
+
+                if (params.filter) searchParams.append('filter', params.filter);
+                if (params.limit) searchParams.append('limit', params.limit);
+                if (params.startDate) searchParams.append('startDate', params.startDate);
+                if (params.endDate) searchParams.append('endDate', params.endDate);
+
+                return {
+                    url: `/dashboard/total-rewards?${searchParams.toString()}`,
+                    method: 'GET',
+                };
+            },
+            providesTags: ['RewardsAnalytics'],
+        }),
         getTotalRewards: builder.query({
             query: (params = {}) => ({
                 url: '/dashboard/total-rewards',
@@ -74,5 +90,5 @@ export const {
     useGetWidgetDataQuery,
     useGetTopCustomersQuery,
     useGetTopProductsQuery,
-    useGetTotalRewardsQuery,
+    useGetRewardsAnalyticsQuery,
 } = dashboardApi;
