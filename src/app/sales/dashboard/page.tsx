@@ -1,16 +1,16 @@
 'use client';
 import MiniCalendar from 'components/calendar/MiniCalendar';
-import WeeklyRevenue from 'components/admin/default/WeeklyRevenue';
-import CustomerAnalytics from 'components/admin/default/CustomerAnalytics';
-import PieChartCard from 'components/admin/default/PieChartCard';
+import WeeklyRevenue from 'components/admin/dashboard/WeeklyRevenue';
+import CustomerAnalytics from 'components/admin/dashboard/CustomerAnalytics';
+import PieChartCard from 'components/admin/dashboard/PieChartCard';
 import { MdBarChart, MdDashboard, MdInventory, MdLoyalty, MdStars } from 'react-icons/md';
 import { IoMdHome, IoMdPeople } from 'react-icons/io';
 import { IoDocuments, IoCard, IoGift } from 'react-icons/io5';
 import Widget from 'components/widget/Widget';
-import CheckTable from 'components/admin/default/CheckTable';
-import ComplexTable from 'components/admin/default/ComplexTable';
-import DailyTraffic from 'components/admin/default/DailyTraffic';
-import TaskCard from 'components/admin/default/TaskCard';
+import CheckTable from 'components/admin/dashboard/CheckTable';
+import ComplexTable from 'components/admin/dashboard/ComplexTable';
+import DailyTraffic from 'components/admin/dashboard/DailyTraffic';
+import TaskCard from 'components/admin/dashboard/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 

@@ -1,22 +1,23 @@
 'use client';
 import MiniCalendar from 'components/calendar/MiniCalendar';
-import WeeklyRevenue from 'components/admin/default/WeeklyRevenue';
-import CustomerAnalytics from 'components/admin/default/CustomerAnalytics';
-import PieChartCard from 'components/admin/default/PieChartCard';
+import WeeklyRevenue from 'components/admin/dashboard/WeeklyRevenue';
+import CustomerAnalytics from 'components/admin/dashboard/CustomerAnalytics';
+import PieChartCard from 'components/admin/dashboard/PieChartCard';
 import { MdBarChart, MdDashboard, MdInventory, MdLoyalty, MdStars } from 'react-icons/md';
 import { IoMdHome, IoMdPeople } from 'react-icons/io';
 import { IoDocuments, IoCard, IoGift } from 'react-icons/io5';
 import Widget from 'components/widget/Widget';
-import CheckTable from 'components/admin/default/CheckTable';
-import ComplexTable from 'components/admin/default/ComplexTable';
-import DailyTraffic from 'components/admin/default/DailyTraffic';
-import TaskCard from 'components/admin/default/TaskCard';
+import CheckTable from 'components/admin/dashboard/CheckTable';
+import ComplexTable from 'components/admin/dashboard/ComplexTable';
+import DailyTraffic from 'components/admin/dashboard/DailyTraffic';
+import TaskCard from 'components/admin/dashboard/TaskCard';
 import tableDataCheck from 'variables/data-tables/tableDataCheck';
 import tableDataComplex from 'variables/data-tables/tableDataComplex';
 import { useGetWidgetDataQuery } from 'store/apiEndPoints/dashboardApi';
+import TopProductsTable from 'components/admin/dashboard/TopProductsTable';
 
 const Dashboard = () => {
-  const { data: widgetsData, isLoading, error } = useGetWidgetDataQuery();
+  const { data: widgetsData, isLoading, error } = useGetWidgetDataQuery({});
 
   console.log("tableDataComplex", tableDataComplex)
 
@@ -69,19 +70,21 @@ const Dashboard = () => {
         <CustomerAnalytics />
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-1">
-        <div>
-          <ComplexTable />
-        </div>
+      <div className="mt-3 grid grid-cols-1 gap-5 ">
+        <ComplexTable />
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-5 ">
+        <TopProductsTable />
+      </div>
+
+      <div className="mt-5 grid grid-cols-1 gap-5">
+        <WeeklyRevenue />
 
         {/* <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
           <DailyTraffic />
           <PieChartCard />
         </div> */}
-      </div>
-
-      <div className="mt-5 grid grid-cols-1 gap-5">
-        <WeeklyRevenue />
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">

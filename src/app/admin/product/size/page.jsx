@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import ProductSizeTable from 'components/admin/default/ProductSizeTable';
+import ProductSizeTable from 'components/admin/dashboard/ProductSizeTable';
 import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
 import AddProductSizeComponent from 'components/product-size/AddProductSize';

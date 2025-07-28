@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import { useState } from 'react';
 import CustomModal from 'components/modal/CustomModal';
 import { useDisclosure } from '@chakra-ui/react';
-import PointLoyaltyTable from 'components/admin/default/PointLoyaltyTable';
+import PointLoyaltyTable from 'components/admin/dashboard/PointLoyaltyTable';
 import AddLoyalty from 'components/form/AddLoyalty';
 import { MdAdd, MdPrint } from "react-icons/md";
 import {

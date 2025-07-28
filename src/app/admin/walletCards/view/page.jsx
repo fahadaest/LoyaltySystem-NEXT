@@ -328,11 +328,11 @@ const Dashboard = () => {
   return (
     <div className="relative">
       <div className="mt-3 mb-5">
-        <HeadingCard icon={<FaWallet className="text-brandGreen" />} subtitle="Manage Wallet Cards">
+        <HeadingCard icon={<FaWallet className="text-brandGreen" />} title="Wallet Cards" subtitle="Manage Wallet Cards">
           <HeaderButton
             icon={MdAdd}
             text="Add Card"
-            size="lg"
+            size="md"
             color="bg-brandGreen"
             onClick={handleAddCard}
           />
