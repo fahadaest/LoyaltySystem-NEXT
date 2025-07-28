@@ -51,7 +51,7 @@ export default function RewardsReport() {
             return {
                 day: label,
                 totalPurchases: (dayData.totalProductsPurchases || 0) + (dayData.totalPointPurchases || 0),
-                // totalAmountSpent: (dayData.totalProductsAmountSpent || 0) + (dayData.totalPointAmountSpent || 0),
+                totalAmountSpent: (dayData.totalProductsAmountSpent || 0) + (dayData.totalPointAmountSpent || 0),
                 totalRewardsRedeemed: (dayData.totalProductRewardsRedeemed || 0) + (dayData.totalPointRewardsRedeemed || 0)
             };
         });
