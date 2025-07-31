@@ -10,17 +10,15 @@ import { useGetMyProfileQuery } from 'store/apiEndPoints/userApi';
 import { useAuth } from 'hooks/useAuth';
 import { getImageUrl } from 'utils/imageUtils';
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 const Navbar = ({ onOpenSidenav, brandText }) => {
   const [darkmode, setDarkmode] = React.useState(
     document.body.classList.contains('dark')
   );
   const router = useRouter();
   const { data } = useGetMyProfileQuery();
-  const { logout, isSuperAdmin } = useAuth();
+  const { logout } = useAuth();
 
-  const profileUrl = isSuperAdmin ? '/superadmin/profile' : '/admin/profile';
+  const profileUrl = '/main/profile';
   const avatar = getImageUrl(data?.profileImage);
   const userName = data?.firstName + ' ' + data?.lastName;
 
@@ -154,9 +152,6 @@ const Navbar = ({ onOpenSidenav, brandText }) => {
                   <p className="text-sm font-bold text-navy-700 dark:text-white">
                     {userName}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                    {isSuperAdmin ? 'Super Admin' : 'Admin'}
-                  </p>
                 </div>
               </div>
             </div>
@@ -170,14 +165,6 @@ const Navbar = ({ onOpenSidenav, brandText }) => {
                 <FiUser className="h-4 w-4" />
                 Profile Settings
               </a>
-
-              {/* <a
-                href="/settings"
-                className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-navy-600 rounded-lg transition-colors"
-              >
-                <FiSettings className="h-4 w-4" />
-                Account Settings
-              </a> */}
 
               <div className="border-t border-gray-200 dark:border-gray-600 my-2"></div>
 

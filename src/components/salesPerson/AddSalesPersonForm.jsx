@@ -75,8 +75,6 @@ const AddSalesPersonForm = forwardRef(({
                     return 'Password must be at least 8 characters long';
                 }
                 return '';
-            case 'managerId':
-                return !value ? 'Manager selection is required' : '';
             case 'permissionIds':
                 return value.length === 0 ? 'At least one permission must be selected' : '';
             default:
@@ -213,7 +211,7 @@ const AddSalesPersonForm = forwardRef(({
                         </FormSection>
 
                         {/* Manager Assignment */}
-                        <FormSection
+                        {/* <FormSection
                             title="Manager Assignment"
                             icon={MdSupervisorAccount}
                             delay={550}
@@ -229,7 +227,7 @@ const AddSalesPersonForm = forwardRef(({
                                 placeholder="Select a manager"
                                 required
                             />
-                        </FormSection>
+                        </FormSection> */}
 
                         {/* Permissions */}
                         <FormSection
@@ -282,21 +280,6 @@ const AddSalesPersonForm = forwardRef(({
                                         </div>
                                     </div>
                                 )}
-
-                                {/* Salesperson Role Info */}
-                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                                    <div className="flex items-start gap-3">
-                                        <MdPerson className="text-blue-600 dark:text-blue-400 text-xl mt-0.5" />
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                                                Salesperson Role
-                                            </h4>
-                                            <p className="text-sm text-blue-700 dark:text-blue-300">
-                                                Salespersons can manage customer relationships, track sales opportunities, and generate reports based on their assigned permissions.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </FormSection>
                     </div>

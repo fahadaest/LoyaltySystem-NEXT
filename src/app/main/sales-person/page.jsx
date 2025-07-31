@@ -34,15 +34,9 @@ const Dashboard = () => {
     { value: 4, label: 'Lisa Wilson - Sales Director' },
   ];
 
-  // Get permissions from API or use empty array while loading
   const permissions = permissionsData?.flat || [];
 
   const columns = [
-    {
-      accessorKey: "id",
-      header: "ID",
-      cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.id}</p>,
-    },
     {
       accessorKey: "firstName",
       header: "First Name",
@@ -59,30 +53,40 @@ const Dashboard = () => {
       cell: (info) => <p className="text-sm text-gray-800 dark:text-white">{info.row.original.email}</p>,
     },
     {
-      accessorKey: "manager",
-      header: "Manager",
-      cell: (info) => {
-        const manager = mockManagers.find(m => m.value === info.row.original.managerId);
-        return <p className="text-sm text-gray-800 dark:text-white">{manager?.label || 'N/A'}</p>;
-      },
-    },
-    {
       accessorKey: "permissions",
       header: "Permissions",
       cell: (info) => {
-        const permissionCount = info.row.original.permissionIds?.length || 0;
-        const permissionNames = info.row.original.permissionIds?.map(id => {
-          const permission = permissions.find(p => p.value === id);
-          return permission?.module || '';
-        }).filter(Boolean).join(', ');
+        const manager = info.row.original;
+        const managerPermissionIds = manager.permissionIds ||
+          manager.permissions?.map(p => p.id) ||
+          manager.permissions?.map(p => p.value) ||
+          [];
+        const permissionCount = managerPermissionIds.length;
+        const permissionModules = managerPermissionIds.map(id => {
+          const permission = permissions.find(p =>
+            p.id === id ||
+            p.value === id ||
+            p.id === parseInt(id) ||
+            p.value === parseInt(id) ||
+            p.id === String(id) ||
+            p.value === String(id)
+          );
+          return permission?.module || permission?.name || '';
+        }).filter(Boolean);
+
+        const uniqueModules = [...new Set(permissionModules)];
+        const moduleNames = uniqueModules.join(', ');
 
         return (
           <div className="text-sm text-gray-800 dark:text-white">
             <p className="font-medium">{permissionCount} permissions</p>
-            {permissionNames && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]" title={permissionNames}>
-                {permissionNames}
+            {moduleNames && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]" title={moduleNames}>
+                {moduleNames}
               </p>
+            )}
+            {permissionCount === 0 && (
+              <p className="text-xs text-red-500">No permissions assigned</p>
             )}
           </div>
         );

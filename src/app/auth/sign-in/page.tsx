@@ -89,7 +89,7 @@ function SignInDefault() {
       } else if (user.role === 'salesperson') {
         router.replace('/main/card-scanner');
       } else if (user.role === 'manager') {
-        router.replace('/main/dashboard');
+        router.replace('/main/card-scanner');
       }
     }
   }, [isAuthenticated, user, router]);
