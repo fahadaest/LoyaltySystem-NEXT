@@ -9,13 +9,15 @@ const initialState = {
 };
 
 const normalizeUserData = (userData) => {
+    console.log("normalizeUserData", userData);
     const id = userData.id || userData._id;
 
     const normalized = {
         id: id.toString(),
         name: `${userData.firstName} ${userData.lastName}`,
         email: userData.email,
-        role: userData.role
+        role: userData.role,
+        permissions: userData.permissions,
     };
 
     return normalized;

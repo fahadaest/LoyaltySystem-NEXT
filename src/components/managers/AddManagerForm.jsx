@@ -118,123 +118,119 @@ const AddManagerForm = forwardRef(({ onSubmit, permissions = [], permissionsGrou
     };
 
     return (
-        <div className={`w-full transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-            <AnimatedCard>
-                <AnimatedCardContent>
-                    <div className="space-y-6">
+        <div className={`w-full px-8 py-5 transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <div className="space-y-6">
 
-                        <FormSection
-                            title="Personal Information"
+                <FormSection
+                    title="Personal Information"
+                    icon={MdPerson}
+                    delay={400}
+                    isVisible={isVisible}
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <AnimatedInput
+                            label="First Name"
                             icon={MdPerson}
-                            delay={400}
-                            isVisible={isVisible}
-                        >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <AnimatedInput
-                                    label="First Name"
-                                    icon={MdPerson}
-                                    value={formData.firstName}
-                                    onChange={(value) => handleInputChange('firstName', value)}
-                                    error={errors.firstName}
-                                    placeholder="Enter first name"
-                                    required
-                                />
-                                <AnimatedInput
-                                    label="Last Name"
-                                    icon={MdPerson}
-                                    value={formData.lastName}
-                                    onChange={(value) => handleInputChange('lastName', value)}
-                                    error={errors.lastName}
-                                    placeholder="Enter last name"
-                                    required
-                                />
-                            </div>
-                        </FormSection>
-
-                        <FormSection
-                            title="Account Information"
-                            icon={MdEmail}
-                            delay={500}
-                            isVisible={isVisible}
-                        >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <AnimatedInput
-                                    label="Email Address"
-                                    icon={MdEmail}
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(value) => handleInputChange('email', value)}
-                                    error={errors.email}
-                                    placeholder="Enter email address"
-                                    required
-                                />
-                                <AnimatedInput
-                                    label={isEditMode ? "New Password (leave blank to keep current)" : "Password"}
-                                    icon={MdLock}
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={(value) => handleInputChange('password', value)}
-                                    error={errors.password}
-                                    placeholder={isEditMode ? "Enter new password (optional)" : "Enter password (min. 8 characters)"}
-                                    required={!isEditMode}
-                                />
-                            </div>
-                        </FormSection>
-
-                        <FormSection
-                            title="Manager Permissions & Authority"
-                            icon={MdSecurity}
-                            delay={600}
-                            isVisible={isVisible}
-                        >
-                            <div className="space-y-4">
-                                <AnimatedMultiSelect
-                                    label="Manager Permissions"
-                                    icon={MdSecurity}
-                                    value={formData.permissionIds}
-                                    onChange={(value) => handleInputChange('permissionIds', value)}
-                                    permissionsGrouped={permissionsGrouped}
-                                    error={errors.permissionIds}
-                                    required
-                                />
-
-                                {formData.permissionIds.length > 0 && (
-                                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <MdSecurity size={16} className="text-green-600 dark:text-green-400" />
-                                            <h4 className="text-sm font-semibold text-green-900 dark:text-green-100">
-                                                Permission Summary ({formData.permissionIds.length} selected)
-                                            </h4>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            {Object.keys(permissionsGrouped).map(module => {
-                                                const modulePermissions = permissionsGrouped[module].filter(p =>
-                                                    formData.permissionIds.includes(p.id)
-                                                );
-
-                                                if (modulePermissions.length === 0) return null;
-
-                                                return (
-                                                    <div key={module} className="text-sm">
-                                                        <span className="font-medium text-green-800 dark:text-green-200">
-                                                            {module}:
-                                                        </span>
-                                                        <span className="text-green-700 dark:text-green-300 ml-2">
-                                                            {modulePermissions.length} permission{modulePermissions.length !== 1 ? 's' : ''}
-                                                        </span>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                )}
-
-                            </div>
-                        </FormSection>
+                            value={formData.firstName}
+                            onChange={(value) => handleInputChange('firstName', value)}
+                            error={errors.firstName}
+                            placeholder="Enter first name"
+                            required
+                        />
+                        <AnimatedInput
+                            label="Last Name"
+                            icon={MdPerson}
+                            value={formData.lastName}
+                            onChange={(value) => handleInputChange('lastName', value)}
+                            error={errors.lastName}
+                            placeholder="Enter last name"
+                            required
+                        />
                     </div>
-                </AnimatedCardContent>
-            </AnimatedCard>
+                </FormSection>
+
+                <FormSection
+                    title="Account Information"
+                    icon={MdEmail}
+                    delay={500}
+                    isVisible={isVisible}
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <AnimatedInput
+                            label="Email Address"
+                            icon={MdEmail}
+                            type="email"
+                            value={formData.email}
+                            onChange={(value) => handleInputChange('email', value)}
+                            error={errors.email}
+                            placeholder="Enter email address"
+                            required
+                        />
+                        <AnimatedInput
+                            label={isEditMode ? "New Password (leave blank to keep current)" : "Password"}
+                            icon={MdLock}
+                            type="password"
+                            value={formData.password}
+                            onChange={(value) => handleInputChange('password', value)}
+                            error={errors.password}
+                            placeholder={isEditMode ? "Enter new password (optional)" : "Enter password (min. 8 characters)"}
+                            required={!isEditMode}
+                        />
+                    </div>
+                </FormSection>
+
+                <FormSection
+                    title="Manager Permissions & Authority"
+                    icon={MdSecurity}
+                    delay={600}
+                    isVisible={isVisible}
+                >
+                    <div className="space-y-4">
+                        <AnimatedMultiSelect
+                            label="Manager Permissions"
+                            icon={MdSecurity}
+                            value={formData.permissionIds}
+                            onChange={(value) => handleInputChange('permissionIds', value)}
+                            permissionsGrouped={permissionsGrouped}
+                            error={errors.permissionIds}
+                            required
+                        />
+
+                        {formData.permissionIds.length > 0 && (
+                            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <MdSecurity size={16} className="text-green-600 dark:text-green-400" />
+                                    <h4 className="text-sm font-semibold text-green-900 dark:text-green-100">
+                                        Permission Summary ({formData.permissionIds.length} selected)
+                                    </h4>
+                                </div>
+
+                                <div className="space-y-2">
+                                    {Object.keys(permissionsGrouped).map(module => {
+                                        const modulePermissions = permissionsGrouped[module].filter(p =>
+                                            formData.permissionIds.includes(p.id)
+                                        );
+
+                                        if (modulePermissions.length === 0) return null;
+
+                                        return (
+                                            <div key={module} className="text-sm">
+                                                <span className="font-medium text-green-800 dark:text-green-200">
+                                                    {module}:
+                                                </span>
+                                                <span className="text-green-700 dark:text-green-300 ml-2">
+                                                    {modulePermissions.length} permission{modulePermissions.length !== 1 ? 's' : ''}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+                </FormSection>
+            </div>
         </div>
     );
 });

@@ -54,10 +54,22 @@ const ManagersDashboard = () => {
       accessorKey: "permissions",
       header: "Permissions",
       cell: (info) => {
-        const permissionCount = info.row.original.permissionIds?.length || 0;
-        const permissionModules = info.row.original.permissionIds?.map(id => {
-          const permission = permissions.find(p => p.value === id);
-          return permission?.module || '';
+        const manager = info.row.original;
+        const managerPermissionIds = manager.permissionIds ||
+          manager.permissions?.map(p => p.id) ||
+          manager.permissions?.map(p => p.value) ||
+          [];
+        const permissionCount = managerPermissionIds.length;
+        const permissionModules = managerPermissionIds.map(id => {
+          const permission = permissions.find(p =>
+            p.id === id ||
+            p.value === id ||
+            p.id === parseInt(id) ||
+            p.value === parseInt(id) ||
+            p.id === String(id) ||
+            p.value === String(id)
+          );
+          return permission?.module || permission?.name || '';
         }).filter(Boolean);
 
         const uniqueModules = [...new Set(permissionModules)];
@@ -70,6 +82,9 @@ const ManagersDashboard = () => {
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]" title={moduleNames}>
                 {moduleNames}
               </p>
+            )}
+            {permissionCount === 0 && (
+              <p className="text-xs text-red-500">No permissions assigned</p>
             )}
           </div>
         );
@@ -104,7 +119,6 @@ const ManagersDashboard = () => {
         dispatch(showAlert({ message: 'Manager Created Successfully!', severity: 'success', duration: 2000 }));
         onClose();
       } catch (error) {
-        console.error('Create manager error:', error);
         dispatch(showAlert({ message: 'Error creating manager. Please try again.', severity: 'error', duration: 2000 }));
       }
     }
@@ -125,7 +139,6 @@ const ManagersDashboard = () => {
         dispatch(showAlert({ message: 'Manager Updated Successfully!', severity: 'success', duration: 2000 }));
         onClose();
       } catch (error) {
-        console.error('Update manager error:', error);
         dispatch(showAlert({ message: 'Error updating manager. Please try again.', severity: 'error', duration: 2000 }));
       }
     }
@@ -138,7 +151,6 @@ const ManagersDashboard = () => {
         dispatch(showAlert({ message: 'Manager Deleted Successfully!', severity: 'success', duration: 2000 }));
         setDeleteModalOpen(false);
       } catch (error) {
-        console.error('Delete manager error:', error);
         dispatch(showAlert({ message: 'Error deleting manager. Please try again.', severity: 'error', duration: 2000 }));
       }
     }
@@ -169,7 +181,7 @@ const ManagersDashboard = () => {
   return (
     <div>
       <div className="mt-3 mb-5">
-        <HeadingCard icon={<FaUserShield className="text-brandGreen text-3xl" />} subtitle="Manage Managers">
+        <HeadingCard icon={<FaUserShield className="text-brandGreen text-3xl" />} title="Manage Managers" subtitle="Add, Edit, Update or Remove Managers">
           <HeaderButton
             icon={MdAdd}
             text="Add New Manager"

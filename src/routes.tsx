@@ -17,7 +17,11 @@ import {
   FaCog
 } from 'react-icons/fa';
 
-import { selectIsSuperAdmin, selectIsAdmin, selectIsSalesPerson, selectIsManager } from 'store/selectors/authSelectors';
+import {
+  selectUserPermissions,
+  selectIsSuperAdmin, selectIsAdmin, selectIsSalesPerson, selectIsManager,
+  canAccessDashboard, selectCanManageProducts, selectCanManageProductSizes, selectCanManageProductLoyalty, selectCanManagePointLoyalty, selectCanManageWalletCards, selectCanManageCustomers, selectCanManageSalesPerson, selectCanManageManagers, selectCanAccessSettings, selectCanAccessWalletAddress, selectCanAccessWalletSocialLinks, selectCanAccessWalletBeacons, selectCanAccessWalletSupport, selectCanAccessWalletTermsAndConditions, selectCanScanCards
+} from 'store/selectors/authSelectors';
 
 export const useRoutes = () => {
   const isSuperAdmin = useSelector(selectIsSuperAdmin);
@@ -25,9 +29,26 @@ export const useRoutes = () => {
   const isSalesPerson = useSelector(selectIsSalesPerson);
   const isManager = useSelector(selectIsManager);
 
+  const dashboardAccess = useSelector(canAccessDashboard);
+  const canManageProducts = useSelector(selectCanManageProducts);
+  const canManageProductSizes = useSelector(selectCanManageProductSizes);
+  const canManageProductLoyalty = useSelector(selectCanManageProductLoyalty);
+  const canManagePointLoyalty = useSelector(selectCanManagePointLoyalty);
+  const canManageWalletCards = useSelector(selectCanManageWalletCards);
+  const canManageCustomers = useSelector(selectCanManageCustomers);
+  const canManageSalesPerson = useSelector(selectCanManageSalesPerson);
+  const canManageManagers = useSelector(selectCanManageManagers);
+  const canAccessSettings = useSelector(selectCanAccessSettings);
+  const canAccessWalletAddress = useSelector(selectCanAccessWalletAddress);
+  const canAccessWalletSocialLinks = useSelector(selectCanAccessWalletSocialLinks);
+  const canAccessWalletBeacons = useSelector(selectCanAccessWalletBeacons);
+  const canAccessWalletSupport = useSelector(selectCanAccessWalletSupport);
+  const canAccessWalletTermsAndConditions = useSelector(selectCanAccessWalletTermsAndConditions);
+  const canScanCards = useSelector(selectCanScanCards);
+
   const allRoutes = [
 
-    ...(isAdmin || isManager ? [{
+    ...(isAdmin || dashboardAccess ? [{
       heading: 'Overview',
       name: 'Main Dashboard',
       layout: '/main',
@@ -35,7 +56,16 @@ export const useRoutes = () => {
       icon: <MdBarChart className="h-6 w-6" />,
     }] : []),
 
-    ...(isAdmin ? [{
+    ...(canScanCards ? [{
+      heading: 'Sales',
+      name: 'Scan Card',
+      icon: <MdQrCodeScanner className="h-6 w-6" />,
+      layout: '/sales',
+      path: 'card-scanner',
+      showDivider: false,
+    }] : []),
+
+    ...(isAdmin || canManageProducts || canManageProductSizes ? [{
       heading: 'Product & Loyalties',
       name: 'Products',
       icon: <FaBox className="h-6 w-6" />,
@@ -43,44 +73,44 @@ export const useRoutes = () => {
       path: '',
       showDivider: false,
       submenu: [
-        {
+        ...(isAdmin || canManageProducts ? [{
           name: 'Product Listing',
           layout: '/main/product',
           path: 'all',
           icon: <MdHome className="h-6 w-6" />,
-        },
-        {
+        }] : []),
+        ...(isAdmin || canManageProductSizes ? [{
           name: 'Product Sizes',
           layout: '/main/product',
           path: 'size',
           icon: <MdHome className="h-6 w-6" />,
-        },
+        }] : []),
       ],
     }] : []),
 
-    ...(isAdmin ? [{
+    ...(isAdmin || canManageProductLoyalty || canManagePointLoyalty ? [{
       name: 'Loyalty',
       icon: <FaThLarge className="h-6 w-6" />,
       layout: '/main/loyalty',
       path: '',
       showDivider: false,
       submenu: [
-        {
+        ...(isAdmin || canManageProductLoyalty ? [{
           name: 'Product Loyalty',
           layout: '/main/loyalty',
           path: 'product',
           icon: <MdHome className="h-6 w-6" />,
-        },
-        {
+        }] : []),
+        ...(isAdmin || canManagePointLoyalty ? [{
           name: 'Point Loyalty',
           layout: '/main/loyalty',
           path: 'point',
           icon: <MdHome className="h-6 w-6" />,
-        },
+        }] : []),
       ],
     }] : []),
 
-    ...(isAdmin ? [{
+    ...(isAdmin || canManageWalletCards ? [{
       name: 'Cards',
       icon: <FaCreditCard className="h-6 w-6" />,
       layout: '/main/walletCards',
@@ -95,7 +125,7 @@ export const useRoutes = () => {
       ],
     }] : []),
 
-    ...(isAdmin ? [{
+    ...(isAdmin || canManageCustomers ? [{
       heading: 'Management',
       name: 'Customers',
       layout: '/main/customer',
@@ -104,7 +134,7 @@ export const useRoutes = () => {
       showDivider: false,
     }] : []),
 
-    ...(isAdmin ? [{
+    ...(isAdmin || canManageSalesPerson ? [{
       name: 'Sales Person',
       layout: '/main',
       path: 'sales-person',
@@ -112,14 +142,14 @@ export const useRoutes = () => {
       showDivider: false,
     }] : []),
 
-    ...(isAdmin ? [{
+    ...(isAdmin || canManageManagers ? [{
       name: 'Managers',
       layout: '/main',
       path: 'managers',
       icon: <FaBuilding className="h-6 w-6" />,
     }] : []),
 
-    ...(isAdmin ? [{
+    ...(isAdmin || canAccessSettings ? [{
       heading: 'Settings',
       name: 'Settings',
       icon: <FaCog className="h-6 w-6" />,
@@ -127,36 +157,36 @@ export const useRoutes = () => {
       path: '',
       showDivider: false,
       submenu: [
-        {
+        ...(isAdmin || canAccessWalletAddress ? [{
           name: 'Wallet Address',
           layout: '/main/settings',
           path: 'wallet-address',
           icon: <MdHome className="h-6 w-6" />,
-        },
-        {
+        }] : []),
+        ...(isAdmin || canAccessWalletSocialLinks ? [{
           name: 'Wallet Social Links',
           layout: '/main/settings',
           path: 'wallet-social-links',
           icon: <MdHome className="h-6 w-6" />,
-        },
-        {
+        }] : []),
+        ...(isAdmin || canAccessWalletBeacons ? [{
           name: 'Wallet Beacons',
           layout: '/main/settings',
           path: 'wallet-beacons',
           icon: <MdHome className="h-6 w-6" />,
-        },
-        {
+        }] : []),
+        ...(isAdmin || canAccessWalletSupport ? [{
           name: 'Wallet Support',
           layout: '/main/settings',
           path: 'wallet-support',
           icon: <MdHome className="h-6 w-6" />,
-        },
-        {
+        }] : []),
+        ...(isAdmin || canAccessWalletTermsAndConditions ? [{
           name: 'Terms & Conditions',
           layout: '/main/settings',
           path: 'wallet-terms-conditions',
           icon: <MdHome className="h-6 w-6" />,
-        },
+        }] : []),
       ],
     }] : []),
 
@@ -176,16 +206,6 @@ export const useRoutes = () => {
       path: 'subscriptions',
       icon: <MdOutlineSubscriptions className="h-6 w-6" />,
     }] : []),
-
-    ...(isSalesPerson ? [{
-      heading: 'Sales',
-      name: 'Scan Card',
-      icon: <MdQrCodeScanner className="h-6 w-6" />,
-      layout: '/sales',
-      path: 'card-scanner',
-      showDivider: false,
-    }] : []),
-
   ];
 
   return allRoutes;

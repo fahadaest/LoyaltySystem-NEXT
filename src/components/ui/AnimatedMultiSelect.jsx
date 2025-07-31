@@ -91,7 +91,6 @@ const AnimatedMultiSelect = forwardRef(({
         }
     }, [isOpen]);
 
-    // Close dropdown and reset state
     const closeDropdown = () => {
         setIsOpen(false);
         setDropdownReady(false);
