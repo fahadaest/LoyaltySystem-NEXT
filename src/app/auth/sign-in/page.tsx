@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import AnimatedInput from 'components/ui/AnimatedInput';
 import AnimatedButton from 'components/ui/AnimatedButton';
 import Default from 'components/auth/variants/DefaultAuthLayout';
-import Checkbox from 'components/checkbox';
 import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from 'hooks/useAuth';
 
@@ -55,8 +54,6 @@ function SignInDefault() {
 
   const handleSignIn = async () => {
     setLocalError('');
-
-    // Validate inputs
     const emailValidationError = validateEmail(email);
     const passwordValidationError = validatePassword(password);
 
@@ -71,7 +68,6 @@ function SignInDefault() {
       const result = await login(email, password);
 
       if (result.success) {
-        // Success handling - router redirect will be handled by useEffect
       } else {
         setLocalError(result.error || 'Invalid email or password. Please try again.');
       }
@@ -87,11 +83,11 @@ function SignInDefault() {
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.role === 'superadmin') {
-        router.replace('/superadmin/manage-admin');
+        router.replace('/admin/manage-admin');
       } else if (user.role === 'admin') {
         router.replace('/admin/dashboard');
       } else if (user.role === 'salesperson') {
-        router.replace('/sales/dashboard');
+        router.replace('/admin/card-scanner');
       }
     }
   }, [isAuthenticated, user, router]);

@@ -20,8 +20,6 @@ import TopProductsTable from 'components/admin/dashboard/TopProductsTable';
 const Dashboard = () => {
   const { data: widgetsData, isLoading, error } = useGetWidgetDataQuery({});
 
-  console.log("tableDataComplex", tableDataComplex)
-
   if (isLoading) {
     return <div className="p-4">Loading dashboard data...</div>;
   }

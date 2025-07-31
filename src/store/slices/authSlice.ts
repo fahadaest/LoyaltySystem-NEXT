@@ -1,35 +1,21 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { authApi } from 'store/apiEndPoints/authApi';
 
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: 'admin' | 'superadmin';
-}
-
-interface AuthState {
-    user: User | null;
-    isAuthenticated: boolean;
-    isInitialized: boolean;
-    token: string | null;
-}
-
-const initialState: AuthState = {
+const initialState = {
     user: null,
     isAuthenticated: false,
     isInitialized: false,
     token: null,
 };
 
-const normalizeUserData = (userData: any): User => {
+const normalizeUserData = (userData) => {
     const id = userData.id || userData._id;
 
     const normalized = {
         id: id.toString(),
         name: `${userData.firstName} ${userData.lastName}`,
         email: userData.email,
-        role: userData.role as 'admin' | 'superadmin'
+        role: userData.role
     };
 
     return normalized;
@@ -39,7 +25,7 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
+        setCredentials: (state, action) => {
             const { user, token } = action.payload;
             state.user = user;
             state.token = token;

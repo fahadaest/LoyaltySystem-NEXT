@@ -7,7 +7,7 @@ import 'styles/index.css';
 import { Provider } from 'react-redux';
 import { store } from 'store/store';
 import CustomAlert from 'components/customAlert/CustomAlert';
-import { AuthWrapper } from './permissions/AuthWrapper';
+import { AuthWrapper } from './AuthWrapper';
 
 import dynamic from 'next/dynamic';
 

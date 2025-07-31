@@ -36,6 +36,16 @@ export const selectIsAdmin = createSelector(
     (role) => role === 'admin'
 );
 
+export const selectIsSalesPerson = createSelector(
+    [selectUserRole],
+    (role) => role === 'salesperson'
+);
+
+export const selectIsManager = createSelector(
+    [selectUserRole],
+    (role) => role === 'manager'
+);
+
 export const selectIsAdminOrAbove = createSelector(
     [selectUserRole],
     (role) => ['admin', 'superadmin'].includes(role as string)
