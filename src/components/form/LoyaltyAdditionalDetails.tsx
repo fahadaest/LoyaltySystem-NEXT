@@ -5,8 +5,7 @@ import ImageSelector from 'components/ui/ImageSelector';
 import QRCode from 'react-qr-code';
 import { MdTitle, MdPalette, MdPhotoSizeSelectActual, MdQrCode, MdTextFields } from 'react-icons/md';
 import { Type, Palette, Image, Settings } from 'lucide-react';
-
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getImageUrl } from 'utils/imageUtils';
 
 const LoyaltyAdditionalDetails = ({
     formData,
@@ -59,7 +58,7 @@ const LoyaltyAdditionalDetails = ({
 
     useEffect(() => {
         if (selectedLoyaltyData?.templateImage) {
-            updateFormField('templateImage', baseUrl + selectedLoyaltyData.templateImage);
+            updateFormField(getImageUrl(selectedLoyaltyData?.templateImage));
         }
     }, [selectedLoyaltyData, updateFormField]);
 

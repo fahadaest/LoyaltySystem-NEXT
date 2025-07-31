@@ -1,6 +1,6 @@
 import React from 'react';
 import QRCode from 'react-qr-code';
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getImageUrl } from 'utils/imageUtils';
 
 const LoyaltyBannerPreview = ({
     registerCustomerLink,
@@ -20,8 +20,8 @@ const LoyaltyBannerPreview = ({
     icon2TextSize,
     icon3TextSize
 }) => {
-    const logoImage = baseUrl + logo;
-    const mainImage = baseUrl + templateImage;
+    const logoImage = getImageUrl(logo);
+    const mainImage = getImageUrl(templateImage);
     return (
         <div className="w-full flex justify-center bg-black-900">
             <div

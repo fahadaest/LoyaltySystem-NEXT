@@ -246,7 +246,8 @@ export default function SubscriptionsPage() {
     <div className="mt-5 grid grid-cols-1 gap-5">
       <div className="mt-3">
         <HeadingCard
-          subtitle="Manage Subscriptions"
+          title="Manage Subscriptions"
+          subtitle="Manage all your Subscriptions"
           icon={<FaCogs className="text-3xl text-brandGreen dark:text-white" />}
         >
           <HeaderButton

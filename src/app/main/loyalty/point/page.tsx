@@ -21,6 +21,7 @@ import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { MdStar } from "react-icons/md";
 import { MdCardGiftcard } from 'react-icons/md';
 import LoyaltyBannerPreview from 'components/banner/LoyaltyBannerPreview';
+import { getImageUrl } from 'utils/imageUtils';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -128,19 +129,19 @@ const Dashboard = () => {
       rewardPoints: data.rewardPoints || '',
       rewardPointsEquivalent: data.rewardPointsEquivalent || '',
       templateColor: data.templateColor || '#4a5568',
-      logo: data.logo ? baseUrl + data.logo : null,
+      logo: data.logo ? getImageUrl(data.log) : null,
       bannerTitle: data.bannerTitle || '',
       logoBlob: null,
-      templateImage: data.templateImage ? baseUrl + data.templateImage : null,
+      templateImage: data.templateImage ? getImageUrl(data.templateImage) : null,
       icon1Text: data.icon1Text || '100 Points',
       icon2Text: data.icon2Text || 'Equals 1 AED',
       icon3Text: data.icon3Text || 'No Limits',
       icon1TextSize: data.icon1TextSize || 12,
       icon2TextSize: data.icon2TextSize || 12,
       icon3TextSize: data.icon3TextSize || 12,
-      icon1: data.icon1 ? baseUrl + data.icon1 : null,
-      icon2: data.icon2 ? baseUrl + data.icon2 : null,
-      icon3: data.icon3 ? baseUrl + data.icon3 : null,
+      icon1: data.icon1 ? getImageUrl(data.icon1) : null,
+      icon2: data.icon2 ? getImageUrl(data.icon2) : null,
+      icon3: data.icon3 ? getImageUrl(data.icon3) : null,
       logoSize: data.logoSize || 60,
       qrSize: data.qrSize || 80,
       templateImageBlob: null,

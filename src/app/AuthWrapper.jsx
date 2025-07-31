@@ -13,6 +13,7 @@ export const AuthWrapper = ({ children }) => {
     const { isAuthenticated, isInitialized } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
+    console.log("pathname", pathname)
 
     useEffect(() => {
         if (isInitialized && !isAuthenticated && !publicRoutes.includes(pathname)) {
