@@ -1,14 +1,17 @@
 'use client';
+import { useSelector } from 'react-redux';
 import General from 'components/admin/profile/General';
 import ProfileBanner from 'components/admin/profile/ProfileBanner';
 import { useGetMyProfileQuery } from 'store/apiEndPoints/userApi';
 import CustomModal from 'components/modal/CustomModal';
 import { useState } from 'react';
 import EditProfile from 'components/admin/profile/EditProfile';
+import { selectIsAdmin } from 'store/selectors/authSelectors';
 
 const ProfileOverview = () => {
   const { data, error, isLoading } = useGetMyProfileQuery();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isAdmin = useSelector(selectIsAdmin);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -24,9 +27,11 @@ const ProfileOverview = () => {
         <div className="col-span-12">
           <ProfileBanner data={data} onEdit={openModal} />
         </div>
-        <div className="col-span-12">
-          <General data={data} />
-        </div>
+        {isAdmin && (
+          <div className="col-span-12">
+            <General data={data} />
+          </div>
+        )}
       </div>
 
       <CustomModal

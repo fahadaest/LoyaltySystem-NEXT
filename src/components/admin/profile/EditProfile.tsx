@@ -7,6 +7,7 @@ import Card from 'components/card';
 import { showAlert } from 'store/apiEndPoints/alertSlice';
 import { useDispatch } from 'react-redux';
 import ImageUploaderAndCropper from 'components/imageUploader/ImageUploaderAndCropper';
+import { getImageUrl } from 'utils/imageUtils';
 
 const EditProfile = ({ data, onClose }) => {
     const [firstName, setFirstName] = useState(data?.firstName || '');
@@ -106,7 +107,7 @@ const EditProfile = ({ data, onClose }) => {
             <div className="col-span-12 flex flex-col justify-center mt-4">
                 <h4 className="text-lg font-bold text-brandGreen dark:text-white">Profile Image</h4>
                 <ImageUploaderAndCropper
-                    previewImage={profileImage}
+                    previewImage={getImageUrl(profileImage)}
                     setPreviewImage={setProfileImage}
                     onCropComplete={handleProfileImageCrop}
                     removeImage={() => removeImage('profile')}

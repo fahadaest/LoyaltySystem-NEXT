@@ -9,7 +9,6 @@ const initialState = {
 };
 
 const normalizeUserData = (userData) => {
-    console.log("normalizeUserData", userData);
     const id = userData.id || userData._id;
 
     const normalized = {

@@ -18,7 +18,6 @@ import {
 } from 'react-icons/fa';
 
 import {
-  selectUserPermissions,
   selectIsSuperAdmin, selectIsAdmin, selectIsSalesPerson, selectIsManager,
   canAccessDashboard, selectCanManageProducts, selectCanManageProductSizes, selectCanManageProductLoyalty, selectCanManagePointLoyalty, selectCanManageWalletCards, selectCanManageCustomers, selectCanManageSalesPerson, selectCanManageManagers, selectCanAccessSettings, selectCanAccessWalletAddress, selectCanAccessWalletSocialLinks, selectCanAccessWalletBeacons, selectCanAccessWalletSupport, selectCanAccessWalletTermsAndConditions, selectCanScanCards
 } from 'store/selectors/authSelectors';

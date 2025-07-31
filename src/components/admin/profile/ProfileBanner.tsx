@@ -1,16 +1,16 @@
 import Card from 'components/card';
 import Image from 'next/image';
 import { MdEdit } from 'react-icons/md';
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getImageUrl } from 'utils/imageUtils';
 
 const ProfileBanner = ({ data, onEdit }) => {
-  const coverImg = data?.coverImage ? baseUrl + data.coverImage : '/images/default-cover.jpg';
-  const profileImg = data?.profileImage ? baseUrl + data.profileImage : '/images/default-profile.jpg';
+  const coverImg = getImageUrl(data?.coverImage);
+  const profileImg = getImageUrl(data?.profileImage);
 
   return (
     <Card extra={'items-center w-full h-full p-[16px] bg-cover'}>
       <div className="absolute top-7 right-5 z-10">
-        <button onClick={onEdit} className="p-2 bg-brandGreen text-white rounded-full shadow-md "  >
+        <button onClick={onEdit} className="p-2 bg-brandGreen text-white rounded-full shadow-md">
           <MdEdit size={24} />
         </button>
       </div>
@@ -20,13 +20,21 @@ const ProfileBanner = ({ data, onEdit }) => {
         style={{ backgroundImage: `url(${coverImg})` }}
       >
         <div className="absolute -bottom-12 flex h-[87px] w-[87px] items-center justify-center rounded-full border-[4px] border-white bg-brandGreen dark:!border-navy-700">
-          <Image
-            width="20"
-            height="20"
-            className="h-full w-full rounded-full"
-            src={profileImg}
-            alt="Profile Avatar"
-          />
+          {profileImg ? (
+            <Image
+              width="87"
+              height="87"
+              className="h-full w-full rounded-full"
+              src={profileImg}
+              alt="Profile Avatar"
+            />
+          ) : (
+            <div className="h-full w-full rounded-full bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500 text-2xl font-bold">
+                {data?.firstName?.charAt(0) || '?'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
