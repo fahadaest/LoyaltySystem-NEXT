@@ -4,6 +4,7 @@ import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
 import { useDisclosure } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
+import { FaUserShield, FaUserPlus, FaUserEdit } from "react-icons/fa";
 import { useCreateManagerMutation, useGetAllManagersQuery, useUpdateManagerMutation, useDeleteManagerMutation } from 'store/apiEndPoints/managersApi';
 import { useGetAllPermissionsQuery } from 'store/apiEndPoints/permissionsApi';
 import Table from 'components/ui/Table';
@@ -11,7 +12,6 @@ import CustomModal from 'components/modal/CustomModal';
 import DeleteConfirmationModal from 'components/modal/DeleteConfirmationModal';
 import { useDispatch } from 'react-redux';
 import { showAlert } from 'store/apiEndPoints/alertSlice';
-import { FaUserShield } from "react-icons/fa";
 import AddManagerForm from 'components/managers/AddManagerForm';
 
 const ManagersDashboard = () => {
@@ -27,7 +27,6 @@ const ManagersDashboard = () => {
   const dispatch = useDispatch();
   const formRef = useRef(null);
 
-  // Get permissions from API or use empty array while loading
   const permissions = permissionsData?.flat || [];
 
   const columns = [
@@ -150,7 +149,6 @@ const ManagersDashboard = () => {
     setDeleteModalOpen(true);
   };
 
-  // Show loading state while permissions are loading
   if (permissionsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -160,7 +158,6 @@ const ManagersDashboard = () => {
     );
   }
 
-  // Show error state if permissions failed to load
   if (permissionsError) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -197,16 +194,16 @@ const ManagersDashboard = () => {
       <CustomModal
         isOpen={isOpen}
         onClose={onClose}
-        title={editRowData ? 'Edit Manager' : 'Add New Manager'}
+        headerTitle={editRowData ? 'Edit Manager' : 'Add Manager'}
+        headerDescription={editRowData ? 'You can edit existing Manager' : 'You can add new Manager'}
+        icon={editRowData ? <FaUserEdit className="text-brandGreen text-2xl" /> : <FaUserPlus className="text-brandGreen text-2xl" />}
         size="1xl"
         handlePrint={undefined}
         footerConfirmation={handleModalSubmit}
         footerConfirmButtonText={editRowData ? 'Update Manager' : 'Create Manager'}
         isLoading={isCreatingManager || isUpdatingManager}
         showFooter={true}
-        headerTitle={undefined}
-        headerDescription={undefined}
-        showFooterCancelButton={undefined}
+        showFooterCancelButton={onClose}
         footerConfirmButtonIcon={undefined}
         showModalBackButton={undefined}
         handleClickBack={undefined}

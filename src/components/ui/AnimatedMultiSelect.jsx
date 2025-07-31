@@ -21,6 +21,14 @@ const AnimatedMultiSelect = forwardRef(({
     const dropdownRef = useRef(null);
     const [mounted, setMounted] = useState(false);
 
+    // Function to format permission names
+    const formatPermissionName = (name) => {
+        return name
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    };
+
     useEffect(() => {
         setMounted(true);
         const timer = setTimeout(() => setIsVisible(true), 100);
@@ -111,7 +119,6 @@ const AnimatedMultiSelect = forwardRef(({
 
     const getSelectedCount = () => value.length;
 
-    // Flatten all items from all groups
     const getAllItems = () => {
         return Object.values(permissionsGrouped).flat();
     };
@@ -125,7 +132,6 @@ const AnimatedMultiSelect = forwardRef(({
                 setDropdownReady(false);
             } else {
                 setIsOpen(true);
-                // Position will be calculated in useEffect
             }
         }
     };
@@ -142,7 +148,6 @@ const AnimatedMultiSelect = forwardRef(({
                 minWidth: '200px'
             }}
         >
-            {/* Direct Product List */}
             {allItems.length > 0 ? (
                 <>
                     {allItems.map((item) => (
@@ -159,7 +164,7 @@ const AnimatedMultiSelect = forwardRef(({
                             )}
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                    {item.name}
+                                    {formatPermissionName(item.name)}
                                 </p>
                                 {item.description && (
                                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -170,7 +175,6 @@ const AnimatedMultiSelect = forwardRef(({
                         </button>
                     ))}
 
-                    {/* Clear All / Select All Actions */}
                     <div className="p-3 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-750">
                         <div className="flex gap-2">
                             <button
@@ -178,8 +182,6 @@ const AnimatedMultiSelect = forwardRef(({
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-
-                                    // Preserve scroll position for Clear All
                                     const scrollTop = dropdownRef.current?.scrollTop || 0;
                                     onChange([]);
 
@@ -229,7 +231,6 @@ const AnimatedMultiSelect = forwardRef(({
     return (
         <div className={`w-full transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
             <div className="relative" ref={containerRef}>
-                {/* Label */}
                 <div className="flex items-center gap-2 mb-2">
                     {Icon && <Icon size={16} className="text-brandGreen" />}
                     <label className={`text-sm font-semibold ${error ? 'text-red-600' : 'text-gray-700 dark:text-gray-300'}`}>
@@ -238,7 +239,6 @@ const AnimatedMultiSelect = forwardRef(({
                     </label>
                 </div>
 
-                {/* Dropdown Toggle */}
                 <button
                     type="button"
                     onClick={handleToggleOpen}
@@ -259,17 +259,15 @@ const AnimatedMultiSelect = forwardRef(({
                 >
                     <span className={`text-sm ${getSelectedCount() === 0 ? 'text-gray-400' : 'text-gray-900 dark:text-white'}`}>
                         {getSelectedCount() === 0
-                            ? 'Select products'
-                            : `${getSelectedCount()} product${getSelectedCount() !== 1 ? 's' : ''} selected`
+                            ? 'Select permissions'
+                            : `${getSelectedCount()} permission${getSelectedCount() !== 1 ? 's' : ''} selected`
                         }
                     </span>
                     {isOpen ? <MdExpandLess size={20} /> : <MdExpandMore size={20} />}
                 </button>
 
-                {/* Portal Dropdown Content */}
                 {isOpen && dropdownReady && mounted && typeof window !== 'undefined' && createPortal(
                     <>
-                        {/* Backdrop to close dropdown when clicking outside */}
                         <div
                             className="fixed inset-0 z-[9998]"
                             onClick={(e) => {
@@ -284,7 +282,6 @@ const AnimatedMultiSelect = forwardRef(({
                     document.body
                 )}
 
-                {/* Error Message */}
                 {error && (
                     <p className="mt-1 text-xs text-red-600 animate-slideDown">
                         {error}

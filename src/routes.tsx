@@ -27,138 +27,138 @@ export const useRoutes = () => {
 
   const allRoutes = [
 
-    ...(isAdmin ? [{
+    ...(isAdmin || isManager ? [{
       heading: 'Overview',
       name: 'Main Dashboard',
-      layout: '/admin',
+      layout: '/main',
       path: 'dashboard',
       icon: <MdBarChart className="h-6 w-6" />,
     }] : []),
 
-    {
+    ...(isAdmin ? [{
       heading: 'Product & Loyalties',
       name: 'Products',
       icon: <FaBox className="h-6 w-6" />,
-      layout: '/admin/product',
+      layout: '/main/product',
       path: '',
       showDivider: false,
       submenu: [
         {
           name: 'Product Listing',
-          layout: '/admin/product',
+          layout: '/main/product',
           path: 'all',
           icon: <MdHome className="h-6 w-6" />,
         },
         {
           name: 'Product Sizes',
-          layout: '/admin/product',
+          layout: '/main/product',
           path: 'size',
           icon: <MdHome className="h-6 w-6" />,
         },
       ],
-    },
+    }] : []),
 
-    {
+    ...(isAdmin ? [{
       name: 'Loyalty',
       icon: <FaThLarge className="h-6 w-6" />,
-      layout: '/admin/loyalty',
+      layout: '/main/loyalty',
       path: '',
       showDivider: false,
       submenu: [
         {
           name: 'Product Loyalty',
-          layout: '/admin/loyalty',
+          layout: '/main/loyalty',
           path: 'product',
           icon: <MdHome className="h-6 w-6" />,
         },
         {
           name: 'Point Loyalty',
-          layout: '/admin/loyalty',
+          layout: '/main/loyalty',
           path: 'point',
           icon: <MdHome className="h-6 w-6" />,
         },
       ],
-    },
+    }] : []),
 
-    {
+    ...(isAdmin ? [{
       name: 'Cards',
       icon: <FaCreditCard className="h-6 w-6" />,
-      layout: '/admin/walletCards',
+      layout: '/main/walletCards',
       path: '',
       submenu: [
         {
           name: 'Manage Wallet Cards',
-          layout: '/admin/walletCards',
+          layout: '/main/walletCards',
           path: 'view',
           icon: <MdHome className="h-6 w-6" />,
         },
       ],
-    },
+    }] : []),
 
-    {
+    ...(isAdmin ? [{
       heading: 'Management',
       name: 'Customers',
-      layout: '/admin/customer',
+      layout: '/main/customer',
       path: 'view',
       icon: <FaUsers className="h-6 w-6" />,
       showDivider: false,
-    },
+    }] : []),
 
-    {
+    ...(isAdmin ? [{
       name: 'Sales Person',
-      layout: '/admin',
+      layout: '/main',
       path: 'sales-person',
       icon: <FaBriefcase className="h-6 w-6" />,
       showDivider: false,
-    },
+    }] : []),
 
-    {
+    ...(isAdmin ? [{
       name: 'Managers',
-      layout: '/admin',
+      layout: '/main',
       path: 'managers',
       icon: <FaBuilding className="h-6 w-6" />,
-    },
+    }] : []),
 
-    {
+    ...(isAdmin ? [{
       heading: 'Settings',
       name: 'Settings',
       icon: <FaCog className="h-6 w-6" />,
-      layout: '/admin/settings',
+      layout: '/main/settings',
       path: '',
       showDivider: false,
       submenu: [
         {
           name: 'Wallet Address',
-          layout: '/admin/settings',
+          layout: '/main/settings',
           path: 'wallet-address',
           icon: <MdHome className="h-6 w-6" />,
         },
         {
           name: 'Wallet Social Links',
-          layout: '/admin/settings',
+          layout: '/main/settings',
           path: 'wallet-social-links',
           icon: <MdHome className="h-6 w-6" />,
         },
         {
           name: 'Wallet Beacons',
-          layout: '/admin/settings',
+          layout: '/main/settings',
           path: 'wallet-beacons',
           icon: <MdHome className="h-6 w-6" />,
         },
         {
           name: 'Wallet Support',
-          layout: '/admin/settings',
+          layout: '/main/settings',
           path: 'wallet-support',
           icon: <MdHome className="h-6 w-6" />,
         },
         {
           name: 'Terms & Conditions',
-          layout: '/admin/settings',
+          layout: '/main/settings',
           path: 'wallet-terms-conditions',
           icon: <MdHome className="h-6 w-6" />,
         },
       ],
-    },
+    }] : []),
 
     ...(isSuperAdmin ? [{
       heading: 'Admin',
@@ -176,7 +176,6 @@ export const useRoutes = () => {
       path: 'subscriptions',
       icon: <MdOutlineSubscriptions className="h-6 w-6" />,
     }] : []),
-
 
     ...(isSalesPerson ? [{
       heading: 'Sales',

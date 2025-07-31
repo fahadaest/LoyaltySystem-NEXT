@@ -1,18 +1,12 @@
 'use client';
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { MdPerson, MdEmail, MdLock, MdSupervisorAccount, MdSecurity, MdPersonAdd, MdClose } from 'react-icons/md';
+import { MdPerson, MdEmail, MdLock, MdSecurity } from 'react-icons/md';
 import AnimatedInput from '../ui/AnimatedInput';
 import AnimatedMultiSelect from 'components/ui/AnimatedMultiSelect';
 import FormSection from '../ui/FormSection';
-import { AnimatedCard, AnimatedCardHeader, AnimatedCardContent } from '../ui/AnimatedCard';
+import { AnimatedCard, AnimatedCardContent } from '../ui/AnimatedCard';
 
-const AddManagerForm = forwardRef(({
-    onSubmit,
-    permissions = [],
-    permissionsGrouped = {},
-    initialData = null,
-    isLoading = false
-}, ref) => {
+const AddManagerForm = forwardRef(({ onSubmit, permissions = [], permissionsGrouped = {}, initialData = null, isLoading = false }, ref) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -23,10 +17,8 @@ const AddManagerForm = forwardRef(({
 
     const [errors, setErrors] = useState({});
     const [isVisible, setIsVisible] = useState(false);
-
     const isEditMode = !!initialData;
 
-    // Expose handleSubmit to parent via ref
     useImperativeHandle(ref, () => ({
         handleSubmit
     }));
@@ -36,15 +28,18 @@ const AddManagerForm = forwardRef(({
         return () => clearTimeout(timer);
     }, []);
 
-    // Populate form with initial data for editing
     useEffect(() => {
         if (initialData) {
+            const permissionIds = initialData.permissions
+                ? initialData.permissions.map(permission => permission.id)
+                : initialData.permissionIds || [];
+
             setFormData({
                 firstName: initialData.firstName || '',
                 lastName: initialData.lastName || '',
                 email: initialData.email || '',
-                password: '', // Don't populate password for security
-                permissionIds: initialData.permissionIds || []
+                password: '',
+                permissionIds: permissionIds
             });
         }
     }, [initialData]);
@@ -61,18 +56,14 @@ const AddManagerForm = forwardRef(({
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(value) ? '' : 'Please enter a valid email address';
             case 'password':
-                // Only require password for new managers
                 if (!isEditMode) {
                     if (!value) return 'Password is required';
                     if (value.length < 8) return 'Password must be at least 8 characters long';
                 }
-                // For edit mode, only validate if password is provided
                 if (isEditMode && value && value.length < 8) {
                     return 'Password must be at least 8 characters long';
                 }
-                return '';
-            case 'permissionIds':
-                return value.length === 0 ? 'At least one permission must be selected' : '';
+                return '';;
             default:
                 return '';
         }
@@ -110,11 +101,10 @@ const AddManagerForm = forwardRef(({
                     permissionIds: formData.permissionIds.map(id => parseInt(id))
                 };
 
-                // For edit mode, include the ID and don't send empty password
                 if (isEditMode) {
                     submitData.id = initialData.id;
                     if (!submitData.password) {
-                        delete submitData.password; // Remove empty password field
+                        delete submitData.password;
                     }
                 }
 
@@ -132,7 +122,7 @@ const AddManagerForm = forwardRef(({
             <AnimatedCard>
                 <AnimatedCardContent>
                     <div className="space-y-6">
-                        {/* Personal Information */}
+
                         <FormSection
                             title="Personal Information"
                             icon={MdPerson}
@@ -161,7 +151,6 @@ const AddManagerForm = forwardRef(({
                             </div>
                         </FormSection>
 
-                        {/* Account Information */}
                         <FormSection
                             title="Account Information"
                             icon={MdEmail}
@@ -192,7 +181,6 @@ const AddManagerForm = forwardRef(({
                             </div>
                         </FormSection>
 
-                        {/* Manager Permissions */}
                         <FormSection
                             title="Manager Permissions & Authority"
                             icon={MdSecurity}
@@ -200,7 +188,6 @@ const AddManagerForm = forwardRef(({
                             isVisible={isVisible}
                         >
                             <div className="space-y-4">
-                                {/* Grouped Permission Selector */}
                                 <AnimatedMultiSelect
                                     label="Manager Permissions"
                                     icon={MdSecurity}
@@ -211,7 +198,6 @@ const AddManagerForm = forwardRef(({
                                     required
                                 />
 
-                                {/* Selected Permissions Summary */}
                                 {formData.permissionIds.length > 0 && (
                                     <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
                                         <div className="flex items-center gap-2 mb-3">
@@ -244,38 +230,6 @@ const AddManagerForm = forwardRef(({
                                     </div>
                                 )}
 
-                                {/* Manager Privileges Info */}
-                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                                    <div className="flex items-start gap-3">
-                                        <MdSupervisorAccount className="text-blue-600 dark:text-blue-400 text-xl mt-0.5" />
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                                                Manager Authority
-                                            </h4>
-                                            <p className="text-sm text-blue-700 dark:text-blue-300">
-                                                Managers have elevated permissions to oversee salespersons, access comprehensive reports, manage territories, and maintain team performance standards.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Permission Guidelines */}
-                                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
-                                    <div className="flex items-start gap-3">
-                                        <MdSecurity className="text-amber-600 dark:text-amber-400 text-xl mt-0.5" />
-                                        <div>
-                                            <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-2">
-                                                Permission Guidelines
-                                            </h4>
-                                            <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
-                                                <li>• <strong>Management:</strong> Full access to salesperson and team management</li>
-                                                <li>• <strong>Reports:</strong> Access to all team and performance analytics</li>
-                                                <li>• <strong>Settings:</strong> Configure team-specific system settings</li>
-                                                <li>• <strong>Customer:</strong> Oversee customer relationship management</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </FormSection>
                     </div>
@@ -286,5 +240,4 @@ const AddManagerForm = forwardRef(({
 });
 
 AddManagerForm.displayName = 'AddManagerForm';
-
 export default AddManagerForm;

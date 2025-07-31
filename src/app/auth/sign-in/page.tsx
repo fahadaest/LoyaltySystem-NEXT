@@ -83,11 +83,13 @@ function SignInDefault() {
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.role === 'superadmin') {
-        router.replace('/admin/manage-admin');
+        router.replace('/main/manage-admin');
       } else if (user.role === 'admin') {
-        router.replace('/admin/dashboard');
+        router.replace('/main/dashboard');
       } else if (user.role === 'salesperson') {
-        router.replace('/admin/card-scanner');
+        router.replace('/main/card-scanner');
+      } else if (user.role === 'manager') {
+        router.replace('/main/dashboard');
       }
     }
   }, [isAuthenticated, user, router]);
