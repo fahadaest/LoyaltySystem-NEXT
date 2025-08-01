@@ -6,19 +6,42 @@ const publicRoutes = [
     '/login',
     '/register',
     '/forgot-password',
-    '/register-customer'
+    '/register-customer',
+    '/auth/sign-in'  // Add this
 ];
 
 export const AuthWrapper = ({ children }) => {
     const { isAuthenticated, isInitialized } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
-    console.log("pathname", pathname)
+
+    console.log('AuthWrapper state:', {
+        pathname,
+        isAuthenticated,
+        isInitialized,
+        isPublicRoute: publicRoutes.includes(pathname)
+    });
 
     useEffect(() => {
-        if (isInitialized && !isAuthenticated && !publicRoutes.includes(pathname)) {
+        if (!isInitialized) return;
+
+        if (pathname === '/' || !pathname) {
+            if (isAuthenticated) {
+                router.push('/main/dashboard');
+            } else {
+                router.push('/auth/sign-in');
+            }
+            return;
+        }
+
+        if (!isAuthenticated && !publicRoutes.includes(pathname)) {
             router.push('/auth/sign-in');
         }
+
+        if (isAuthenticated && pathname.startsWith('/auth/')) {
+            router.push('/main/dashboard');
+        }
+
     }, [isAuthenticated, isInitialized, router, pathname]);
 
     if (!isInitialized) {
