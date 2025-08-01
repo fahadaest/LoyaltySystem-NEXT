@@ -21,7 +21,6 @@ import { getImageUrl } from 'utils/imageUtils';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-// Initial form state constant to avoid recreation
 const INITIAL_LOYALTY_FORM_DATA = {
   loyaltyTemplates: "",
   rewardTitle: "",
@@ -75,7 +74,6 @@ const Dashboard = () => {
 
   const printRef = useRef(null);
 
-  // Memoized current URL to avoid recalculation
   const currentUrl = useMemo(() => {
     if (typeof window !== 'undefined') {
       return window.location.origin;
@@ -83,12 +81,10 @@ const Dashboard = () => {
     return '';
   }, []);
 
-  // Memoized loading state
   const isLoading = useMemo(() => {
     return isCreating || isUpdating || isDeleting;
   }, [isCreating, isUpdating, isDeleting]);
 
-  // Optimized form field updater
   const updateLoyaltyFormField = useCallback((field, value) => {
     setLoyaltyFormData(prev => ({
       ...prev,
@@ -150,7 +146,6 @@ const Dashboard = () => {
     });
   }, [baseUrl]);
 
-  // Enhanced form submission with better error handling
   const handleAddLoyalty = useCallback(async () => {
     if (isLoading) return; // Prevent double submission
 
@@ -434,7 +429,8 @@ const Dashboard = () => {
         isOpen={isViewModalOpen}
         onClose={closeViewModal}
         handlePrint={handlePrint}
-        title="Real-Time Banner Preview"
+        headerTitle="Real-Time Banner Preview"
+        headerDescription="You can print this banner to use it in your store."
         size="lg"
       >
         <div ref={printRef}>

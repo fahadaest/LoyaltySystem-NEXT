@@ -456,10 +456,10 @@ const Dashboard = () => {
         onClose={closeViewModal}
         handlePrint={handlePrint}
         headerTitle="Real-Time Banner Preview"
+        headerDescription="You can print this banner to use it in your store."
         size="lg"
         showModalBackButton={undefined}
         handleClickBack={undefined}
-        headerDescription={undefined}
         showFooter={undefined}
         showFooterCancelButton={undefined}
         footerConfirmation={undefined}
