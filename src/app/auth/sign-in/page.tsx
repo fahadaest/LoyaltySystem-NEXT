@@ -8,6 +8,7 @@ import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from 'hooks/useAuth';
 
 function SignInDefault() {
+  console.log('🟡 SIGN-IN PAGE IS RENDERING - SUCCESS!');
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

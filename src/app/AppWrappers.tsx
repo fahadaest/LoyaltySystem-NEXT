@@ -18,9 +18,6 @@ const NoSSR = dynamic(() => Promise.resolve(_NoSSR), {
 });
 
 const publicRoutes = [
-  '/login',
-  '/register',
-  '/forgot-password',
   '/register-customer',
   '/auth/sign-in'
 ];
@@ -51,10 +48,12 @@ const AuthWrapper = ({ children }: { children: ReactNode }) => {
 
     if (!isAuthenticated && !publicRoutes.includes(pathname)) {
       router.push('/auth/sign-in');
+      return;
     }
 
     if (isAuthenticated && pathname.startsWith('/auth/')) {
       router.push('/main/dashboard');
+      return;
     }
 
   }, [isAuthenticated, isInitialized, router, pathname]);
