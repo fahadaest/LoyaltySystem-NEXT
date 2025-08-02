@@ -36,6 +36,7 @@ const AnimatedPhoneInput = ({
             onCountryChange(country.code);
         }
     };
+
     const handlePhoneChange = (e) => {
         const inputValue = e.target.value;
         // Remove all non-numeric characters
@@ -88,7 +89,7 @@ const AnimatedPhoneInput = ({
         };
     }, [isOpen]);
 
-    // Format phone number display
+    // Format phone number display - shorter for mobile
     const formatPhoneNumber = (number) => {
         // Only format if it's a valid length
         if (!number || !/^\d{9}$|^\d{10}$|^\d{11}$/.test(number)) {
@@ -124,7 +125,7 @@ const AnimatedPhoneInput = ({
 
             {/* Phone Input Container */}
             <div className="relative group" style={{ zIndex: 1000 }}>
-                <div className={`flex rounded-xl border-2 transition-all duration-200 relative
+                <div className={`flex rounded-xl border-2 transition-all duration-200 relative overflow-hidden
                     ${hasError
                         ? 'border-red-500 focus-within:border-red-500 focus-within:ring-red-500'
                         : 'border-gray-200 focus-within:border-brandGreen focus-within:ring-brandGreen dark:border-gray-600 group-hover:border-gray-300'
@@ -132,27 +133,26 @@ const AnimatedPhoneInput = ({
                     focus-within:outline-none focus-within:ring-2 focus-within:ring-opacity-50 dark:bg-gray-700
                     transform`} data-phone-input>
 
-                    {/* Country Code Selector */}
-                    <div className="relative">
+                    {/* Country Code Selector - Made smaller for mobile */}
+                    <div className="relative flex-shrink-0">
                         <button
                             type="button"
                             onClick={() => setIsOpen(!isOpen)}
-                            className="flex items-center gap-2 px-3 py-3 bg-gray-50 dark:bg-gray-600 border-r border-gray-200 dark:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors duration-200 rounded-l-xl"
+                            className="flex items-center gap-1 px-2 sm:px-3 py-3 bg-gray-50 dark:bg-gray-600 border-r border-gray-200 dark:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors duration-200 rounded-l-xl min-w-0"
                         >
-                            <span className="text-lg">{selectedCountry.flag}</span>
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span className="text-base sm:text-lg">{selectedCountry.flag}</span>
+                            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                 {selectedCountry.code}
                             </span>
-                            {isOpen ? <MdExpandLess size={16} /> : <MdExpandMore size={16} />}
+                            {isOpen ? <MdExpandLess size={14} className="hidden sm:block" /> : <MdExpandMore size={14} className="hidden sm:block" />}
                         </button>
 
                         {/* Country Dropdown */}
                         {isOpen && (
                             <div
                                 ref={dropdownRef}
-                                className="absolute top-full left-0 mt-1 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-[99999]"
+                                className="absolute top-full left-0 mt-1 w-64 sm:w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-[99999]"
                                 style={{
-                                    // Fallback positioning
                                     position: 'absolute',
                                 }}
                             >
@@ -161,14 +161,14 @@ const AnimatedPhoneInput = ({
                                         key={country.iso}
                                         type="button"
                                         onClick={() => handleCountrySelect(country)}
-                                        className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl ${selectedCountry.iso === country.iso ? 'bg-brandGreen bg-opacity-10 border-r-2 border-brandGreen' : ''
+                                        className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl ${selectedCountry.iso === country.iso ? 'bg-brandGreen bg-opacity-10 border-r-2 border-brandGreen' : ''
                                             }`}
                                     >
-                                        <span className="text-lg">{country.flag}</span>
-                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[3rem]">
+                                        <span className="text-base sm:text-lg">{country.flag}</span>
+                                        <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[2.5rem] sm:min-w-[3rem]">
                                             {country.code}
                                         </span>
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                                        <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">
                                             {country.name}
                                         </span>
                                     </button>
@@ -188,7 +188,7 @@ const AnimatedPhoneInput = ({
                         onKeyDown={handleKeyPress}
                         placeholder={placeholder}
                         maxLength={11}
-                        className="flex-1 px-4 py-3 bg-transparent focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-r-xl"
+                        className="flex-1 px-3 sm:px-4 py-3 bg-transparent focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-r-xl text-sm sm:text-base min-w-0"
                         {...props}
                     />
                 </div>
@@ -197,7 +197,7 @@ const AnimatedPhoneInput = ({
                 <div className="absolute inset-0 rounded-xl bg-brandGreen opacity-0 group-focus-within:opacity-10 transition-opacity duration-200 pointer-events-none"></div>
             </div>
 
-            {/* Single feedback section to avoid overlapping */}
+            {/* Feedback section - optimized for mobile */}
             {hasValue && (
                 <div className="mt-2 space-y-1">
                     {/* Character count */}
@@ -208,23 +208,25 @@ const AnimatedPhoneInput = ({
                         {isValidLength ? (
                             <span className="text-brandGreen">✓ Valid</span>
                         ) : value.length > 0 ? (
-                            <span className="text-orange-500">Must be 9, 10, or 11 digits</span>
+                            <span className="text-orange-500">9-11 digits required</span>
                         ) : null}
                     </div>
 
-                    {/* Phone Format Preview or Length Guide */}
+                    {/* Phone Format Preview - mobile optimized */}
                     {isValidLength && !hasError ? (
                         <div className="animate-fadeIn">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                <span className="text-brandGreen">📞</span>
-                                Full number: {selectedCountry.code} {formatPhoneNumber(value)}
+                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 break-all">
+                                <span className="text-brandGreen flex-shrink-0">📞</span>
+                                <span className="truncate">
+                                    {selectedCountry.code} {formatPhoneNumber(value)}
+                                </span>
                             </p>
                         </div>
                     ) : !isValidLength && !hasError ? (
                         <div className="animate-fadeIn">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                <span className="text-orange-500">ℹ️</span>
-                                Phone number should be 9-11 digits (9: some mobile, 10: standard, 11: with country prefix)
+                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-start gap-1">
+                                <span className="text-orange-500 flex-shrink-0 mt-0.5">ℹ️</span>
+                                <span>Enter 9-11 digits for your phone number</span>
                             </p>
                         </div>
                     ) : null}
@@ -235,10 +237,10 @@ const AnimatedPhoneInput = ({
             {hasError && (
                 <div className="animate-slideDown">
                     <p className="text-sm text-red-500 flex items-center gap-2">
-                        <svg className="w-4 h-4 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 animate-bounce flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
-                        {error}
+                        <span>{error}</span>
                     </p>
                 </div>
             )}

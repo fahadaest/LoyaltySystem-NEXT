@@ -1,8 +1,6 @@
 'use client';
 
 export default function Home() {
-    console.log('🔴 Root page.tsx rendering - this should ONLY show for "/" route');
-
     return (
         <div className="min-h-screen flex items-center justify-center to-indigo-50 dark:from-navy-900 dark:via-navy-800 dark:to-navy-900">
             <div className="text-center space-y-8">
@@ -19,9 +17,6 @@ export default function Home() {
                     </h2>
                     <p className="text-gray-600 dark:text-gray-300 animate-pulse">
                         Initializing your experience...
-                    </p>
-                    <p className="text-xs text-gray-500 mt-2">
-                        Debug: This is the ROOT page (/)
                     </p>
                 </div>
 
