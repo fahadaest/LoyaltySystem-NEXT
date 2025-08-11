@@ -49,6 +49,7 @@
     "react-custom-scrollbars-2": "^4.2.1",
     "react-dom": "19.0.0",
     "react-icons": "^4.4.0",
+    "react-image-crop": "^11.0.10",
     "react-no-ssr": "^1.1.0",
     "react-qr-code": "^2.0.16",
     "react-redux": "^9.2.0",

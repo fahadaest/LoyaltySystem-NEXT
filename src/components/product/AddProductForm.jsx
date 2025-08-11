@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import { MdAdd, MdDriveFileRenameOutline, MdDescription, MdPhotoSizeSelectActual, MdCategory, MdInfo, MdImage, MdAttachMoney } from "react-icons/md";
 import { Package, Edit3, Image as ImageIcon, DollarSign } from "lucide-react";
 import Button from "components/button/Button";
-import ImageSelector from "components/ui/ImageSelector";
 import AnimatedInput from "components/ui/AnimatedInput";
 import AnimatedSelect from "components/ui/AnimatedSelect";
 import AnimatedPriceField from "components/ui/AnimatedPriceField";
@@ -22,9 +21,7 @@ const AddProductForm = ({
   size,
   setSize,
   previewImage,
-  setPreviewImage,
-  imageBlob,
-  setImageBlob,
+  onOpenImageSelector,
   sizeOptions,
   selectedProduct,
   isLoading,
@@ -85,15 +82,6 @@ const AddProductForm = ({
 
   const handleCurrencyChange = (currencyCode) => {
     setCurrency(currencyCode);
-  };
-
-  const handleImageChange = (imageUrl, blob) => {
-    setPreviewImage(imageUrl);
-    setImageBlob(blob);
-
-    if (errors.image) {
-      setErrors(prev => ({ ...prev, image: '' }));
-    }
   };
 
   const validateForm = () => {
@@ -218,19 +206,66 @@ const AddProductForm = ({
                   </div>
 
                   <div className="md:col-span-1">
-                    <ImageSelector
-                      label="Product Image"
-                      value={previewImage}
-                      onChange={handleImageChange}
-                      onBlobChange={setImageBlob}
-                      aspectRatio={1.3}
-                      error={errors.image}
-                      placeholder="Upload product image"
-                      maxWidth={400}
-                      maxHeight={300}
-                      quality={0.9}
-                      required
-                    />
+                    {/* Image Selection Area */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 mb-3">
+                        <MdImage size={16} className="text-brandGreen" />
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                          Product Image
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        {previewImage && (
+                          <div className="flex items-center animate-fadeIn">
+                            <div className="w-2 h-2 bg-brandGreen rounded-full mr-1 animate-pulse"></div>
+                            <span className="text-xs text-brandGreen font-medium">✓</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="relative">
+                        {previewImage ? (
+                          <div className="relative group">
+                            <img
+                              src={previewImage}
+                              alt="Product preview"
+                              className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 object-cover"
+                              style={{ maxHeight: 200, aspectRatio: 1.3 }}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={onOpenImageSelector}
+                                className="bg-brandGreen hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                              >
+                                <MdImage className="w-4 h-4" />
+                                Change Image
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            onClick={onOpenImageSelector}
+                            className="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-brandGreen dark:hover:border-brandGreen transition-colors"
+                            style={{ minHeight: 200 }}
+                          >
+                            <MdImage className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              Upload product image
+                            </p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                              Click to select image
+                            </p>
+                          </div>
+                        )}
+
+                        {errors.image && (
+                          <div className="mt-2 flex items-center gap-1 text-red-500 text-sm">
+                            <MdInfo size={14} />
+                            {errors.image}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
 

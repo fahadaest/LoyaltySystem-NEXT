@@ -1,43 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
-
-export interface Admin {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-}
-
-export interface CreateAdminRequest {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    phoneNumber: string;
-    loyaltyAccess?: {
-        pointBased?: boolean;
-        productBased?: boolean;
-    };
-    subscriptionId: number;
-}
-
-export interface UpdateAdminRequest {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    password?: string;
-    phoneNumber: string;
-    loyaltyAccess?: {
-        pointBased?: boolean;
-        productBased?: boolean;
-    };
-}
+import { getApiBaseUrl } from 'utils/api';
 
 export const adminApi = createApi({
     reducerPath: 'adminApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -49,7 +17,7 @@ export const adminApi = createApi({
     }),
     tagTypes: ['Admins'],
     endpoints: (builder) => ({
-        createAdmin: builder.mutation<Admin, CreateAdminRequest>({
+        createAdmin: builder.mutation({
             query: (newAdmin) => ({
                 url: '/admins',
                 method: 'POST',
@@ -57,15 +25,15 @@ export const adminApi = createApi({
             }),
             invalidatesTags: ['Admins'],
         }),
-        listAdmins: builder.query<Admin[], void>({
+        listAdmins: builder.query({
             query: () => '/admins',
             providesTags: ['Admins'],
         }),
-        getAdminById: builder.query<Admin, string>({
+        getAdminById: builder.query({
             query: (id) => `/admins/${id}`,
             providesTags: (result, error, id) => [{ type: 'Admins', id }],
         }),
-        updateAdmin: builder.mutation<Admin, { id: string; data: UpdateAdminRequest }>({
+        updateAdmin: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/admins/${id}`,
                 method: 'PUT',
@@ -76,7 +44,7 @@ export const adminApi = createApi({
                 { type: 'Admins' }
             ],
         }),
-        deleteAdmin: builder.mutation<{ message: string }, string>({
+        deleteAdmin: builder.mutation({
             query: (id) => ({
                 url: `/admins/${id}`,
                 method: 'DELETE',

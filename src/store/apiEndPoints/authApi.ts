@@ -1,36 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface LoginResponse {
-    _id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-    token: string;
-}
-
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-}
-
-export interface VerifyTokenResponse {
-    user: User;
-}
+import { getApiBaseUrl } from 'utils/api';
 
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-        prepareHeaders: (headers) => {
+        baseUrl: '',
+        prepareHeaders: (headers, { endpoint, forced, type }) => {
             const token = getCookie('token');
             if (token) {
                 headers.set('Authorization', `Bearer ${token}`);
@@ -41,22 +17,38 @@ export const authApi = createApi({
     }),
     tagTypes: ['Auth'],
     endpoints: (builder) => ({
-        login: builder.mutation<LoginResponse, LoginRequest>({
+        login: builder.mutation({
             query: (credentials) => ({
-                url: '/auth/login',
+                url: `${getApiBaseUrl()}/auth/login`,
                 method: 'POST',
                 body: credentials,
             }),
             invalidatesTags: ['Auth'],
         }),
-        verifyToken: builder.query<VerifyTokenResponse, void>({
-            query: () => '/users/profile',
+        verifyToken: builder.query({
+            query: () => `${getApiBaseUrl()}/users/profile`,
             providesTags: ['Auth'],
         }),
-        logout: builder.mutation<void, void>({
+        logout: builder.mutation({
             query: () => ({
-                url: '/auth/logout',
+                url: `${getApiBaseUrl()}/auth/logout`,
                 method: 'POST',
+            }),
+            invalidatesTags: ['Auth'],
+        }),
+        adminSignup: builder.mutation({
+            query: (signupData) => ({
+                url: `${getApiBaseUrl()}/admins/signup`,
+                method: 'POST',
+                body: signupData,
+            }),
+            invalidatesTags: ['Auth'],
+        }),
+        verifySignupOtp: builder.mutation({
+            query: (otpData) => ({
+                url: `${getApiBaseUrl()}/admins/verify-signup-otp`,
+                method: 'POST',
+                body: otpData,
             }),
             invalidatesTags: ['Auth'],
         }),
@@ -67,5 +59,7 @@ export const {
     useLoginMutation,
     useVerifyTokenQuery,
     useLogoutMutation,
-    useLazyVerifyTokenQuery
+    useLazyVerifyTokenQuery,
+    useAdminSignupMutation,
+    useVerifySignupOtpMutation
 } = authApi;

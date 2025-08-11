@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
+import { getApiBaseUrl } from 'utils/api';
 
 export const customersApi = createApi({
     reducerPath: 'customersApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -17,45 +18,7 @@ export const customersApi = createApi({
     tagTypes: ['Customer'],
     endpoints: (builder) => ({
         // Create a new customer with Apple Wallet integration
-        createCustomer: builder.mutation<{
-            success: boolean;
-            customer: {
-                id: number;
-                firstName: string;
-                lastName: string;
-                email: string;
-                phoneNumber: string;
-                adminId: number;
-                createdAt: string;
-                updatedAt: string;
-                loyaltyPrograms: Array<{
-                    id: number;
-                    customerId: number;
-                    loyaltyId: number;
-                    type: 'PRODUCT' | 'POINT';
-                    createdAt: string;
-                    updatedAt: string;
-                    pointLoyalty?: any;
-                    productLoyalty?: any;
-                }>;
-            };
-            appleWalletPass: {
-                available: boolean;
-                downloadUrl?: string;
-                fileName?: string;
-                passId?: number;
-                error?: string;
-                reason?: string;
-            };
-        }, {
-            firstName: string;
-            lastName: string;
-            email: string;
-            phoneNumber: string;
-            type: 'PRODUCT' | 'POINT';
-            loyaltyId: number;
-            adminId: number;
-        }>({
+        createCustomer: builder.mutation({
             query: (formData) => ({
                 url: '/customers',
                 method: 'POST',

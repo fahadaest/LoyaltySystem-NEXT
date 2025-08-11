@@ -6,6 +6,7 @@ import { useDisclosure } from '@chakra-ui/react';
 import AddProductForm from 'components/product/AddProductForm';
 import HeadingCard from 'components/header/HeadingCard';
 import HeaderButton from 'components/button/HeaderButton';
+import ImageSelector from 'components/ui/ImageSelector';
 import { MdAdd, MdEdit } from 'react-icons/md';
 import { FaBox } from "react-icons/fa";
 import { useGetAllProductsQuery, useDeleteProductMutation, useCreateProductMutation, useUpdateProductMutation } from 'store/apiEndPoints/productsApi';
@@ -18,6 +19,7 @@ import { getImageUrl } from 'utils/imageUtils';
 
 const Dashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isImageSelectorOpen, onOpen: onImageSelectorOpen, onClose: onImageSelectorClose } = useDisclosure();
   const dispatch = useDispatch();
 
   const { data: products, error, isLoading, refetch } = useGetAllProductsQuery();
@@ -100,6 +102,16 @@ const Dashboard = () => {
     onClose();
   };
 
+  const handleImageChange = (imageUrl, blob) => {
+    setPreviewImage(imageUrl);
+    setImageBlob(blob);
+    onImageSelectorClose();
+  };
+
+  const handleOpenImageSelector = () => {
+    onImageSelectorOpen();
+  };
+
   const handleCreateProduct = async () => {
     if (!productName || !description || !price || !size || !imageBlob) {
       dispatch(showAlert({ message: 'Please fill out all fields and upload an image.', severity: 'error', duration: 2000 }));
@@ -169,9 +181,7 @@ const Dashboard = () => {
     size,
     setSize,
     previewImage,
-    setPreviewImage,
-    imageBlob,
-    setImageBlob,
+    onOpenImageSelector: handleOpenImageSelector,
 
     // Data
     sizeOptions,
@@ -188,7 +198,7 @@ const Dashboard = () => {
   return (
     <div className="relative">
       <div className="mt-3 mb-5">
-        <HeadingCard icon={<FaBox className="text-brandGreen" />} subtitle="Manage Products">
+        <HeadingCard icon={<FaBox className="text-brandGreen" />} title="Manage Products" subtitle="Manage Your Products">
           <HeaderButton
             icon={MdAdd}
             text="Add Product"
@@ -240,6 +250,7 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Product Form Modal */}
       <CustomModal
         isOpen={isOpen}
         onClose={handleCloseModal}
@@ -254,6 +265,39 @@ const Dashboard = () => {
       >
         <AddProductForm {...formProps} />
       </CustomModal>
+
+      {/* Image Selector Modal - This will appear on top */}
+      {isImageSelectorOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999]">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Select Product Image
+              </h3>
+              <button
+                onClick={onImageSelectorClose}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <ImageSelector
+              label="Product Image"
+              value={previewImage}
+              onChange={handleImageChange}
+              onBlobChange={setImageBlob}
+              aspectRatio={1.3}
+              placeholder="Upload product image"
+              maxWidth={400}
+              maxHeight={300}
+              quality={0.9}
+              required
+            />
+          </div>
+        </div>
+      )}
 
       <DeleteConfirmationModal
         isOpen={deleteItemId !== null}

@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
+import { getApiBaseUrl } from 'utils/api';
 
 export const dashboardApi = createApi({
     reducerPath: 'dashboardApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -91,4 +92,5 @@ export const {
     useGetTopCustomersQuery,
     useGetTopProductsQuery,
     useGetRewardsAnalyticsQuery,
+    useGetTotalRewardsQuery,
 } = dashboardApi;

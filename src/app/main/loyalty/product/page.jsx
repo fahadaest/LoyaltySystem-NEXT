@@ -112,7 +112,7 @@ const Dashboard = () => {
     console.log("data", data)
 
     setLoyaltyFormData({
-      loyaltyTemplates: data.loyaltyTemplates || '',
+      loyaltyTemplates: '',
       rewardTitle: data.rewardTitle || '',
       rewardDescription: data.rewardDescription || '',
       purchaseQuantity: data.purchaseQuantity || '',
@@ -356,6 +356,7 @@ const Dashboard = () => {
         <div className="mt-3 mb-5">
           <HeadingCard
             icon={<FaGift className="text-brandGreen text-3xl" />}
+            title="Product Loyalty"
             subtitle="Manage Product-Based Loyalties Reward"
           >
             <HeaderButton
@@ -397,7 +398,7 @@ const Dashboard = () => {
         headerTitle={selectedLoyaltyData ? "Edit Loyalty" : "Add New Loyalty"}
         isOpen={isAddModalOpen}
         onClose={handleCloseAddModal}
-        size={modalSize}
+        size='4xl'
         showFooter={showFooter}
         showFooterCancelButton={showFooter}
         footerConfirmation={showFooter ? handleAddLoyalty : null}

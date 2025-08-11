@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
+import { getApiBaseUrl } from 'utils/api';
 
 export const managersApi = createApi({
     reducerPath: 'managersApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -29,7 +30,7 @@ export const managersApi = createApi({
             providesTags: ['Managers'],
         }),
         getManagerById: builder.query({
-            query: (id: number | string) => `/managers/${id}`,
+            query: (id) => `/managers/${id}`,
         }),
         updateManager: builder.mutation({
             query: ({ id, managerData }) => ({
@@ -40,7 +41,7 @@ export const managersApi = createApi({
             invalidatesTags: ['Managers'],
         }),
         deleteManager: builder.mutation({
-            query: (id: number | string) => ({
+            query: (id) => ({
                 url: `/managers/${id}`,
                 method: 'DELETE',
             }),

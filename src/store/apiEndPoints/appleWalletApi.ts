@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
+import { getApiBaseUrl } from 'utils/api';
 
 export const appleWalletApi = createApi({
     reducerPath: 'appleWalletApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -17,7 +18,7 @@ export const appleWalletApi = createApi({
     tagTypes: ['AppleWalletPass'],
     endpoints: (builder) => ({
         // Download Apple Wallet pass by serial number
-        downloadAppleWalletPass: builder.query<Blob, string>({
+        downloadAppleWalletPass: builder.query({
             query: (serialNumber) => ({
                 url: `/apple-wallet/download/${serialNumber}`,
                 responseHandler: (response) => response.blob(),
@@ -25,7 +26,7 @@ export const appleWalletApi = createApi({
         }),
 
         // Download Apple Wallet pass as mutation (for triggering downloads)
-        downloadAppleWalletPassMutation: builder.mutation<Blob, string>({
+        downloadAppleWalletPassMutation: builder.mutation({
             query: (serialNumber) => ({
                 url: `/apple-wallet/download/${serialNumber}`,
                 method: 'GET',
@@ -34,25 +35,7 @@ export const appleWalletApi = createApi({
         }),
 
         // Get Apple Wallet pass status
-        getAppleWalletPassStatus: builder.query<{
-            success: boolean;
-            pass: {
-                serialNumber: string;
-                status: 'active' | 'expired' | 'revoked';
-                loyaltyType: 'PRODUCT' | 'POINT';
-                customer: {
-                    firstName: string;
-                    lastName: string;
-                    email: string;
-                };
-                loyalty: {
-                    type: 'PRODUCT' | 'POINT';
-                    loyaltyId: number;
-                };
-                createdAt: string;
-                updatedAt: string;
-            };
-        }, string>({
+        getAppleWalletPassStatus: builder.query({
             query: (serialNumber) => `/apple-wallet/status/${serialNumber}`,
             providesTags: (result, error, serialNumber) => [
                 { type: 'AppleWalletPass', id: serialNumber }
@@ -60,24 +43,7 @@ export const appleWalletApi = createApi({
         }),
 
         // Get all Apple Wallet passes for a customer
-        getCustomerAppleWalletPasses: builder.query<{
-            success: boolean;
-            count: number;
-            passes: Array<{
-                id: number;
-                serialNumber: string;
-                loyaltyType: 'PRODUCT' | 'POINT';
-                status: 'active' | 'expired' | 'revoked';
-                downloadUrl: string;
-                loyaltyProgram: {
-                    rewardTitle: string;
-                    spendingAmount?: number;
-                    rewardPoints?: number;
-                    purchaseQuantity?: number;
-                };
-                createdAt: string;
-            }>;
-        }, number>({
+        getCustomerAppleWalletPasses: builder.query({
             query: (customerId) => `/apple-wallet/customer/${customerId}`,
             providesTags: (result, error, customerId) => [
                 { type: 'AppleWalletPass', id: `customer-${customerId}` }
@@ -85,15 +51,7 @@ export const appleWalletApi = createApi({
         }),
 
         // Revoke an Apple Wallet pass (admin only)
-        revokeAppleWalletPass: builder.mutation<{
-            success: boolean;
-            message: string;
-            pass: {
-                serialNumber: string;
-                status: string;
-                updatedAt: string;
-            };
-        }, string>({
+        revokeAppleWalletPass: builder.mutation({
             query: (serialNumber) => ({
                 url: `/apple-wallet/revoke/${serialNumber}`,
                 method: 'PUT',

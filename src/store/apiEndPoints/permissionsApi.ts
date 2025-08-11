@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
+import { getApiBaseUrl } from 'utils/api';
 
 export const permissionsApi = createApi({
     reducerPath: 'permissionsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -19,7 +20,7 @@ export const permissionsApi = createApi({
         getAllPermissions: builder.query({
             query: () => '/permissions',
             providesTags: ['Permissions'],
-            transformResponse: (response: any) => {
+            transformResponse: (response) => {
                 // Transform the grouped permissions into a flat array for easier use in forms
                 const flatPermissions = [];
                 Object.keys(response).forEach(module => {
@@ -39,7 +40,7 @@ export const permissionsApi = createApi({
             }
         }),
         getUserPermissions: builder.query({
-            query: (userId: number | string) => `/permissions/user/${userId}`,
+            query: (userId) => `/permissions/user/${userId}`,
             providesTags: (result, error, userId) => [{ type: 'UserPermissions', id: userId }],
         }),
         updateUserPermissions: builder.mutation({

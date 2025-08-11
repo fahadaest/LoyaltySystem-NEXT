@@ -1,593 +1,291 @@
-'use client';
-import React, { useState, useRef, useCallback, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { MdFileUpload, MdClose, MdCrop, MdCheck, MdImage } from "react-icons/md";
-import AnimatedButton from "./AnimatedButton";
+import React, { useState, useRef, useCallback } from 'react';
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+import { Upload, Crop, Check, X, RotateCcw } from 'lucide-react';
 
 const ImageSelector = ({
     label,
     value,
     onChange,
     onBlobChange,
-    aspectRatio,
+    aspectRatio = 1,
+    placeholder = "Upload image",
+    maxHeight = 200,
     error,
-    required = false,
-    placeholder = "Upload an image",
-    className = '',
-    maxWidth = 400,
-    maxHeight = 300,
-    quality = 0.95,
-    ...props
+    className = ""
 }) => {
-    const [cropModalOpen, setCropModalOpen] = useState(false);
-    const [currentImageToCrop, setCurrentImageToCrop] = useState(null);
-    const [crop, setCrop] = useState({
-        unit: '%',
-        width: 60,
-        height: 60,
-        x: 20,
-        y: 20
-    });
-    const cropImageRef = useRef(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [isResizing, setIsResizing] = useState(null);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [isAnimating, setIsAnimating] = useState(false);
-    const [imageNaturalDimensions, setImageNaturalDimensions] = useState({ width: 0, height: 0 });
+    const [isOpen, setIsOpen] = useState(false);
+    const [imgSrc, setImgSrc] = useState('');
+    const [crop, setCrop] = useState();
+    const [completedCrop, setCompletedCrop] = useState();
+    const [loading, setLoading] = useState(false);
 
+    const imgRef = useRef(null);
     const fileInputRef = useRef(null);
     const canvasRef = useRef(null);
 
-    const hasError = !!error;
-    const hasValue = value && value.trim() !== '';
+    // Handle file selection
+    const handleFileSelect = useCallback((e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-    console.log("crop-----> ", crop)
-
-    // Calculate proper crop dimensions based on aspect ratio and image dimensions
-    const calculateCropDimensions = (imageWidth, imageHeight, aspectRatio) => {
-        const imageAspectRatio = imageWidth / imageHeight;
-
-        let cropWidth, cropHeight;
-
-        if (imageAspectRatio > aspectRatio) {
-            // Image is wider than desired aspect ratio
-            // Base crop size on image height
-            cropHeight = Math.min(60, (imageHeight / Math.max(imageWidth, imageHeight)) * 100);
-            cropWidth = cropHeight * aspectRatio * (imageHeight / imageWidth);
-        } else {
-            // Image is taller than desired aspect ratio
-            // Base crop size on image width
-            cropWidth = Math.min(60, (imageWidth / Math.max(imageWidth, imageHeight)) * 100);
-            cropHeight = cropWidth / aspectRatio * (imageWidth / imageHeight);
-        }
-
-        return {
-            width: Math.min(cropWidth, 80), // Max 80% of image
-            height: Math.min(cropHeight, 80), // Max 80% of image
-            x: Math.max(10, (100 - cropWidth) / 2), // Center horizontally
-            y: Math.max(10, (100 - cropHeight) / 2) // Center vertically
-        };
-    };
-
-    useEffect(() => {
-        if (imageNaturalDimensions.width && imageNaturalDimensions.height && aspectRatio) {
-            const newCropDimensions = calculateCropDimensions(
-                imageNaturalDimensions.width,
-                imageNaturalDimensions.height,
-                aspectRatio
-            );
-
-            setCrop(prev => {
-                // Only update if the new dimensions are significantly different
-                const widthDiff = Math.abs(prev.width - newCropDimensions.width);
-                const heightDiff = Math.abs(prev.height - newCropDimensions.height);
-
-                if (widthDiff > 1 || heightDiff > 1) {
-                    return {
-                        ...prev,
-                        ...newCropDimensions
-                    };
-                }
-                return prev;
-            });
-        }
-    }, [aspectRatio, imageNaturalDimensions.width, imageNaturalDimensions.height]);
-
-    // Prevent body scroll when modal is open
-    useEffect(() => {
-        if (cropModalOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [cropModalOpen]);
-
-    const handleUploadClick = () => {
-        fileInputRef.current?.click();
-        setIsAnimating(true);
-        setTimeout(() => setIsAnimating(false), 150);
-    };
-
-    const handleFileChange = (event) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setCurrentImageToCrop({ file, src: e.target.result, name: file.name });
-                setCropModalOpen(true);
-            };
-            reader.readAsDataURL(file);
-        }
-        event.target.value = '';
-    };
-
-    const onImageLoadCallback = useCallback((img) => {
-        cropImageRef.current = img;
-        if (img && img.naturalWidth && img.naturalHeight) {
-            setImageNaturalDimensions(prev => {
-                // Only update if dimensions actually changed
-                if (prev.width !== img.naturalWidth || prev.height !== img.naturalHeight) {
-                    return {
-                        width: img.naturalWidth,
-                        height: img.naturalHeight
-                    };
-                }
-                return prev;
-            });
-        }
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+            setImgSrc(reader.result?.toString() || '');
+            setIsOpen(true);
+        });
+        reader.readAsDataURL(file);
     }, []);
 
-    const getCroppedImg = (image, crop) => {
+    // Initialize crop when image loads
+    const onImageLoad = useCallback((e) => {
+        const { width: displayedWidth, height: displayedHeight } = e.currentTarget;
+
+        // Calculate crop dimensions based on the displayed image size (not natural size)
+        let cropWidth, cropHeight;
+        if (displayedWidth / displayedHeight > aspectRatio) {
+            cropHeight = displayedHeight * 0.8; // Use 80% of displayed height
+            cropWidth = cropHeight * aspectRatio;
+        } else {
+            cropWidth = displayedWidth * 0.8; // Use 80% of displayed width
+            cropHeight = cropWidth / aspectRatio;
+        }
+
+        // Ensure crop doesn't exceed image boundaries
+        cropWidth = Math.min(cropWidth, displayedWidth * 0.9);
+        cropHeight = Math.min(cropHeight, displayedHeight * 0.9);
+
+        const crop = {
+            unit: 'px',
+            width: cropWidth,
+            height: cropHeight,
+            x: (displayedWidth - cropWidth) / 2,
+            y: (displayedHeight - cropHeight) / 2,
+        };
+
+        setCrop(crop);
+        setCompletedCrop(crop);
+    }, [aspectRatio]);
+
+    // Generate cropped image
+    const getCroppedImg = useCallback(async () => {
+        if (!completedCrop || !imgRef.current || !canvasRef.current) return;
+
+        setLoading(true);
+
+        const image = imgRef.current;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        const imageRect = image.getBoundingClientRect();
-        const scaleX = image.naturalWidth / imageRect.width;
-        const scaleY = image.naturalHeight / imageRect.height;
 
-        const cropX = (crop.x / 100) * imageRect.width;
-        const cropY = (crop.y / 100) * imageRect.height;
-        const cropWidth = (crop.width / 100) * imageRect.width;
-        const cropHeight = (crop.height / 100) * imageRect.height;
+        if (!ctx) return;
 
-        canvas.width = cropWidth * scaleX;
-        canvas.height = cropHeight * scaleY;
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
+
+        canvas.width = completedCrop.width * scaleX;
+        canvas.height = completedCrop.height * scaleY;
+
+        ctx.imageSmoothingQuality = 'high';
 
         ctx.drawImage(
             image,
-            cropX * scaleX,
-            cropY * scaleY,
-            cropWidth * scaleX,
-            cropHeight * scaleY,
+            completedCrop.x * scaleX,
+            completedCrop.y * scaleY,
+            completedCrop.width * scaleX,
+            completedCrop.height * scaleY,
             0,
             0,
-            cropWidth * scaleX,
-            cropHeight * scaleY
+            canvas.width,
+            canvas.height
         );
 
         return new Promise((resolve) => {
-            canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const croppedImageUrl = URL.createObjectURL(blob);
+                    onChange?.(croppedImageUrl);
+                    onBlobChange?.(blob);
+                    resolve(croppedImageUrl);
+                }
+            }, 'image/jpeg', 0.9);
         });
-    };
+    }, [completedCrop, onChange, onBlobChange]);
 
-    const handleCropComplete = async () => {
-        if (cropImageRef.current && crop.width && crop.height) {
-            try {
-                const blob = await getCroppedImg(cropImageRef.current, crop);
-                const imageUrl = URL.createObjectURL(blob);
-                onChange(imageUrl);
-                if (onBlobChange) {
-                    onBlobChange(blob);
-                }
-            } catch (error) {
-                console.error('Error cropping image:', error);
-            }
+    // Handle crop confirmation
+    const handleCropConfirm = useCallback(async () => {
+        await getCroppedImg();
+        setIsOpen(false);
+        setImgSrc('');
+        setLoading(false);
+    }, [getCroppedImg]);
+
+    // Handle crop cancel
+    const handleCropCancel = useCallback(() => {
+        setIsOpen(false);
+        setImgSrc('');
+        setCrop(undefined);
+        setCompletedCrop(undefined);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
+    }, []);
 
-        setCropModalOpen(false);
-        setCurrentImageToCrop(null);
-    };
-
-    const handleRemoveImage = (e) => {
-        e?.stopPropagation();
-
-        if (value && value.startsWith('blob:')) {
-            URL.revokeObjectURL(value);
+    // Reset/clear image
+    const handleReset = useCallback(() => {
+        onChange?.('');
+        onBlobChange?.(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
-
-        onChange('');
-        if (onBlobChange) {
-            onBlobChange(null);
-        }
-
-        setIsAnimating(true);
-        setTimeout(() => setIsAnimating(false), 150);
-    };
-
-    const handleCropMouseDown = (e) => {
-        e.stopPropagation();
-        if (!cropImageRef.current) return;
-
-        setIsDragging(true);
-        const rect = cropImageRef.current.getBoundingClientRect();
-        const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
-        const mouseY = ((e.clientY - rect.top) / rect.height) * 100;
-
-        setDragStart({
-            x: mouseX - crop.x,
-            y: mouseY - crop.y
-        });
-    };
-
-    const handleResizeMouseDown = (e, corner) => {
-        e.stopPropagation();
-        if (!cropImageRef.current) return;
-
-        setIsResizing(corner);
-        const rect = cropImageRef.current.getBoundingClientRect();
-        const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
-        const mouseY = ((e.clientY - rect.top) / rect.height) * 100;
-
-        setDragStart({ x: mouseX, y: mouseY });
-    };
-
-    const handleMouseMove = (e) => {
-        if (!cropImageRef.current || (!isDragging && !isResizing)) return;
-
-        const rect = cropImageRef.current.getBoundingClientRect();
-        const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
-        const mouseY = ((e.clientY - rect.top) / rect.height) * 100;
-
-        if (isDragging) {
-            const newX = Math.max(0, Math.min(mouseX - dragStart.x, 100 - crop.width));
-            const newY = Math.max(0, Math.min(mouseY - dragStart.y, 100 - crop.height));
-
-            setCrop(prev => ({
-                ...prev,
-                x: newX,
-                y: newY
-            }));
-        }
-
-        if (isResizing && imageNaturalDimensions.width && imageNaturalDimensions.height) {
-            const deltaX = mouseX - dragStart.x;
-            const deltaY = mouseY - dragStart.y;
-
-            let newWidth = crop.width;
-            let newHeight = crop.height;
-            let newX = crop.x;
-            let newY = crop.y;
-
-            // Calculate the actual aspect ratio correction factor based on image dimensions
-            const imageAspectRatio = imageNaturalDimensions.width / imageNaturalDimensions.height;
-            const aspectRatioCorrection = aspectRatio / imageAspectRatio;
-
-            if (isResizing === 'se') {
-                newWidth = Math.max(10, Math.min(crop.width + deltaX, 100 - crop.x));
-                newHeight = newWidth / aspectRatioCorrection;
-
-                // Ensure height doesn't exceed bounds
-                if (newHeight > 100 - crop.y) {
-                    newHeight = 100 - crop.y;
-                    newWidth = newHeight * aspectRatioCorrection;
-                }
-            }
-
-            if (isResizing === 'sw') {
-                const maxWidthChange = Math.min(deltaX, crop.x);
-                newWidth = Math.max(10, crop.width - maxWidthChange);
-                newHeight = newWidth / aspectRatioCorrection;
-                newX = crop.x + crop.width - newWidth;
-
-                // Ensure height doesn't exceed bounds
-                if (newHeight > 100 - crop.y) {
-                    newHeight = 100 - crop.y;
-                    newWidth = newHeight * aspectRatioCorrection;
-                    newX = crop.x + crop.width - newWidth;
-                }
-            }
-
-            if (isResizing === 'ne') {
-                const maxHeightChange = Math.min(-deltaY, crop.y);
-                newHeight = Math.max(10, crop.height - maxHeightChange);
-                newWidth = newHeight * aspectRatioCorrection;
-                newY = crop.y + crop.height - newHeight;
-
-                // Ensure width doesn't exceed bounds
-                if (newWidth > 100 - crop.x) {
-                    newWidth = 100 - crop.x;
-                    newHeight = newWidth / aspectRatioCorrection;
-                    newY = crop.y + crop.height - newHeight;
-                }
-            }
-
-            if (isResizing === 'nw') {
-                const maxWidthChange = Math.min(deltaX, crop.x);
-                const maxHeightChange = Math.min(-deltaY, crop.y);
-
-                newWidth = Math.max(10, crop.width - maxWidthChange);
-                newHeight = newWidth / aspectRatioCorrection;
-
-                newX = crop.x + crop.width - newWidth;
-                newY = crop.y + crop.height - newHeight;
-
-                // Adjust if exceeding bounds
-                if (newY < 0) {
-                    newY = 0;
-                    newHeight = crop.y + crop.height;
-                    newWidth = newHeight * aspectRatioCorrection;
-                    newX = crop.x + crop.width - newWidth;
-                }
-            }
-
-            // Final bounds checking
-            newWidth = Math.min(newWidth, 100 - newX);
-            newHeight = Math.min(newHeight, 100 - newY);
-
-            setCrop(prev => ({
-                ...prev,
-                width: Math.max(10, newWidth),
-                height: Math.max(10, newHeight),
-                x: Math.max(0, newX),
-                y: Math.max(0, newY)
-            }));
-
-            setDragStart({ x: mouseX, y: mouseY });
-        }
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-        setIsResizing(false);
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    useEffect(() => {
-        if (isDragging || isResizing) {
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-        }
-
-        return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [isDragging, isResizing, crop, aspectRatio, imageNaturalDimensions]);
-
-    // Modal component to render with createPortal
-    const CropModal = () => (
-        <div
-            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
-            style={{ zIndex: 999999 }}
-            onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                    setCropModalOpen(false);
-                    setCurrentImageToCrop(null);
-                }
-            }}
-        >
-            <div
-                className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold text-gray-700 dark:text-white flex items-center gap-2">
-                        <MdCrop className="text-brandGreen" />
-                        Crop Image
-                        <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
-                            ({aspectRatio.toFixed(2)}:1 ratio)
-                        </span>
-                    </h3>
-                    <button
-                        onClick={() => {
-                            setCropModalOpen(false);
-                            setCurrentImageToCrop(null);
-                        }}
-                        className="text-gray-500 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                        <MdClose size={24} />
-                    </button>
-                </div>
-
-                {/* Image Crop Area */}
-                <div className="flex justify-center mb-6">
-                    <div className="relative">
-                        <img
-                            ref={onImageLoadCallback}
-                            src={currentImageToCrop?.src}
-                            alt="Crop preview"
-                            className="max-w-full max-h-[50vh] object-contain select-none rounded-lg"
-                            style={{ cursor: 'default' }}
-                        />
-                    </div>
-
-
-                    {/* Crop Overlay */}
-                    <div
-                        className="absolute border-2 border-brandGreen bg-brandGreen bg-opacity-20 cursor-move rounded"
-                        style={{
-                            left: `${crop.x}%`,
-                            top: `${crop.y}%`,
-                            width: `${crop.width}%`,
-                            height: `${crop.height}%`
-                        }}
-                        onMouseDown={handleCropMouseDown}
-                    >
-                        {/* Resize Handles */}
-                        <div
-                            className="absolute -top-1 -left-1 w-3 h-3 bg-brandGreen border-2 border-white cursor-nw-resize rounded-full shadow-md"
-                            onMouseDown={(e) => handleResizeMouseDown(e, 'nw')}
-                        ></div>
-                        <div
-                            className="absolute -top-1 -right-1 w-3 h-3 bg-brandGreen border-2 border-white cursor-ne-resize rounded-full shadow-md"
-                            onMouseDown={(e) => handleResizeMouseDown(e, 'ne')}
-                        ></div>
-                        <div
-                            className="absolute -bottom-1 -left-1 w-3 h-3 bg-brandGreen border-2 border-white cursor-sw-resize rounded-full shadow-md"
-                            onMouseDown={(e) => handleResizeMouseDown(e, 'sw')}
-                        ></div>
-                        <div
-                            className="absolute -bottom-1 -right-1 w-3 h-3 bg-brandGreen border-2 border-white cursor-se-resize rounded-full shadow-md"
-                            onMouseDown={(e) => handleResizeMouseDown(e, 'se')}
-                        ></div>
-                    </div>
-                </div>
-
-                {/* Debug Info */}
-                <div className="text-xs text-gray-500 mb-4">
-                    <div>Image: {imageNaturalDimensions.width} × {imageNaturalDimensions.height}</div>
-                    <div>Crop: {crop.width.toFixed(1)}% × {crop.height.toFixed(1)}% at ({crop.x.toFixed(1)}%, {crop.y.toFixed(1)}%)</div>
-                    <div>Target Aspect Ratio: {aspectRatio.toFixed(2)}:1</div>
-                </div>
-
-                {/* Modal Actions */}
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-600">
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                        <span className="font-medium">Instructions:</span> Drag to move • Drag corners to resize
-                    </div>
-                    <div className="flex gap-3">
-                        <AnimatedButton
-                            variant="secondary"
-                            onClick={() => {
-                                setCropModalOpen(false);
-                                setCurrentImageToCrop(null);
-                            }}
-                            icon={MdClose}
-                        >
-                            Cancel
-                        </AnimatedButton>
-                        <AnimatedButton
-                            variant="primary"
-                            onClick={handleCropComplete}
-                            icon={MdCheck}
-                        >
-                            Apply Crop
-                        </AnimatedButton>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    }, [onChange, onBlobChange]);
 
     return (
-        <div className={`space-y-2 ${className}`}>
-            {/* Label with Icon */}
-            <div className="flex items-center gap-2">
-                <MdImage size={16} className="text-brandGreen" />
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <>
+            <div className={`space-y-2 ${className}`}>
+                {/* Label */}
+                <label className="block text-sm font-medium text-gray-700 dark:text-white">
                     {label}
-                    {required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                {hasValue && (
-                    <div className="flex items-center animate-fadeIn">
-                        <div className="w-2 h-2 bg-brandGreen rounded-full mr-1 animate-pulse"></div>
-                        <span className="text-xs text-brandGreen font-medium">✓</span>
-                    </div>
-                )}
-            </div>
 
-            {/* Image Selector */}
-            <div className="relative group">
-                {!hasValue ? (
-                    <button
-                        type="button"
-                        onClick={handleUploadClick}
-                        className={`w-full py-8 px-6 flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200
-                            ${hasError
-                                ? 'border-red-500 hover:border-red-400'
-                                : 'border-gray-200 hover:border-brandGreen dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                            }
-                            ${isAnimating ? 'scale-105 border-brandGreen' : 'scale-100'}
-                            transform focus:outline-none focus:ring-2 focus:ring-brandGreen focus:ring-opacity-50`}
-                    >
-                        <MdFileUpload
-                            className={`text-4xl mb-2 transition-all duration-200 
-                                ${hasError ? 'text-red-500' : 'text-brandGreen dark:text-white group-hover:text-brandGreen'}
-                                ${isAnimating ? 'scale-110' : 'scale-100'} transform`}
-                        />
-                        <h4 className="text-sm font-semibold text-gray-700 dark:text-white mb-1">
-                            {placeholder}
-                        </h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                            PNG, JPG, and GIF files are allowed
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                            Aspect Ratio: {aspectRatio.toFixed(2)}:1
-                        </p>
-                    </button>
-                ) : (
-                    <div className="relative group rounded-xl overflow-hidden border-2 border-gray-200 dark:border-gray-600">
-                        <img
-                            src={value}
-                            alt="Selected"
-                            className="w-full h-48 object-cover transition-transform duration-200 group-hover:scale-105"
-                            style={{ maxWidth: maxWidth, maxHeight: maxHeight }}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
-                                <AnimatedButton
-                                    size="sm"
-                                    variant="secondary"
-                                    onClick={handleUploadClick}
-                                    className="bg-white bg-opacity-90 text-gray-700 hover:bg-opacity-100"
+                {/* Upload Area or Preview */}
+                <div className="relative">
+                    {value ? (
+                        <div className="relative group">
+                            <img
+                                src={value}
+                                alt="Preview"
+                                className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 object-cover"
+                                style={{ maxHeight, aspectRatio }}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors"
+                                    title="Change image"
                                 >
-                                    Change
-                                </AnimatedButton>
-                                <AnimatedButton
-                                    size="sm"
-                                    variant="secondary"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleRemoveImage(e);
-                                    }}
-                                    className="bg-red-500 bg-opacity-90 text-white hover:bg-red-600 hover:bg-opacity-100"
-                                    icon={MdClose}
+                                    <Crop className="w-4 h-4" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleReset}
+                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+                                    title="Remove image"
                                 >
-                                    Remove
-                                </AnimatedButton>
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
                         </div>
-                    </div>
-                )}
+                    ) : (
+                        <div
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
+                            style={{ minHeight: maxHeight }}
+                        >
+                            <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{placeholder}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                Aspect ratio: {aspectRatio.toFixed(2)}:1
+                            </p>
+                        </div>
+                    )}
 
-                {/* Focus Ring Animation */}
-                <div className="absolute inset-0 rounded-xl bg-brandGreen opacity-0 group-focus-within:opacity-10 transition-opacity duration-200 pointer-events-none"></div>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                    />
+                </div>
+
+                {/* Error message */}
+                {error && <p className="text-sm text-red-500">{error}</p>}
             </div>
 
-            {/* Hidden File Input */}
-            <input
-                type="file"
-                accept="image/png, image/jpeg, image/gif"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-                {...props}
-            />
+            {/* Crop Modal */}
+            {isOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl max-h-[95vh] flex flex-col overflow-hidden">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                Crop Image
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                    Ratio: {aspectRatio.toFixed(2)}:1
+                                </span>
+                            </div>
+                        </div>
 
-            {/* Error Message */}
-            {hasError && (
-                <div className="animate-slideDown">
-                    <p className="text-sm text-red-500 flex items-center gap-2">
-                        <svg className="w-4 h-4 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                        {error}
-                    </p>
+                        {/* Crop Area - This will take available space */}
+                        <div className="flex-1 p-4 flex items-center justify-center overflow-hidden min-h-0">
+                            {imgSrc && (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <ReactCrop
+                                        crop={crop}
+                                        onChange={(_, percentCrop) => setCrop(percentCrop)}
+                                        onComplete={(c) => setCompletedCrop(c)}
+                                        aspect={aspectRatio}
+                                        minWidth={50}
+                                        minHeight={50 / aspectRatio}
+                                        className="max-w-full max-h-full"
+                                        style={{ maxHeight: '100%', maxWidth: '100%' }}
+                                    >
+                                        <img
+                                            ref={imgRef}
+                                            alt="Crop me"
+                                            src={imgSrc}
+                                            onLoad={onImageLoad}
+                                            className="max-w-full max-h-full object-contain"
+                                            style={{
+                                                maxHeight: 'calc(95vh - 200px)', // Account for header and footer
+                                                maxWidth: '100%',
+                                                height: 'auto',
+                                                width: 'auto'
+                                            }}
+                                        />
+                                    </ReactCrop>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                            <button
+                                type="button"
+                                onClick={handleCropCancel}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCropConfirm}
+                                disabled={loading || !completedCrop}
+                                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
+                            >
+                                {loading ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check className="w-4 h-4" />
+                                        Apply Crop
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Hidden canvas for processing */}
+                    <canvas ref={canvasRef} className="hidden" />
                 </div>
             )}
-
-            {/* Render Crop Modal using createPortal */}
-            {cropModalOpen && currentImageToCrop && typeof window !== 'undefined' &&
-                createPortal(<CropModal />, document.body)
-            }
-
-            {/* Hidden Canvas for Image Processing */}
-            <canvas ref={canvasRef} style={{ display: 'none' }} />
-        </div>
+        </>
     );
 };
 

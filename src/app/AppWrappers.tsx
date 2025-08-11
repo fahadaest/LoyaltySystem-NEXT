@@ -19,7 +19,10 @@ const NoSSR = dynamic(() => Promise.resolve(_NoSSR), {
 
 const publicRoutes = [
   '/register-customer',
-  '/auth/sign-in'
+  '/register-customer/',
+  '/auth/sign-in',
+  '/auth/sign-up',
+  '/auth/sign-up/'
 ];
 
 const AuthWrapper = ({ children }: { children: ReactNode }) => {
@@ -27,12 +30,7 @@ const AuthWrapper = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  console.log('AuthWrapper state:', {
-    pathname,
-    isAuthenticated,
-    isInitialized,
-    isPublicRoute: publicRoutes.includes(pathname)
-  });
+  console.log("Current Pathname:", pathname);
 
   useEffect(() => {
     if (!isInitialized) return;

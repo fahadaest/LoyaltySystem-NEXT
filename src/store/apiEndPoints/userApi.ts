@@ -1,27 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
-
-export interface UserProfile {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    profileImage?: string;
-    coverImage?: string;
-}
-
-export interface UpdateUserProfileRequest {
-    firstName?: string;
-    lastName?: string;
-    phoneNumber?: string;
-    profileImage?: File;
-    coverImage?: File;
-}
+import { getApiBaseUrl } from 'utils/api';
 
 export const userProfileApi = createApi({
     reducerPath: 'userProfileApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -33,7 +17,7 @@ export const userProfileApi = createApi({
     }),
     tagTypes: ['UserProfile'],
     endpoints: (builder) => ({
-        getMyProfile: builder.query<UserProfile, void>({
+        getMyProfile: builder.query({
             query: () => '/users/profile',
             providesTags: ['UserProfile'],
         }),

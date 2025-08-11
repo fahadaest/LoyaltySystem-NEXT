@@ -6,6 +6,7 @@ import AnimatedButton from 'components/ui/AnimatedButton';
 import Default from 'components/auth/variants/DefaultAuthLayout';
 import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from 'hooks/useAuth';
+import { redirectWithSubdomain, getRoleBasedRedirectPath, redirectWithSubdomainForced } from 'utils/redirect';
 
 function SignInDefault() {
   const router = useRouter();
@@ -80,25 +81,19 @@ function SignInDefault() {
     setShowPassword(!showPassword);
   };
 
+
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (user.role === 'superadmin') {
-        router.replace('/main/manage-admin');
-      } else if (user.role === 'admin') {
-        router.replace('/main/dashboard');
-      } else if (user.role === 'salesperson') {
-        router.replace('/main/card-scanner');
-      } else if (user.role === 'manager') {
-        router.replace('/main/card-scanner');
-      }
+      const redirectPath = getRoleBasedRedirectPath(user);
+      redirectWithSubdomainForced(redirectPath);
     }
   }, [isAuthenticated, user, router]);
 
   return (
     <Default
       maincard={
-        <div className="mb-16 mt-16 flex h-full w-full items-center justify-center px-2 md:mx-0 md:px-0 lg:mb-10 lg:items-center lg:justify-start">
-          <div className="mt-[10vh] w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 xl:max-w-[420px]">
+        <div className="h-screen w-[50%] flex items-center justify-center">
+          <div className="w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 xl:max-w-[420px]">
             <h3 className="mb-2.5 text-4xl font-bold text-navy-700 dark:text-white">
               Sign In
             </h3>
@@ -212,4 +207,4 @@ function SignInDefault() {
   );
 }
 
-export default SignInDefault; 
+export default SignInDefault;

@@ -95,6 +95,12 @@ export const useRoutes = () => {
       showDivider: false,
       submenu: [
         ...(isAdmin || canManageProductLoyalty ? [{
+          name: 'Create Loyalty',
+          layout: '/main/loyalty',
+          path: 'create-loyalty',
+          icon: <MdHome className="h-6 w-6" />,
+        }] : []),
+        ...(isAdmin || canManageProductLoyalty ? [{
           name: 'Product Loyalty',
           layout: '/main/loyalty',
           path: 'product',

@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getCookie } from 'utils/getCookies';
+import { getApiBaseUrl } from 'utils/api';
 
 export const productsApi = createApi({
     reducerPath: 'productsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+        baseUrl: getApiBaseUrl(),
         prepareHeaders: (headers) => {
             const token = getCookie('token');
             if (token) {
@@ -29,7 +30,7 @@ export const productsApi = createApi({
             providesTags: ['Products'],
         }),
         getProductById: builder.query({
-            query: (id: number | string) => `/products/${id}`,
+            query: (id) => `/products/${id}`,
         }),
         updateProduct: builder.mutation({
             query: ({ id, formData }) => ({
@@ -40,7 +41,7 @@ export const productsApi = createApi({
             invalidatesTags: ['Products'],
         }),
         deleteProduct: builder.mutation({
-            query: (id: number | string) => ({
+            query: (id) => ({
                 url: `/products/${id}`,
                 method: 'DELETE',
             }),
