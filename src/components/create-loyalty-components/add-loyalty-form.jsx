@@ -13,10 +13,12 @@ const AddLoyaltyForm = ({
   loyaltyType,
   formData,
   setFormData,
+  previewImage,
+  onOpenImageSelector
 }) => {
 
   return (
-    <div >
+    <div>
       <AnimatedCard>
         <AnimatedCardContent>
           <div className="space-y-8 px-2">
@@ -119,9 +121,9 @@ const AddLoyaltyForm = ({
                 <BannerEditor
                   formData={formData}
                   setFormData={setFormData}
+                  previewImage={previewImage}
+                  onOpenImageSelector={onOpenImageSelector}
                 />
-
-
 
               </div>
 
