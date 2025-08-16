@@ -9,13 +9,31 @@ import LoyaltyAdditionalDetails from "../form/LoyaltyAdditionalDetails";
 import WalletCardSelector from "components/loyalty/WalletCardSelector";
 import BannerEditor from "./loyalty-banner-component";
 
+
 const AddLoyaltyForm = ({
   loyaltyType,
   formData,
   setFormData,
-  previewImage,
-  onOpenImageSelector
+  previewImages,
+  onOpenImageSelector,
+  products
 }) => {
+
+  const productOptions = (products || []).map(product => ({
+    label: product.name,
+    value: product.id,
+  }));
+
+
+  console.log("products", products)
+
+  // Helper function to update form data
+  const updateFormData = (field, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [field]: value
+    }));
+  };
 
   return (
     <div>
@@ -35,8 +53,8 @@ const AddLoyaltyForm = ({
                     label="Reward Title"
                     icon={MdTitle}
                     placeholder="Enter Loyalty Name"
-                    value=""
-                    onChange={() => { }}
+                    value={formData?.rewardTitle || ''}
+                    onChange={(value) => updateFormData('rewardTitle', value)}
                     required
                   />
 
@@ -44,8 +62,8 @@ const AddLoyaltyForm = ({
                     label="Reward Description"
                     icon={MdDescription}
                     placeholder="Enter Loyalty Description"
-                    value=""
-                    onChange={() => { }}
+                    value={formData?.rewardDescription || ''}
+                    onChange={(value) => updateFormData('rewardDescription', value)}
                   />
                 </div>
 
@@ -55,34 +73,38 @@ const AddLoyaltyForm = ({
                       label="Purchase Quantity"
                       icon={MdTitle}
                       placeholder="Enter Quantity to purchase"
-                      value=""
-                      onChange={() => { }}
+                      value={formData?.purchaseQuantity || ''}
+                      onChange={(value) => updateFormData('purchaseQuantity', value)}
                       required
                     />
 
                     <AnimatedSelect
-                      label="Purchase Product"
-                      icon={MdDescription}
-                      placeholder="Purchase Product"
-                      value=""
-                      onChange={() => { }}
+                      label="Select Purchasing Product"
+                      icon={MdCardGiftcard}
+                      placeholder="Select a Purchasing Product"
+                      options={productOptions}
+                      value={formData.productId}
+                      onChange={(value) => updateFormData('productId', value)}
+                      required
                     />
 
                     <AnimatedInput
                       label="Reward Quantity"
                       icon={MdTitle}
                       placeholder="Enter Reward Quantity"
-                      value=""
-                      onChange={() => { }}
+                      value={formData?.rewardQuantity || ''}
+                      onChange={(value) => updateFormData('rewardQuantity', value)}
                       required
                     />
 
                     <AnimatedSelect
-                      label="Reward Product"
-                      icon={MdDescription}
-                      placeholder="Enter Reward Product"
-                      value=""
-                      onChange={() => { }}
+                      label="Select Reward Product"
+                      icon={MdCardGiftcard}
+                      placeholder="Select a Reward Product"
+                      options={productOptions}
+                      value={formData.rewardProductId}
+                      onChange={(value) => updateFormData('rewardProductId', value)}
+                      required
                     />
                   </div>
                 )}
@@ -93,8 +115,8 @@ const AddLoyaltyForm = ({
                       label="Spending Amount"
                       icon={MdTitle}
                       placeholder="Enter Amount to spend"
-                      value=""
-                      onChange={() => { }}
+                      value={formData?.spendingAmount || ''}
+                      onChange={(value) => updateFormData('spendingAmount', value)}
                       required
                     />
 
@@ -102,8 +124,8 @@ const AddLoyaltyForm = ({
                       label="Reward Points"
                       icon={MdTitle}
                       placeholder="Enter Reward Points"
-                      value=""
-                      onChange={() => { }}
+                      value={formData?.rewardPoints || ''}
+                      onChange={(value) => updateFormData('rewardPoints', value)}
                       required
                     />
 
@@ -111,8 +133,8 @@ const AddLoyaltyForm = ({
                       label="Reward Points Amount"
                       icon={MdTitle}
                       placeholder="Enter Reward Points Equivalent to Amount"
-                      value=""
-                      onChange={() => { }}
+                      value={formData?.rewardPointsEquivalent || ''}
+                      onChange={(value) => updateFormData('rewardPointsEquivalent', value)}
                       required
                     />
                   </div>
@@ -121,10 +143,9 @@ const AddLoyaltyForm = ({
                 <BannerEditor
                   formData={formData}
                   setFormData={setFormData}
-                  previewImage={previewImage}
+                  previewImages={previewImages}
                   onOpenImageSelector={onOpenImageSelector}
                 />
-
               </div>
 
             </FormSection>

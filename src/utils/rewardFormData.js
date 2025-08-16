@@ -3,8 +3,10 @@ export const initialProductFormData = {
     purchaseQuantity: '',
     rewardDescription: '',
     productId: '',
-    templateColor: '#4F46E5', // Updated to match banner default
-    loyaltyTemplates: '',
+    templateColor: '#000000',
+    bottomColor: '#374151',
+    bottomTextColor: '#ffffff', // New property for bottom section text color
+    loyaltyTemplates: 'products',
     rewardProductId: '',
     icon1Text: '',
     templateImage: '',
@@ -16,37 +18,21 @@ export const initialProductFormData = {
     icon3: '',
     logo: '',
     cardId: '',
-    price: '',
 
-    // Banner specific fields
     bannerTitle: 'product loyalty',
     bannerTitleColor: '#FFFFFF',
-    selectedImage: '', // For banner image
-    selectedLogo: '', // For logo image
+    selectedImage: '',
+    selectedLogo: '',
+    selectedIcon1: '',
+    selectedIcon2: '',
+    selectedIcon3: '',
 
-    // Section heights (percentages)
     sectionHeights: {
         top: 30,
         middle: 40,
         bottom: 30
     },
 
-    // Title positioning and styling
-    titlePosition: {
-        x: 0,
-        y: 0,
-        fontSize: 18
-    },
-
-
-    // Section heights (percentages)
-    sectionHeights: {
-        top: 30,
-        middle: 40,
-        bottom: 30
-    },
-
-    // Element positions and styling
     titlePosition: {
         x: 0,
         y: 0,
@@ -54,40 +40,34 @@ export const initialProductFormData = {
     },
 
     qrPosition: {
-        x: 333,
-        y: 12,
-        size: 32
+        x: 155,
+        y: 125,
+        size: 64
     },
 
     logoPosition: {
-        x: 12,
-        y: 12,
+        x: 167,
+        y: 20,
         size: 40,
         isVisible: true
     },
 
     icon1Position: {
-        x: 20,
-        y: 0,
         size: 24,
-        text: 'Feature 1'
+        text: 'Scan Qr with your mobile phone'
     },
 
     icon2Position: {
-        x: 120,
-        y: 0,
         size: 24,
-        text: 'Feature 2'
+        text: 'Download the Point Pass into your mobile'
     },
 
     icon3Position: {
-        x: 220,
-        y: 0,
         size: 24,
-        text: 'Feature 3'
+        text: 'Enter Your promotion'
     },
 
-    footerText: 'Powered by RewardHive'
+    footerText: 'Powered by RewardHive www.codehive.com'
 };
 
 export const initialPointFormData = {
@@ -95,9 +75,10 @@ export const initialPointFormData = {
     spendingAmount: '',
     rewardPoints: '',
     rewardPointsEquivalent: '',
-    templateColor: '#4F46E5',
+    templateColor: '#000000',
     bottomColor: '#374151',
-    loyaltyTemplates: '',
+    bottomTextColor: '#ffffff', // New property for bottom section text color
+    loyaltyTemplates: 'points',
     icon1Text: '',
     icon2Text: '',
     icon3Text: '',
@@ -106,8 +87,8 @@ export const initialPointFormData = {
     icon2: '',
     icon3: '',
     logo: '',
+    cardId: '',
 
-    // Banner specific fields
     bannerTitle: 'point loyalty',
     bannerTitleColor: '#FFFFFF',
     selectedImage: '',
@@ -116,14 +97,12 @@ export const initialPointFormData = {
     selectedIcon2: '',
     selectedIcon3: '',
 
-    // Section heights (percentages)
     sectionHeights: {
         top: 30,
         middle: 40,
         bottom: 30
     },
 
-    // Element positions and styling
     titlePosition: {
         x: 0,
         y: 0,
@@ -131,37 +110,31 @@ export const initialPointFormData = {
     },
 
     qrPosition: {
-        x: 333,
-        y: 12,
-        size: 32
+        x: 155,
+        y: 125,
+        size: 64
     },
 
     logoPosition: {
-        x: 12,
-        y: 12,
+        x: 167,
+        y: 20,
         size: 40,
         isVisible: true
     },
 
     icon1Position: {
-        x: 20,
-        y: 0,
         size: 24,
-        text: 'Feature 1'
+        text: 'Scan Qr with your mobile phone'
     },
 
     icon2Position: {
-        x: 120,
-        y: 0,
         size: 24,
-        text: 'Feature 2'
+        text: 'Download the Point Pass into your mobile'
     },
 
     icon3Position: {
-        x: 220,
-        y: 0,
         size: 24,
-        text: 'Feature 3'
+        text: 'Enter Your promotion'
     },
 
     footerText: 'Powered by RewardHive'

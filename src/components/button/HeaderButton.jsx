@@ -10,6 +10,7 @@ const sizeClasses = {
 
 const HeaderButton = ({
     icon: Icon,
+    rightIcon: RightIcon,
     text,
     color = "bg-brandGreen",
     hoverColor = "hover:bg-brandGreenDark",
@@ -34,6 +35,11 @@ const HeaderButton = ({
                 />
             )}
             {text && <span className="leading-none">{text}</span>}
+            {RightIcon && (
+                <RightIcon
+                    className=" text-white w-[15px] h-[15px] sm:w-[18px] sm:h-[18px] transition-transform duration-300 group-hover:rotate-[360deg]"
+                />
+            )}
         </button>
     );
 };

@@ -4,11 +4,19 @@ import { FaGift } from "react-icons/fa";
 import LoyaltySelectionCard from './loyalty-selection-card';
 
 const CreateLoyaltyComponent = ({
-    setLoyaltyType
+    setLoyaltyType,
+    setFormData
 }) => {
 
     const handleLoyaltyTypeSelect = (type) => {
         setLoyaltyType(type);
+        const loyaltyTemplateValue = type === 'products' ? 'general' : 'point';
+
+        setFormData(prevData => ({
+            ...prevData,
+            loyaltyTemplates: loyaltyTemplateValue
+        }));
+
     };
 
     const loyaltySelectionCardData = [
