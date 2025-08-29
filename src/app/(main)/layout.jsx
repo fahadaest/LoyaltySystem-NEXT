@@ -15,7 +15,7 @@ export default function MainLayout({ children }) {
                 </div>
 
                 <main className="pt-1 pr-4">
-                    <div className="bg-white rounded-[2rem] border border-gray-200 shadow-sm p-8 min-h-[calc(100vh-10rem)]">
+                    <div className="bg-white rounded-[2rem] border border-gray-200 shadow-sm p-5 min-h-[calc(100vh-10rem)]">
                         {children}
                     </div>
                 </main>
