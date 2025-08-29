@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import DropdownButton from '../ui/DropDownButton';
-import AreaChart from './subComponents/AreaGraph';
+import AreaChart from '../ui/AreaGraph';
 
 const CustomerAnalytics = () => {
     // Sample data for the area chart

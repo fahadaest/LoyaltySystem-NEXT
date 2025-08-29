@@ -1,5 +1,5 @@
 import React from 'react';
-import ReportCard from './subComponents/ReportCard';
+import ReportCard from '../ui/ReportCard';
 
 const Metrics = () => {
     const metricsData = [
