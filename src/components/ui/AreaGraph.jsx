@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const AreaChart = ({
     data,
@@ -11,6 +11,12 @@ const AreaChart = ({
     showYAxisLabels = true,
     containerStyle = {}
 }) => {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     // Fixed dimensions for proper text rendering
     const svgWidth = 1200;
     const svgHeight = height;
@@ -21,7 +27,17 @@ const AreaChart = ({
         height: chartHeight
     };
 
-    // Create dramatic mountain-like curves
+    // Fixed seed for consistent random-like behavior
+    const seededMath = {
+        sin: (x) => Math.sin(x),
+        cos: (x) => Math.cos(x),
+        pow: (x, y) => Math.pow(x, y),
+        PI: Math.PI,
+        floor: (x) => Math.floor(x),
+        min: (a, b) => Math.min(a, b)
+    };
+
+    // Create dramatic mountain-like curves with consistent precision
     const createDramaticMountainPath = (chartData, key, maxVal = maxValue) => {
         if (chartData.length === 0) return '';
 
@@ -29,7 +45,7 @@ const AreaChart = ({
         const basePoints = chartData.map((item, index) => {
             const x = chartArea.left + (index / (chartData.length - 1)) * chartArea.width;
             const y = chartArea.top + chartArea.height - (item[key] / maxVal) * chartArea.height;
-            return { x, y };
+            return { x: Number(x.toFixed(2)), y: Number(y.toFixed(2)) };
         });
 
         // Create many more interpolated points for dramatic mountain shapes
@@ -39,8 +55,8 @@ const AreaChart = ({
         for (let i = 0; i < segments; i++) {
             const t = i / (segments - 1);
             const dataIndex = t * (basePoints.length - 1);
-            const lowerIndex = Math.floor(dataIndex);
-            const upperIndex = Math.min(lowerIndex + 1, basePoints.length - 1);
+            const lowerIndex = seededMath.floor(dataIndex);
+            const upperIndex = seededMath.min(lowerIndex + 1, basePoints.length - 1);
             const localT = dataIndex - lowerIndex;
 
             const x = chartArea.left + t * chartArea.width;
@@ -51,25 +67,28 @@ const AreaChart = ({
 
             // Strong peaks at beginning (Jan)
             if (t < 0.1) {
-                mountainOffset = Math.sin(t * Math.PI * 20) * 15 * (1 - t * 8);
+                mountainOffset = seededMath.sin(t * seededMath.PI * 20) * 15 * (1 - t * 8);
             }
             // Deep valley in Feb-Mar (t = 0.08 - 0.25)
             else if (t >= 0.08 && t < 0.25) {
                 const valleyT = (t - 0.08) / (0.25 - 0.08);
-                mountainOffset = -Math.sin(valleyT * Math.PI) * 20 + Math.cos(valleyT * Math.PI * 6) * 12;
+                mountainOffset = -seededMath.sin(valleyT * seededMath.PI) * 20 + seededMath.cos(valleyT * seededMath.PI * 6) * 12;
             }
             // Moderate variations in middle months
             else if (t >= 0.25 && t < 0.75) {
-                mountainOffset = Math.sin(t * Math.PI * 8) * 10 + Math.cos(t * Math.PI * 12) * 6;
+                mountainOffset = seededMath.sin(t * seededMath.PI * 8) * 10 + seededMath.cos(t * seededMath.PI * 12) * 6;
             }
             // Strong upward trend at end (Nov-Dec)
             else if (t >= 0.75) {
                 const endT = (t - 0.75) / 0.25;
-                mountainOffset = Math.sin(endT * Math.PI * 8) * 18 + Math.pow(endT, 2) * 25;
+                mountainOffset = seededMath.sin(endT * seededMath.PI * 8) * 18 + seededMath.pow(endT, 2) * 25;
             }
 
             const y = baseY + mountainOffset;
-            mountainPoints.push({ x, y });
+            mountainPoints.push({
+                x: Number(x.toFixed(2)),
+                y: Number(y.toFixed(2))
+            });
         }
 
         // Build dramatic SVG path
@@ -83,10 +102,10 @@ const AreaChart = ({
 
             if (next && i < mountainPoints.length - 2) {
                 // Use tighter control points for sharper mountain features
-                const cpX1 = prev.x + (curr.x - prev.x) * 0.3;
-                const cpY1 = prev.y + (curr.y - prev.y) * 0.2;
-                const cpX2 = curr.x - (next.x - curr.x) * 0.3;
-                const cpY2 = curr.y - (next.y - curr.y) * 0.2;
+                const cpX1 = Number((prev.x + (curr.x - prev.x) * 0.3).toFixed(2));
+                const cpY1 = Number((prev.y + (curr.y - prev.y) * 0.2).toFixed(2));
+                const cpX2 = Number((curr.x - (next.x - curr.x) * 0.3).toFixed(2));
+                const cpY2 = Number((curr.y - (next.y - curr.y) * 0.2).toFixed(2));
 
                 path += ` C ${cpX1},${cpY1} ${cpX2},${cpY2} ${curr.x},${curr.y}`;
             } else {
@@ -104,7 +123,7 @@ const AreaChart = ({
         const basePoints = chartData.map((item, index) => {
             const x = chartArea.left + (index / (chartData.length - 1)) * chartArea.width;
             const y = chartArea.top + chartArea.height - (item[key] / maxVal) * chartArea.height;
-            return { x, y };
+            return { x: Number(x.toFixed(2)), y: Number(y.toFixed(2)) };
         });
 
         const mountainPoints = [];
@@ -113,8 +132,8 @@ const AreaChart = ({
         for (let i = 0; i < segments; i++) {
             const t = i / (segments - 1);
             const dataIndex = t * (basePoints.length - 1);
-            const lowerIndex = Math.floor(dataIndex);
-            const upperIndex = Math.min(lowerIndex + 1, basePoints.length - 1);
+            const lowerIndex = seededMath.floor(dataIndex);
+            const upperIndex = seededMath.min(lowerIndex + 1, basePoints.length - 1);
             const localT = dataIndex - lowerIndex;
 
             const x = chartArea.left + t * chartArea.width;
@@ -123,22 +142,25 @@ const AreaChart = ({
             let mountainOffset = 0;
 
             if (t < 0.1) {
-                mountainOffset = Math.sin(t * Math.PI * 20) * 15 * (1 - t * 8);
+                mountainOffset = seededMath.sin(t * seededMath.PI * 20) * 15 * (1 - t * 8);
             }
             else if (t >= 0.08 && t < 0.25) {
                 const valleyT = (t - 0.08) / (0.25 - 0.08);
-                mountainOffset = -Math.sin(valleyT * Math.PI) * 20 + Math.cos(valleyT * Math.PI * 6) * 12;
+                mountainOffset = -seededMath.sin(valleyT * seededMath.PI) * 20 + seededMath.cos(valleyT * seededMath.PI * 6) * 12;
             }
             else if (t >= 0.25 && t < 0.75) {
-                mountainOffset = Math.sin(t * Math.PI * 8) * 10 + Math.cos(t * Math.PI * 12) * 6;
+                mountainOffset = seededMath.sin(t * seededMath.PI * 8) * 10 + seededMath.cos(t * seededMath.PI * 12) * 6;
             }
             else if (t >= 0.75) {
                 const endT = (t - 0.75) / 0.25;
-                mountainOffset = Math.sin(endT * Math.PI * 8) * 18 + Math.pow(endT, 2) * 25;
+                mountainOffset = seededMath.sin(endT * seededMath.PI * 8) * 18 + seededMath.pow(endT, 2) * 25;
             }
 
             const y = baseY + mountainOffset;
-            mountainPoints.push({ x, y });
+            mountainPoints.push({
+                x: Number(x.toFixed(2)),
+                y: Number(y.toFixed(2))
+            });
         }
 
         let path = `M ${mountainPoints[0].x},${mountainPoints[0].y}`;
@@ -149,10 +171,10 @@ const AreaChart = ({
             const next = mountainPoints[i + 1];
 
             if (next && i < mountainPoints.length - 2) {
-                const cpX1 = prev.x + (curr.x - prev.x) * 0.3;
-                const cpY1 = prev.y + (curr.y - prev.y) * 0.2;
-                const cpX2 = curr.x - (next.x - curr.x) * 0.3;
-                const cpY2 = curr.y - (next.y - curr.y) * 0.2;
+                const cpX1 = Number((prev.x + (curr.x - prev.x) * 0.3).toFixed(2));
+                const cpY1 = Number((prev.y + (curr.y - prev.y) * 0.2).toFixed(2));
+                const cpX2 = Number((curr.x - (next.x - curr.x) * 0.3).toFixed(2));
+                const cpY2 = Number((curr.y - (next.y - curr.y) * 0.2).toFixed(2));
 
                 path += ` C ${cpX1},${cpY1} ${cpX2},${cpY2} ${curr.x},${curr.y}`;
             } else {
@@ -188,6 +210,102 @@ const AreaChart = ({
         boxShadow: '0px 3.5px 5.5px rgba(0, 0, 0, 0.02)',
         borderRadius: '37px'
     };
+
+    // Don't render the complex paths during SSR
+    if (!isClient) {
+        return (
+            <div
+                className="bg-white border rounded-3xl relative w-full overflow-hidden"
+                style={{ ...defaultContainerStyle, ...containerStyle }}
+            >
+                <svg
+                    width="100%"
+                    height={height}
+                    viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+                    className="absolute inset-0"
+                    preserveAspectRatio="xMidYMid meet"
+                >
+                    {/* Grid Lines */}
+                    {showGrid && [0, 1, 2, 3, 4, 5].map((i) => {
+                        const y = chartArea.top + (i / 5) * chartArea.height;
+                        return (
+                            <line
+                                key={i}
+                                x1={chartArea.left}
+                                y1={y}
+                                x2={chartArea.left + chartArea.width}
+                                y2={y}
+                                stroke="#E2E8F0"
+                                strokeDasharray="2,2"
+                                strokeWidth="1"
+                            />
+                        );
+                    })}
+
+                    {/* Y-axis labels */}
+                    {showYAxisLabels && [500, 400, 300, 200, 100, 0].map((value, i) => {
+                        const y = chartArea.top + (i / 5) * chartArea.height;
+                        return (
+                            <text
+                                key={i}
+                                x={chartArea.left - 10}
+                                y={y + 4}
+                                fill="#636363"
+                                fontSize="12"
+                                fontFamily="Poppins, sans-serif"
+                                fontWeight="500"
+                                textAnchor="end"
+                                dominantBaseline="middle"
+                            >
+                                {value}
+                            </text>
+                        );
+                    })}
+
+                    {/* X-axis labels */}
+                    {showXAxisLabels && chartData.map((item, i) => {
+                        const x = chartArea.left + (i / (chartData.length - 1)) * chartArea.width;
+                        return (
+                            <text
+                                key={i}
+                                x={x}
+                                y={chartArea.top + chartArea.height + 25}
+                                fill="#636363"
+                                fontSize="12"
+                                fontFamily="Poppins, sans-serif"
+                                fontWeight="500"
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                            >
+                                {item.month}
+                            </text>
+                        );
+                    })}
+
+                    {/* Gradient Definitions */}
+                    <defs>
+                        <linearGradient id="grayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0.88%" stopColor="#B6B6B6" stopOpacity="1" />
+                            <stop offset="32.16%" stopColor="rgba(182, 182, 182, 0.576923)" />
+                            <stop offset="77%" stopColor="rgba(182, 182, 182, 0)" />
+                        </linearGradient>
+
+                        <linearGradient id="blackGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0.24%" stopColor="rgba(0, 0, 0, 0.6)" />
+                            <stop offset="67.63%" stopColor="rgba(0, 0, 0, 0.354808)" />
+                            <stop offset="117.05%" stopColor="rgba(255, 255, 255, 0)" />
+                        </linearGradient>
+
+                        <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="rgba(65, 204, 64, 0.61)" />
+                            <stop offset="78.42%" stopColor="rgba(65, 204, 64, 0.34899)" />
+                            <stop offset="117.34%" stopColor="rgba(255, 255, 255, 0)" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+        );
+    }
 
     return (
         <div

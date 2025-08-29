@@ -4,7 +4,7 @@ import Metrics from "@/components/dashboard/Metrics";
 import CustomerAnalytics from "@/components/dashboard/CustomerAnalytics";
 import TopCustomers from "@/components/dashboard/TopCustomers";
 import TopProducts from "@/components/dashboard/TopProducts";
-import SalesPerformance from "@/components/dashboard/SalesPerformance";
+import RewardAnalytics from "@/components/dashboard/RewardAnalytics";
 
 const DashboardFinal = () => {
     return (
@@ -15,7 +15,7 @@ const DashboardFinal = () => {
                 <CustomerAnalytics />
                 <TopCustomers />
                 <TopProducts />
-                <SalesPerformance />
+                <RewardAnalytics />
             </div>
 
         </main>
