@@ -14,8 +14,8 @@ const DashboardFinal = () => {
                 <Metrics />
                 <CustomerAnalytics />
                 <TopCustomers />
-                <TopProducts />
                 <RewardAnalytics />
+                <TopProducts />
             </div>
 
         </main>

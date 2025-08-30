@@ -119,9 +119,9 @@ const CustomerAnalytics = () => {
                             Total Customers
                         </span>
                         <div
-                            className="bg-green-500 text-white rounded-xl px-2.5 py-1.5 text-base font-medium flex-shrink-0"
+                            className="bg-brandColor text-white rounded-xl px-2.5 py-1.5 text-base font-medium flex-shrink-0"
                             style={{
-                                background: '#41CC40',
+
                                 borderRadius: '12px',
                                 fontFamily: 'Poppins, sans-serif',
                                 fontSize: '16px',

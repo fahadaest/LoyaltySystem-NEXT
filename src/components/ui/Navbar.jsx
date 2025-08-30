@@ -7,7 +7,7 @@ const Navbar = ({ title = "Welcome Starbucks!" }) => {
     return (
         <nav className="flex justify-between items-center w-full pr-6 py-5 bg-transparent">
             {/* Left side - Title and Breadcrumbs */}
-            <div className="flex flex-col bg-green-100">
+            <div className="flex flex-col">
                 <h1 className="text-[1rem] font-bold text-black font-poppins">
                     {title}
                 </h1>
