@@ -16,7 +16,7 @@ const Button = ({
         <button
             onClick={onClick}
             disabled={disabled}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center space-x-1.5 border transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center justify-between space-x-1.5 border transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
             style={{
                 background: backgroundColor,
                 color: textColor,
@@ -39,9 +39,9 @@ const Button = ({
                     </div>
                 </div>
             )}
-            
+
             <span>{text}</span>
-            
+
             {showIcon && iconPosition === 'right' && (
                 <div
                     className="w-4 h-4 rounded-full flex items-center justify-center"
