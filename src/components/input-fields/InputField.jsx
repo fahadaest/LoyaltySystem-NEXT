@@ -10,13 +10,20 @@ export default function InputField({
     required = false,
     autoComplete,
     className = "",
+    labelSize = "1rem",
+    placeholderSize = "0.875rem",
+    fieldHeight = "0.75rem",
 }) {
     const id = name || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
 
     return (
         <div className={className}>
             {label && (
-                <label htmlFor={id} className="mb-2 block text-base font-semibold text-black">
+                <label
+                    htmlFor={id}
+                    className="mb-2 block font-semibold text-black"
+                    style={{ fontSize: labelSize }}
+                >
                     {label}
                 </label>
             )}
@@ -29,7 +36,12 @@ export default function InputField({
                 placeholder={placeholder}
                 required={required}
                 autoComplete={autoComplete}
-                className="w-full rounded-full border border-gray-300 px-5 py-3 text-sm text-gray-700 focus:border-black focus:outline-none"
+                className="w-full rounded-full border border-gray-300 px-5 text-gray-700 focus:border-black focus:outline-none"
+                style={{
+                    fontSize: placeholderSize,
+                    paddingTop: fieldHeight,
+                    paddingBottom: fieldHeight
+                }}
             />
         </div>
     );

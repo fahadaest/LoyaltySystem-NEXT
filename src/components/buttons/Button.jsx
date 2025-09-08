@@ -1,57 +1,56 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
 
 const Button = ({
     text,
     onClick,
     backgroundColor = '#000000',
     textColor = '#FFFFFF',
-    icon = null,
+    icon,
     showIcon = false,
-    iconPosition = 'right', // 'left' or 'right'
+    iconPosition = 'right',
     disabled = false,
+    height = '35px', // New height prop with default value
     className = ''
 }) => {
+    const isGradient = backgroundColor.includes('linear-gradient');
+
+    const buttonStyle = {
+        fontFamily: 'Poppins, sans-serif',
+        fontSize: '12px',
+        fontWeight: '600',
+        lineHeight: '140%',
+        height: height, // Use dynamic height
+        borderRadius: '36px',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        color: textColor,
+        ...(isGradient ? {
+            background: backgroundColor
+        } : {
+            backgroundColor: backgroundColor
+        })
+    };
+
+    const iconElement = showIcon && icon && (
+        <div className="flex items-center justify-center w-[18px] h-[18px] bg-white rounded-full">
+            <img
+                src={icon}
+                alt=""
+                className="w-[8px] h-[8px]"
+                style={iconPosition === 'left' ? { transform: 'rotate(0deg)' } : { transform: 'rotate(90deg)' }}
+            />
+        </div>
+    );
+
     return (
         <button
             onClick={onClick}
             disabled={disabled}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center justify-between space-x-1.5 border transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
-            style={{
-                background: backgroundColor,
-                color: textColor,
-                borderRadius: '24px',
-                fontFamily: 'Poppins, sans-serif',
-                fontSize: '11px',
-                fontWeight: '500',
-                lineHeight: '130%',
-                height: '32px',
-                border: '1px solid rgba(0, 0, 0, 0.1)'
-            }}
+            className={`flex items-center justify-center gap-2 px-4 transition-opacity hover:opacity-90 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${className}`}
+            style={buttonStyle}
         >
-            {showIcon && iconPosition === 'left' && (
-                <div
-                    className="w-4 h-4 rounded-full flex items-center justify-center"
-                    style={{ background: textColor }}
-                >
-                    <div style={{ color: backgroundColor }}>
-                        {icon || <Plus className="w-2 h-2" />}
-                    </div>
-                </div>
-            )}
-
+            {iconPosition === 'left' && iconElement}
             <span>{text}</span>
-
-            {showIcon && iconPosition === 'right' && (
-                <div
-                    className="w-4 h-4 rounded-full flex items-center justify-center"
-                    style={{ background: textColor }}
-                >
-                    <div style={{ color: backgroundColor }}>
-                        {icon || <Plus className="w-2 h-2" />}
-                    </div>
-                </div>
-            )}
+            {iconPosition === 'right' && iconElement}
         </button>
     );
 };
