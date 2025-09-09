@@ -118,12 +118,8 @@ const LoyaltyManagementComponent = () => {
             </div>
 
             {!formData ? (
-                <div
-                    className="bg-white border border-gray-200 rounded-[40px] p-6"
-                    style={{
-                        boxShadow: '0px 3.5px 5.5px rgba(0, 0, 0, 0.02)',
-                        background: '#FCFCFC'
-                    }}
+                <div className="bg-white border border-gray-200 rounded-[40px] p-6"
+                    style={{ boxShadow: '0px 3.5px 5.5px rgba(0, 0, 0, 0.02)', background: '#FCFCFC' }}
                 >
                     <div className="flex gap-6 justify-start">
                         {loyaltyCards.map((card) => (
@@ -141,7 +137,7 @@ const LoyaltyManagementComponent = () => {
                             loyaltyType={selectedLoyaltyType}
                         />
                     </div>
-                    <div className="space-y-6">
+                    <div className="space-y-6 mt-8">
                         <BannerCreator
                             formData={formData}
                             updateFormData={updateFormData}

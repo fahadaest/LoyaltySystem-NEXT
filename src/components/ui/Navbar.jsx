@@ -41,13 +41,11 @@ const Navbar = ({ title = "Welcome Starbucks!" }) => {
                 {/* Profile Section - Smaller */}
                 <div className="relative  h-8 bg-white rounded-full border border-gray-300 flex gap-6 items-center pl-1.5 pr-1 cursor-pointer hover:bg-gray-50 transition-colors">
                     <div className="flex gap-1 text-xs items-center">
-                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="16" cy="16" r="16" fill="#41cc40" />
-                            <g fill="white">
-                                <circle cx="16" cy="12" r="4" />
-                                <path d="M16 18c-4.5 0-8 2.5-8 5.5v1.5h16v-1.5c0-3-3.5-5.5-8-5.5z" />
-                            </g>
-                        </svg>
+                        <img
+                            src="/img/general/profile_green.svg"
+                            alt="Profile image"
+                            className="w-[24px] h-[24px] object-contain rounded-lg"
+                        />
                         <div className="flex flex-col">
                             <span className="font-medium text-[0.6rem] text-black leading-tight">Starbucks</span>
                             <span className="text-gray-500 text-[0.5rem] leading-tight">Admin</span>

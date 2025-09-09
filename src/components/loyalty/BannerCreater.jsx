@@ -4,6 +4,7 @@ import InputField from '../input-fields/InputField';
 import ColorPicker from '../input-fields/ColorPicker';
 import Button from '../buttons/Button';
 import BannerPreview from './BannerPreview'; // Import the separate banner component
+import FileUploadArea from '../ui/FileUploadArea';
 
 const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
     const [dropdowns, setDropdowns] = useState({
@@ -32,28 +33,6 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
             [field]: !prev[field]
         }));
     };
-
-    const FileUploadArea = ({ label, field, accept = "image/*" }) => (
-        <div className="w-full">
-            <label className="block text-sm font-medium text-black mb-2">{label}</label>
-            <div className="relative">
-                <input
-                    type="file"
-                    accept={accept}
-                    onChange={(e) => handleFileUpload(field, e)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                />
-                <div className="w-full h-28 bg-white border border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50">
-                    <Upload className="w-7 h-7 text-gray-400 mb-2" />
-                    <span className="text-xs text-gray-500 text-center">
-                        {field === 'backgroundImage' && 'Click to Upload product image'}
-                        {field === 'backgroundImg' && 'Click to Upload product image'}
-                        {(field === 'icon1' || field === 'icon2' || field === 'icon3') && 'Upload'}
-                    </span>
-                </div>
-            </div>
-        </div>
-    );
 
     // Get banner settings from the nested structure
     const bannerSettings = formData?.bannerSetting || {};
@@ -103,9 +82,10 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
             {/* Main Content Area */}
             <div className="bg-gray-100 border border-gray-300 rounded-3xl p-3 pt-5">
 
-                <div className="flex w-[100%] lg:flex-row gap-5 bg-yellow-100">
+                <div className="flex w-[100%] lg:flex-row gap-5 ">
                     {/* Banner Settings */}
-                    <div className="w-[84%] space-y-8 bg-pink-100">
+                    <div className="w-[84%] space-y-5">
+
                         <div className="flex items-center justify-between">
                             <h2 className="text-[0.9rem] font-semibold text-black">Banner Setting</h2>
 
@@ -114,11 +94,15 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                                 onClick={handleResetBanner}
                                 backgroundColor={'#000000'}
                                 textColor={'#FFFFFF'}
-                                icon={"/img/general/color_selector_white.svg"}
+                                icon={"/img/general/reset_black.svg"}
                                 showIcon={true}
                                 iconPosition={'right'}
                                 disabled={false}
-                                size={'small'} 
+                                height={'1.6rem'}
+                                fontSize={'0.6rem'}
+                                padding={'0px 4px 0px 8px'}
+                                iconWidth={'0.9rem'}
+                                iconHeight={'0.9rem'}
                                 className={''}
                             />
                         </div>
@@ -126,7 +110,7 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                         <div className="border-b border-gray-300"></div>
 
                         {/* Banner Title and Colors */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <InputField
                                 label="Banner Title*"
                                 name="bannerTitle"
@@ -134,54 +118,89 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                                 placeholder="Enter title"
                                 value={safeFormData.bannerTitle}
                                 onChange={(e) => handleBannerUpdate('bannerTitle', e.target.value)}
-                                labelSize="0.875rem"
-                                placeholderSize="0.875rem"
-                                fieldHeight="0.6rem"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                fieldHeight="0.8rem"
                             />
 
                             <ColorPicker
                                 label="Top Background*"
-                                field="backgroundColor"
+                                name="backgroundColor"
                                 value={safeFormData.backgroundColor}
+                                onChange={(e) => handleBannerUpdate('backgroundColor', e.target.value)}
+                                placeholder="Choose background color"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                fieldHeight="0.8rem"
+                                colorPreviewSize="1.875rem"
+                                iconSize="0.875rem"
                             />
 
                             <ColorPicker
                                 label="Title Colour*"
                                 field="titleColor"
                                 value={safeFormData.titleColor}
+                                onChange={(e) => handleBannerUpdate('backgroundColor', e.target.value)}
+                                placeholder="Choose background color"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                fieldHeight="0.8rem"
+                                colorPreviewSize="1.875rem"
+                                iconSize="0.875rem"
                             />
+
                         </div>
 
                         {/* Logo and Banner Image */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FileUploadArea label="Logo" field="backgroundImg" />
-                            <FileUploadArea label="Banner Image" field="backgroundImage" />
-                        </div>
-
-                        {/* Bottom Colors */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <ColorPicker
-                                label="Bottom Background"
-                                name="bottomBackground"
-                                value={safeFormData.backgroundColor}
-                                onChange={(e) => handleBannerUpdate('backgroundColor', e.target.value)}
-                                labelSize="0.875rem"
-                            />
-
-                            <ColorPicker
-                                label="Bottom Text Colour"
-                                name="bottomTextColor"
-                                value={safeFormData.titleColor}
-                                onChange={(e) => handleBannerUpdate('titleColor', e.target.value)}
-                                labelSize="0.875rem"
+                        <div className="grid grid-cols-1">
+                            <FileUploadArea
+                                label="Banner Image"
+                                name="backgroundImage"
+                                onChange={(e) => handleFileUpload('backgroundImage', e)}
+                                placeholder="Click to Upload product image"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                containerHeight="7rem"
+                                iconSize="1.75rem"
+                                borderRadius="1rem"
                             />
                         </div>
 
                         {/* Icons */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <FileUploadArea label="Icon 1" field="icon1" />
-                            <FileUploadArea label="Icon 2" field="icon2" />
-                            <FileUploadArea label="Icon 3" field="icon3" />
+                            <FileUploadArea
+                                label="Icon 1"
+                                name="icon1"
+                                onChange={(e) => handleFileUpload('icon1', e)}
+                                placeholder="Upload"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                containerHeight="7rem"
+                                iconSize="1.75rem"
+                                borderRadius="1rem"
+                            />
+                            <FileUploadArea
+                                label="Icon 2"
+                                name="icon2"
+                                onChange={(e) => handleFileUpload('icon2', e)}
+                                placeholder="Upload"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                containerHeight="7rem"
+                                iconSize="1.75rem"
+                                borderRadius="1rem"
+                            />
+                            <FileUploadArea
+                                label="Icon 3"
+                                name="icon3"
+                                onChange={(e) => handleFileUpload('icon3', e)}
+                                placeholder="Upload"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                containerHeight="7rem"
+                                iconSize="1.75rem"
+                                borderRadius="1rem"
+                            />
                         </div>
 
                         {/* Text Fields */}
@@ -193,9 +212,9 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                                 placeholder="Enter Text"
                                 value={safeFormData.text1}
                                 onChange={(e) => handleBannerUpdate('text1', e.target.value)}
-                                labelSize="0.875rem"
-                                placeholderSize="0.875rem"
-                                fieldHeight="0.6rem"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                fieldHeight="0.8rem"
                             />
 
                             <InputField
@@ -205,9 +224,9 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                                 placeholder="Enter Text"
                                 value={safeFormData.text2}
                                 onChange={(e) => handleBannerUpdate('text2', e.target.value)}
-                                labelSize="0.875rem"
-                                placeholderSize="0.875rem"
-                                fieldHeight="0.6rem"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                fieldHeight="0.8rem"
                             />
 
                             <InputField
@@ -217,9 +236,9 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                                 placeholder="Enter Text"
                                 value={safeFormData.text3}
                                 onChange={(e) => handleBannerUpdate('text3', e.target.value)}
-                                labelSize="0.875rem"
-                                placeholderSize="0.875rem"
-                                fieldHeight="0.6rem"
+                                labelSize="0.675rem"
+                                placeholderSize="0.575rem"
+                                fieldHeight="0.8rem"
                             />
                         </div>
                     </div>

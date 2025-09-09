@@ -25,7 +25,7 @@ export const createProductLoyaltyDetail = () => ({
 
 export const createBannerSetting = () => ({
     bannerTitle: '',
-    titleColor: '#2F45F2',
+    titleColor: '#FFFFFF',
     backgroundColor: '#000000',
     backgroundImage: null,
     icon1: null,
