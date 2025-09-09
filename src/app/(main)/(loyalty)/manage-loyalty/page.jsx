@@ -5,6 +5,7 @@ import ComponentHeader from '@/components/ui/ComponentHeader';
 import LoyaltyDetails from '@/components/loyalty/LoyaltyDetails';
 import { createPointFormData, createProductFormData, LOYALTY_TYPES } from '@/utils/loyaltyFormData';
 import BannerCreator from '@/components/loyalty/BannerCreater';
+import WalletCardCustomizer from '@/components/wallet-cards/WalletCardCustomizer';
 
 const LoyaltyManagementComponent = () => {
     const [formData, setFormData] = useState(null);
@@ -142,6 +143,12 @@ const LoyaltyManagementComponent = () => {
                             formData={formData}
                             updateFormData={updateFormData}
                             resetFormData={resetBannerData}
+                        />
+                    </div>
+                    <div className="space-y-6 mt-8">
+                        <WalletCardCustomizer
+                            formData={formData}
+                            updateFormData={updateFormData}
                         />
                     </div>
                 </>

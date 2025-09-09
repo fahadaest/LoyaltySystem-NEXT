@@ -83,6 +83,21 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
             <div className="bg-gray-100 border border-gray-300 rounded-3xl p-3 pt-5">
 
                 <div className="flex w-[100%] lg:flex-row gap-5 ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     {/* Banner Settings */}
                     <div className="w-[84%] space-y-5">
 
@@ -108,6 +123,13 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                         </div>
 
                         <div className="border-b border-gray-300"></div>
+
+
+
+
+
+
+
 
                         {/* Banner Title and Colors */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -242,6 +264,23 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                             />
                         </div>
                     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                     {/* Banner Preview - Using the separate component */}
                     <div className="w-[16%] lg:w-auto p-5 bg-white rounded-3xl bg-green-100">

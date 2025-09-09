@@ -37,13 +37,13 @@ export const createBannerSetting = () => ({
 });
 
 export const createPointCustomCard = () => ({
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#000000',
     backgroundImg: null,
     backgroundTitle: ''
 });
 
 export const createProductCustomCard = () => ({
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#000000',
     backgroundImg: null,
     collectedStampImg: null,
     uncollectedStampImg: null
