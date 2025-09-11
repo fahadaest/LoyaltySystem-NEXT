@@ -84,20 +84,6 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
 
                 <div className="flex w-[100%] lg:flex-row gap-5 ">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     {/* Banner Settings */}
                     <div className="w-[84%] space-y-5">
 
@@ -123,13 +109,6 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                         </div>
 
                         <div className="border-b border-gray-300"></div>
-
-
-
-
-
-
-
 
                         {/* Banner Title and Colors */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

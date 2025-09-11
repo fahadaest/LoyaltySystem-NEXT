@@ -1,26 +1,84 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
     const [openSubmenus, setOpenSubmenus] = useState({});
     const timeoutRefs = useRef({});
     const navRef = useRef(null);
     const submenuRefs = useRef({});
+    const router = useRouter();
 
     const menuItems = {
-        general: [{ name: "Dashboard", svgSrc: "/img/sidebar/dashboard_light.svg", svgSrcDark: "/img/sidebar/dashboard_dark.svg", active: true }],
+        general: [{
+            name: "Dashboard",
+            svgSrc: "/img/sidebar/dashboard_light.svg",
+            svgSrcDark: "/img/sidebar/dashboard_dark.svg",
+            active: true,
+            href: "/dashboard"
+        }],
         productLoyalties: [
-            { name: "Products", svgSrc: "/img/sidebar/product_light.svg", svgSrcDark: "/img/sidebar/product_dark.svg" },
-            { name: "Loyalty", svgSrc: "/img/sidebar/loyalty_light.svg", svgSrcDark: "/img/sidebar/loyalty_dark.svg", hasSubmenu: true, submenu: [{ name: "Create Loyalty", href: "/loyalty/programs" }, { name: "Points Loyalty", href: "/loyalty/points" }, { name: "Products Loyalty", href: "/loyalty/rewards" }] },
-            { name: "Cards", svgSrc: "/img/sidebar/card_light.svg", svgSrcDark: "/img/sidebar/card_dark.svg", hasSubmenu: true, submenu: [{ name: "Manage Loyalty Cards", href: "/cards" }] }
+            {
+                name: "Products",
+                svgSrc: "/img/sidebar/product_light.svg",
+                svgSrcDark: "/img/sidebar/product_dark.svg",
+                href: "/products"
+            },
+            {
+                name: "Loyalty",
+                svgSrc: "/img/sidebar/loyalty_light.svg",
+                svgSrcDark: "/img/sidebar/loyalty_dark.svg",
+                hasSubmenu: true,
+                submenu: [
+                    { name: "Create Loyalty", href: "/loyalty/create" },
+                    { name: "Points Loyalty", href: "/loyalty/points" },
+                    { name: "Products Loyalty", href: "/loyalty/products" }
+                ]
+            },
+            {
+                name: "Cards",
+                svgSrc: "/img/sidebar/card_light.svg",
+                svgSrcDark: "/img/sidebar/card_dark.svg",
+                hasSubmenu: true,
+                submenu: [
+                    { name: "Manage Loyalty Cards", href: "/cards" }
+                ]
+            }
         ],
         management: [
-            { name: "Customers", svgSrc: "/img/sidebar/customers_light.svg", svgSrcDark: "/img/sidebar/customers_dark.svg" },
-            { name: "Sales Person", svgSrc: "/img/sidebar/salesPerson_light.svg", svgSrcDark: "/img/sidebar/salesPerson_dark.svg" },
-            { name: "Managers", svgSrc: "/img/sidebar/managers_light.svg", svgSrcDark: "/img/sidebar/managers_dark.svg" }
+            {
+                name: "Customers",
+                svgSrc: "/img/sidebar/customers_light.svg",
+                svgSrcDark: "/img/sidebar/customers_dark.svg",
+                href: "/customers"
+            },
+            {
+                name: "Sales Person",
+                svgSrc: "/img/sidebar/salesPerson_light.svg",
+                svgSrcDark: "/img/sidebar/salesPerson_dark.svg",
+                href: "/sales-person"
+            },
+            {
+                name: "Managers",
+                svgSrc: "/img/sidebar/managers_light.svg",
+                svgSrcDark: "/img/sidebar/managers_dark.svg",
+                href: "/managers"
+            }
         ],
-        settings: [{ name: "Settings", svgSrc: "/img/sidebar/settings_light.svg", svgSrcDark: "/img/sidebar/settings_dark.svg", hasArrow: true, hasSubmenu: true, submenu: [{ name: "Store Address", href: "/cards" }, { name: "Wallet Social Links", href: "/cards" }, { name: "Wallet Beacons", href: "/cards" }, { name: "Wallet Support", href: "/cards" }, { name: "Terms & Conditions", href: "/cards" }] }]
+        settings: [{
+            name: "Settings",
+            svgSrc: "/img/sidebar/settings_light.svg",
+            svgSrcDark: "/img/sidebar/settings_dark.svg",
+            hasArrow: true,
+            hasSubmenu: true,
+            submenu: [
+                { name: "Store Address", href: "/settings/store-address" },
+                { name: "Wallet Social Links", href: "/settings/wallet-social-links" },
+                { name: "Wallet Beacons", href: "/settings/wallet-beacons" },
+                { name: "Terms & Conditions", href: "/settings/terms-conditions" }
+            ]
+        }]
     };
 
     const checkAndScrollToSubmenu = (itemName) => {
@@ -63,6 +121,12 @@ const Sidebar = () => {
         }, 150);
     };
 
+    const handleNavigation = (href) => {
+        if (href) {
+            router.push(href);
+        }
+    };
+
     const getIconSrc = (item) => item.active ? item.svgSrcDark : item.svgSrc;
     const getArrowRotation = (itemName) => openSubmenus[itemName] ? '-rotate-90' : 'rotate-0';
 
@@ -70,6 +134,7 @@ const Sidebar = () => {
         <div
             key={index}
             className={`flex items-center ${isSubmenu ? 'justify-start' : 'justify-between'} px-3 py-2.5 cursor-pointer hover:text-[#41cc40] hover:bg-gray-800 rounded-[2rem] transition-colors ${item.active ? 'bg-white text-black rounded-[2rem]' : ''}`}
+            onClick={() => !item.hasSubmenu && handleNavigation(item.href)}
         >
             <div className="flex items-center gap-2">
                 <img src={getIconSrc(item)} alt={item.name} className="w-3 h-3 object-contain" />
@@ -111,19 +176,19 @@ const Sidebar = () => {
                             >
                                 <div className="ml-6 space-y-1">
                                     {item.submenu.map((subItem, subIndex) => (
-                                        <a
+                                        <div
                                             key={subIndex}
-                                            href={subItem.href}
-                                            className="block text-[9px] text-gray-400 hover:text-[#41cc40] py-1 px-2 rounded transition-colors transform transition-transform duration-200"
+                                            className="block text-[9px] text-gray-400 hover:text-[#41cc40] py-1 px-2 rounded transition-colors transform transition-transform duration-200 cursor-pointer"
                                             style={{
                                                 transform: openSubmenus[item.name]
                                                     ? `translateY(0) scale(1)`
                                                     : `translateY(-10px) scale(0.95)`,
                                                 transitionDelay: openSubmenus[item.name] ? `${subIndex * 50}ms` : '0ms'
                                             }}
+                                            onClick={() => handleNavigation(subItem.href)}
                                         >
                                             {subItem.name}
-                                        </a>
+                                        </div>
                                     ))}
                                 </div>
                             </div>

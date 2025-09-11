@@ -58,15 +58,15 @@ const Button = ({
         borderRadius: iconBorderRadius,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     };
 
-    const baseRotation = iconPosition === 'left' ? 0 : 90;
+    const baseRotation = iconPosition === 'left' ? 0 : 0;
     const iconImageStyle = {
         width: iconImageWidth,
         height: iconImageHeight,
         transform: `rotate(${baseRotation + (isHovered ? 360 : 0)}deg)`,
-        transition: 'transform 0.5s ease-in-out'
+        transition: 'transform 0.5s ease-in-out',
     };
 
     const iconElement = showIcon && icon && (

@@ -4,175 +4,105 @@ import ComponentHeader from "@/components/ui/ComponentHeader";
 import Button from "@/components/buttons/Button";
 import Table from "@/components/ui/Table";
 
-const PointLoyalty = () => {
+const StoreAddressesPage = () => {
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(2);
+    const [totalPages] = useState(10);
 
-    const mockLoyaltyPrograms = [
+    const mockAddresses = [
         {
             id: 1,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "100"
+            address: "123 Sheikh Zayed Road, Dubai, UAE"
         },
         {
             id: 2,
-            name: "Spend AED 100 and Get AED 10",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "200"
+            address: "45 Corniche Street, Abu Dhabi, UAE"
         },
         {
             id: 3,
-            name: "Spend AED 100 and Get AED 5",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "50"
+            address: "78 Al Majaz Area, Sharjah, UAE"
         },
         {
             id: 4,
-            name: "Earn Points on Every Purchase!",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "70"
+            address: "22 Al Nuaimiya, Ajman, UAE"
         },
         {
             id: 5,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "90"
+            address: "56 Al Hamra Village, Ras Al Khaimah, UAE"
         },
         {
-            id: 1,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "100"
+            id: 6,
+            address: "89 King Faisal Street, Fujairah, UAE"
         },
         {
-            id: 2,
-            name: "Spend AED 100 and Get AED 10",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "200"
+            id: 7,
+            address: "15 Al Qasba, Sharjah, UAE"
         },
         {
-            id: 3,
-            name: "Spend AED 100 and Get AED 5",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "50"
+            id: 8,
+            address: "67 Marina Walk, Dubai, UAE"
         },
         {
-            id: 4,
-            name: "Earn Points on Every Purchase!",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "70"
+            id: 9,
+            address: "34 Khalifa Street, Abu Dhabi, UAE"
         },
         {
-            id: 5,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "90"
+            id: 10,
+            address: "12 Al Wahda Street, Sharjah, UAE"
         }
     ];
 
     const tableHeaders = [
         {
-            label: "Name",
-            key: "name",
-            className: "flex-[2.5]",
+            label: "Addresses",
+            key: "address",
+            className: "flex-[4]",
             align: "left"
-        },
-        {
-            label: "Spending Amount",
-            key: "spendingAmount",
-            className: "flex-[1.5]",
-            align: "left"
-        },
-        {
-            label: "Reward Points",
-            key: "rewardPoints",
-            className: "flex-[1.2]",
-            align: "left",
-            render: (item) => (
-                <div className="flex items-center">
-                    <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
-                        {item.rewardPoints}
-                    </span>
-                </div>
-            )
         },
         {
             label: "Actions",
             key: "actions",
-            className: "flex-[2.5]",
+            className: "flex-[1]",
             align: "center",
             render: (item) => (
                 <div className="flex items-center justify-center gap-2">
                     <Button
-                        text={"View"}
-                        onClick={null}
+                        text={"Edit"}
+                        onClick={() => handleEdit(item)}
                         backgroundColor={'#EDEDED'}
                         textColor={'#000000'}
-                        icon={"/img/general/detail_eye.svg"}
+                        icon={"/img/general/edit.svg"}
                         showIcon={true}
                         iconPosition={'right'}
                         disabled={false}
-                        height={'2rem'}
-                        fontSize={'0.7rem'}
-                        padding={'0px 4px 0px 12px'}
+                        height={'1.8rem'}
+                        fontSize={'0.65rem'}
+                        padding={'0px 4px 0px 10px'}
                         iconBackgroundColor={'#000000'}
-                        iconWidth={'1.4rem'}
-                        iconHeight={'1.4rem'}
-                        iconImageWidth={'1rem'}
-                        iconImageHeight={'1rem'}
-                        gap={'12px'}
+                        iconWidth={'1.2rem'}
+                        iconHeight={'1.2rem'}
+                        iconImageWidth={'0.8rem'}
+                        iconImageHeight={'0.8rem'}
+                        gap={'8px'}
+                        borderRadius={'20px'}
                     />
-
-                    <Button
-                        text={"Edit"}
-                        onClick={null}
-                        backgroundColor={'#41CC40'}
-                        textColor={'#000000'}
-                        disabled={false}
-                        height={'2rem'}
-                        fontSize={'0.7rem'}
-                        padding={'0px 12px'}
-                    />
-
                     <Button
                         text={""}
-                        onClick={null}
-                        backgroundColor={'#EDEDED'}
-                        textColor={'#000000'}
+                        onClick={() => handleDelete(item)}
+                        backgroundColor={'#000000'}
+                        textColor={'#FFFFFF'}
                         icon={"/img/general/trash.svg"}
                         showIcon={true}
                         iconPosition={'center'}
                         disabled={false}
-                        height={'2rem'}
-                        width={'2rem'}
-                        fontSize={'0.7rem'}
+                        height={'1.8rem'}
+                        width={'1.8rem'}
+                        fontSize={'0.65rem'}
                         padding={'0px'}
                         iconWidth={'1rem'}
                         iconHeight={'1rem'}
-                        iconImageWidth={'0.8rem'}
-                        iconImageHeight={'0.8rem'}
-                        borderRadius={'50%'}
-                    />
-
-                    <Button
-                        text={""}
-                        onClick={null}
-                        backgroundColor={'#000000'}
-                        textColor={'#FFFFFF'}
-                        icon={"/img/general/copy.svg"}
-                        showIcon={true}
-                        iconPosition={'center'}
-                        disabled={false}
-                        height={'2rem'}
-                        width={'2rem'}
-                        fontSize={'0.7rem'}
-                        padding={'0px'}
-                        iconWidth={'1rem'}
-                        iconHeight={'1rem'}
-                        iconImageWidth={'0.8rem'}
-                        iconImageHeight={'0.8rem'}
+                        iconImageWidth={'0.7rem'}
+                        iconImageHeight={'0.7rem'}
                         borderRadius={'50%'}
                     />
                 </div>
@@ -180,9 +110,19 @@ const PointLoyalty = () => {
         }
     ];
 
-    const handleRowAction = (row) => {
-        console.log("Action clicked for:", row);
-        // Handle the action here
+    const handleEdit = (item) => {
+        console.log("Edit clicked for:", item);
+        // Handle the edit action here
+    };
+
+    const handleDelete = (item) => {
+        console.log("Delete clicked for:", item);
+        // Handle the delete action here
+    };
+
+    const handleAddNewAddress = () => {
+        console.log("Add new address clicked");
+        // Handle add new address
     };
 
     const handlePrevious = () => {
@@ -247,14 +187,14 @@ const PointLoyalty = () => {
         <main className="h-[80vh] flex flex-col overflow-hidden">
             <div className="flex items-start justify-between flex-shrink-0">
                 <ComponentHeader
-                    title="Point Loyalty"
-                    subtitle="Manage Point-Based Loyalties Reward"
-                    infoMessage="This page allows you to add, edit, and manage all your loyalty programs. Use the Add New Loyalty button to create new reward programs."
+                    title="Store Addresses"
+                    subtitle="Add, edit, update or remove addresses"
+                    infoMessage="This page allows you to add, edit, and manage all your store addresses."
                 />
 
                 <Button
-                    text={"Add New Loyalty"}
-                    onClick={null}
+                    text={"Add New Address"}
+                    onClick={handleAddNewAddress}
                     backgroundColor={'#000000'}
                     textColor={'#FFFFFF'}
                     icon={"/img/general/plus.svg"}
@@ -275,7 +215,7 @@ const PointLoyalty = () => {
             <div className="flex-1 min-h-0">
                 <Table
                     headers={tableHeaders}
-                    data={mockLoyaltyPrograms}
+                    data={mockAddresses}
                     headerFontSize="0.8rem"
                     bodyFontSize="0.675rem"
                     paginationInfo={paginationInfo}
@@ -286,4 +226,4 @@ const PointLoyalty = () => {
     );
 };
 
-export default PointLoyalty;
+export default StoreAddressesPage;
