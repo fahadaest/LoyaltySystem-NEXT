@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const Sidebar = () => {
     const [openSubmenus, setOpenSubmenus] = useState({});
@@ -9,13 +9,13 @@ const Sidebar = () => {
     const navRef = useRef(null);
     const submenuRefs = useRef({});
     const router = useRouter();
+    const pathname = usePathname();
 
     const menuItems = {
         general: [{
             name: "Dashboard",
             svgSrc: "/img/sidebar/dashboard_light.svg",
             svgSrcDark: "/img/sidebar/dashboard_dark.svg",
-            active: true,
             href: "/dashboard"
         }],
         productLoyalties: [
@@ -31,20 +31,11 @@ const Sidebar = () => {
                 svgSrcDark: "/img/sidebar/loyalty_dark.svg",
                 hasSubmenu: true,
                 submenu: [
-                    { name: "Create Loyalty", href: "/loyalty/create" },
-                    { name: "Points Loyalty", href: "/loyalty/points" },
-                    { name: "Products Loyalty", href: "/loyalty/products" }
+                    { name: "Create Loyalty", href: "/manage-loyalty" },
+                    { name: "Points Loyalty", href: "/points-loyalty" },
+                    { name: "Products Loyalty", href: "/products-loyalty" }
                 ]
             },
-            {
-                name: "Cards",
-                svgSrc: "/img/sidebar/card_light.svg",
-                svgSrcDark: "/img/sidebar/card_dark.svg",
-                hasSubmenu: true,
-                submenu: [
-                    { name: "Manage Loyalty Cards", href: "/cards" }
-                ]
-            }
         ],
         management: [
             {
@@ -57,7 +48,7 @@ const Sidebar = () => {
                 name: "Sales Person",
                 svgSrc: "/img/sidebar/salesPerson_light.svg",
                 svgSrcDark: "/img/sidebar/salesPerson_dark.svg",
-                href: "/sales-person"
+                href: "/salesperson"
             },
             {
                 name: "Managers",
@@ -73,13 +64,51 @@ const Sidebar = () => {
             hasArrow: true,
             hasSubmenu: true,
             submenu: [
-                { name: "Store Address", href: "/settings/store-address" },
-                { name: "Wallet Social Links", href: "/settings/wallet-social-links" },
-                { name: "Wallet Beacons", href: "/settings/wallet-beacons" },
-                { name: "Terms & Conditions", href: "/settings/terms-conditions" }
+                { name: "Store Address", href: "/store-address" },
+                { name: "Wallet Social Links", href: "/socials-and-support" },
+                { name: "Wallet Beacons", href: "/wallet-beacons" },
+                { name: "Terms & Conditions", href: "/terms-and-conditions" }
             ]
         }]
     };
+
+    // Function to check if an item is active
+    const isItemActive = (item) => {
+        if (item.href && pathname === item.href) {
+            return true;
+        }
+
+        // Check if any submenu item is active
+        if (item.hasSubmenu && item.submenu) {
+            return item.submenu.some(subItem => pathname === subItem.href);
+        }
+
+        return false;
+    };
+
+    // Function to check if a submenu item is active
+    const isSubmenuItemActive = (subItem) => {
+        return pathname === subItem.href;
+    };
+
+    // Auto-open submenu if current page is in submenu
+    useEffect(() => {
+        const allItems = [
+            ...menuItems.general,
+            ...menuItems.productLoyalties,
+            ...menuItems.management,
+            ...menuItems.settings
+        ];
+
+        allItems.forEach(item => {
+            if (item.hasSubmenu && item.submenu) {
+                const hasActiveSubmenu = item.submenu.some(subItem => pathname === subItem.href);
+                if (hasActiveSubmenu) {
+                    setOpenSubmenus(prev => ({ ...prev, [item.name]: true }));
+                }
+            }
+        });
+    }, [pathname]);
 
     const checkAndScrollToSubmenu = (itemName) => {
         if (!navRef.current || !submenuRefs.current[itemName]) return;
@@ -115,6 +144,19 @@ const Sidebar = () => {
     };
 
     const handleMouseLeave = (itemName) => {
+        // Don't auto-close if the submenu contains the active page
+        const allItems = [
+            ...menuItems.general,
+            ...menuItems.productLoyalties,
+            ...menuItems.management,
+            ...menuItems.settings
+        ];
+
+        const currentItem = allItems.find(item => item.name === itemName);
+        const hasActiveSubmenu = currentItem?.submenu?.some(subItem => pathname === subItem.href);
+
+        if (hasActiveSubmenu) return; // Keep submenu open if it contains active page
+
         timeoutRefs.current[itemName] = setTimeout(() => {
             setOpenSubmenus(prev => ({ ...prev, [itemName]: false }));
             delete timeoutRefs.current[itemName];
@@ -127,28 +169,35 @@ const Sidebar = () => {
         }
     };
 
-    const getIconSrc = (item) => item.active ? item.svgSrcDark : item.svgSrc;
+    const getIconSrc = (item) => isItemActive(item) ? item.svgSrcDark : item.svgSrc;
     const getArrowRotation = (itemName) => openSubmenus[itemName] ? '-rotate-90' : 'rotate-0';
 
-    const renderMenuItem = (item, index, isSubmenu = false) => (
-        <div
-            key={index}
-            className={`flex items-center ${isSubmenu ? 'justify-start' : 'justify-between'} px-3 py-2.5 cursor-pointer hover:text-[#41cc40] hover:bg-gray-800 rounded-[2rem] transition-colors ${item.active ? 'bg-white text-black rounded-[2rem]' : ''}`}
-            onClick={() => !item.hasSubmenu && handleNavigation(item.href)}
-        >
-            <div className="flex items-center gap-2">
-                <img src={getIconSrc(item)} alt={item.name} className="w-3 h-3 object-contain" />
-                <span className="text-[10px] font-medium">{item.name}</span>
+    const renderMenuItem = (item, index, isSubmenu = false) => {
+        const isActive = isSubmenu ? isSubmenuItemActive(item) : isItemActive(item);
+
+        return (
+            <div
+                key={index}
+                className={`flex items-center ${isSubmenu ? 'justify-start' : 'justify-between'} px-3 py-2.5 cursor-pointer hover:text-[#41cc40] hover:bg-gray-800 rounded-[2rem] transition-colors ${isActive ? 'bg-white text-black rounded-[2rem]' : ''
+                    }`}
+                onClick={() => !item.hasSubmenu && handleNavigation(item.href)}
+            >
+                <div className="flex items-center gap-2">
+                    {!isSubmenu && (
+                        <img src={getIconSrc(item)} alt={item.name} className="w-3 h-3 object-contain" />
+                    )}
+                    <span className="text-[10px] font-medium">{item.name}</span>
+                </div>
+                {(item.hasSubmenu || item.hasArrow) && (
+                    <img
+                        src="/img/general/arrow_right_white.svg"
+                        alt="arrow"
+                        className={`w-[0.6rem] h-[0.6rem] object-contain transition-transform duration-200 ${getArrowRotation(item.name)}`}
+                    />
+                )}
             </div>
-            {(item.hasSubmenu || item.hasArrow) && (
-                <img
-                    src="/img/general/arrow_right_white.svg"
-                    alt="arrow"
-                    className={`w-[0.6rem] h-[0.6rem] object-contain transition-transform duration-200 ${getArrowRotation(item.name)}`}
-                />
-            )}
-        </div>
-    );
+        );
+    };
 
     const renderSection = (title, items) => (
         <section className="mb-6 mt-6">
@@ -178,7 +227,10 @@ const Sidebar = () => {
                                     {item.submenu.map((subItem, subIndex) => (
                                         <div
                                             key={subIndex}
-                                            className="block text-[9px] text-gray-400 hover:text-[#41cc40] py-1 px-2 rounded transition-colors transform transition-transform duration-200 cursor-pointer"
+                                            className={`block text-[9px] py-1 px-2 rounded transition-colors transform transition-transform duration-200 cursor-pointer ${isSubmenuItemActive(subItem)
+                                                ? 'text-[#41cc40] bg-gray-800'
+                                                : 'text-gray-400 hover:text-[#41cc40]'
+                                                }`}
                                             style={{
                                                 transform: openSubmenus[item.name]
                                                     ? `translateY(0) scale(1)`
