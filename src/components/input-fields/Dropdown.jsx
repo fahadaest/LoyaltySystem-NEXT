@@ -20,7 +20,6 @@ export default function DropdownField({
     const dropdownRef = useRef(null);
     const id = name || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -52,6 +51,7 @@ export default function DropdownField({
                     style={{ fontSize: labelSize }}
                 >
                     {label}
+                    {required && <span className="text-red-500 ml-1">*</span>}
                 </label>
             )}
 
@@ -60,23 +60,21 @@ export default function DropdownField({
                 id={id}
                 name={name}
                 onClick={toggleDropdown}
-                className="w-full rounded-full border border-gray-300 bg-gray-100 px-5 text-left flex items-center justify-between focus:border-black focus:outline-none hover:bg-gray-200 transition-colors"
+                className="w-full rounded-full border border-gray-300 bg-white px-5 text-left flex items-center justify-between focus:border-black focus:outline-none hover:bg-gray-50 transition-colors"
                 style={{
                     fontSize: placeholderSize,
                     paddingTop: fieldHeight,
                     paddingBottom: fieldHeight
                 }}
             >
-                <span className="text-black font-normal">
+                <span className="text-gray-700 font-normal">
                     {value || placeholder}
                 </span>
                 <ChevronDown
-                    className={`w-4 h-4 text-black transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
-                        }`}
+                    className={`w-4 h-4 text-black transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                 />
             </button>
 
-            {/* Dropdown Options */}
             {isOpen && (
                 <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg max-h-60 overflow-y-auto">
                     {options.length > 0 ? (
@@ -85,14 +83,14 @@ export default function DropdownField({
                                 key={index}
                                 type="button"
                                 onClick={() => handleSelect(option.value || option)}
-                                className="w-full px-5 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none first:rounded-t-2xl last:rounded-b-2xl transition-colors"
+                                className="w-full px-5 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none first:rounded-t-2xl last:rounded-b-2xl transition-colors"
                                 style={{
                                     fontSize: placeholderSize,
                                     paddingTop: fieldHeight,
                                     paddingBottom: fieldHeight
                                 }}
                             >
-                                <span className="text-black font-normal">
+                                <span className="text-gray-700 font-normal">
                                     {option.label || option}
                                 </span>
                             </button>

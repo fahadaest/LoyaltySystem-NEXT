@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
+import { selectUserRole } from "@/store/slices/authSlice";
 
 const Sidebar = () => {
     const [openSubmenus, setOpenSubmenus] = useState({});
@@ -10,6 +12,7 @@ const Sidebar = () => {
     const submenuRefs = useRef({});
     const router = useRouter();
     const pathname = usePathname();
+    const userRole = useSelector(selectUserRole);
 
     const menuItems = {
         general: [{
@@ -17,6 +20,18 @@ const Sidebar = () => {
             svgSrc: "/img/sidebar/dashboard_light.svg",
             svgSrcDark: "/img/sidebar/dashboard_dark.svg",
             href: "/dashboard"
+        }],
+        admin: [{
+            name: "Admin",
+            svgSrc: "/img/sidebar/dashboard_light.svg",
+            svgSrcDark: "/img/sidebar/dashboard_dark.svg",
+            href: "/admins"
+        }],
+        superadmin: [{
+            name: "Manage Subscription",
+            svgSrc: "/img/sidebar/settings_light.svg",
+            svgSrcDark: "/img/sidebar/settings_dark.svg",
+            href: "/subscriptions"
         }],
         productLoyalties: [
             {
@@ -95,6 +110,7 @@ const Sidebar = () => {
     useEffect(() => {
         const allItems = [
             ...menuItems.general,
+            ...menuItems.admin,
             ...menuItems.productLoyalties,
             ...menuItems.management,
             ...menuItems.settings
@@ -147,6 +163,7 @@ const Sidebar = () => {
         // Don't auto-close if the submenu contains the active page
         const allItems = [
             ...menuItems.general,
+            ...menuItems.admin,
             ...menuItems.productLoyalties,
             ...menuItems.management,
             ...menuItems.settings
@@ -262,13 +279,29 @@ const Sidebar = () => {
                     <h2 className="text-[1.2rem] font-light"><span className="text-white">REWARD</span><span className="font-semibold">HIVE</span></h2>
                 </div>
                 <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
+
                 {renderSection("General", menuItems.general, false)}
                 <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
-                {renderSection("Product & Loyalties", menuItems.productLoyalties, false)}
-                <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
-                {renderSection("Management", menuItems.management, false)}
-                <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
-                {renderSection("Settings", menuItems.settings, false)}
+
+                {renderSection("Admin", menuItems.admin, false)}
+
+                {userRole === 'superadmin' && (
+                    <>
+                        <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
+                        {renderSection("Subscription", menuItems.superadmin, false)}
+                    </>
+                )}
+
+                {userRole !== 'superadmin' && (
+                    <>
+                        <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
+                        {renderSection("Product & Loyalties", menuItems.productLoyalties, false)}
+                        <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
+                        {renderSection("Management", menuItems.management, false)}
+                        <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
+                        {renderSection("Settings", menuItems.settings, false)}
+                    </>
+                )}
             </nav>
         </aside>
     );

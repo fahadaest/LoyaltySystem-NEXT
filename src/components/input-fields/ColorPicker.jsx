@@ -12,9 +12,9 @@ export default function ColorPicker({
     className = "",
     labelSize = "1rem",
     placeholderSize = "0.875rem",
-    fieldHeight = "0.75rem", // This will be used for padding like InputField
-    colorPreviewSize = "2.25rem", // 36px = 2.25rem
-    iconSize = "1rem", // 16px = 1rem
+    fieldHeight = "0.75rem",
+    colorPreviewSize = "2.25rem",
+    iconSize = "1rem",
     showEyeIcon = true,
 }) {
     const colorInputRef = useRef(null);
@@ -23,7 +23,6 @@ export default function ColorPicker({
     const handleColorChange = (e) => {
         const newColor = e.target.value;
         if (onChange) {
-            // Create a synthetic event object similar to other input components
             onChange({
                 target: {
                     name: name,
@@ -37,14 +36,12 @@ export default function ColorPicker({
         colorInputRef.current?.click();
     };
 
-    // Calculate dynamic sizes (convert rem to numeric for calculations)
     const previewSizeRem = parseFloat(colorPreviewSize);
-    const iconButtonSizeRem = Math.min(previewSizeRem + 0.0625, 2.3125); // Keep icon button reasonable size (37px = 2.3125rem)
-    const paddingLeftRem = previewSizeRem + 1; // 16px = 1rem
+    const iconButtonSizeRem = Math.min(previewSizeRem + 0.0625, 2.3125);
+    const paddingLeftRem = previewSizeRem + 1;
 
     return (
         <div className={className}>
-            {/* Label */}
             {label && (
                 <label
                     htmlFor={id}
@@ -52,36 +49,34 @@ export default function ColorPicker({
                     style={{ fontSize: labelSize }}
                 >
                     {label}
+                    {required && <span className="text-red-500 ml-1">*</span>}
                 </label>
             )}
 
-            {/* Input Field with Color Display */}
             <div className="relative">
                 <div
-                    className="bg-white border border-gray-300 rounded-full flex items-center cursor-pointer"
+                    className="bg-white border border-gray-300 rounded-full flex items-center cursor-pointer focus-within:border-black transition-colors"
                     onClick={handleColorPickerClick}
                     style={{
                         paddingTop: fieldHeight,
                         paddingBottom: fieldHeight,
                         paddingLeft: `${paddingLeftRem}rem`,
-                        paddingRight: `${iconButtonSizeRem + 0.5}rem` // Dynamic right padding based on icon size
+                        paddingRight: `${iconButtonSizeRem + 0.5}rem`
                     }}
                 >
                     <span
-                        className="text-gray-500"
+                        className="text-gray-700"
                         style={{
                             fontFamily: 'Poppins, sans-serif',
                             fontWeight: '400',
                             fontSize: placeholderSize,
-                            lineHeight: '140%',
-                            color: '#636363'
+                            lineHeight: '140%'
                         }}
                     >
                         {value || placeholder}
                     </span>
                 </div>
 
-                {/* Left Color Preview Circle */}
                 <div className="absolute top-1/2 transform -translate-y-1/2" style={{ left: '0.5rem' }}>
                     <div
                         className="rounded-full"
@@ -94,7 +89,6 @@ export default function ColorPicker({
                     />
                 </div>
 
-                {/* Color Picker Button - Positioned absolutely on the right */}
                 <div className="absolute top-1/2 transform -translate-y-1/2" style={{ right: '0.5rem' }}>
                     <input
                         ref={colorInputRef}

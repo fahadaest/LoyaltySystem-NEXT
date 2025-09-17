@@ -25,6 +25,7 @@ export default function InputField({
                     style={{ fontSize: labelSize }}
                 >
                     {label}
+                    {required && <span className="text-red-500 ml-1">*</span>}
                 </label>
             )}
             <input
@@ -36,7 +37,7 @@ export default function InputField({
                 placeholder={placeholder}
                 required={required}
                 autoComplete={autoComplete}
-                className="w-full rounded-full border border-gray-300 px-5 text-gray-700 focus:border-black focus:outline-none"
+                className="w-full rounded-full border border-gray-300 bg-white px-5 text-gray-700 placeholder-gray-400 focus:border-black focus:outline-none transition-colors"
                 style={{
                     fontSize: placeholderSize,
                     paddingTop: fieldHeight,

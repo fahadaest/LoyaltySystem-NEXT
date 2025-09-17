@@ -28,7 +28,7 @@ const Modal = ({
         >
             {/* Modal Container */}
             <div
-                className="bg-white border border-gray-200 shadow-lg rounded-[40px] relative overflow-hidden flex flex-col"
+                className="bg-white border border-gray-200 shadow-lg rounded-[30px] relative overflow-hidden flex flex-col"
                 style={{
                     maxWidth: maxWidth,
                     maxHeight: maxHeight,

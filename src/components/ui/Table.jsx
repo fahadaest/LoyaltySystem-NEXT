@@ -51,10 +51,10 @@ const Table = (props) => {
     };
 
     return (
-        <div className='bg-[#FCFCFC] flex flex-col p-5 border rounded-[2.3rem] relative w-full h-full'>
+        <div className='bg-[#FCFCFC] flex flex-col p-5 border rounded-[2.3rem] relative w-full h-full min-h-0'>
 
-            {/* inner table - now with flex-1 to take remaining space */}
-            <div className="bg-white border rounded-[2.3rem] relative w-full flex flex-col flex-1 overflow-hidden" style={{ ...defaultContainerStyle, ...containerStyle }}>
+            {/* inner table - now with flex-1 to take remaining space and min-h-0 to allow shrinking */}
+            <div className="bg-white border rounded-[2.3rem] relative w-full flex flex-col flex-1 min-h-0 overflow-hidden" style={{ ...defaultContainerStyle, ...containerStyle }}>
                 {/* Table Header - fixed */}
                 <div className="flex items-center px-6 py-4 border-b border-gray-200 flex-shrink-0 w-full min-w-full">
                     {headers.map((header, index) => (
@@ -77,8 +77,8 @@ const Table = (props) => {
                     ))}
                 </div>
 
-                {/* Table Body - scrollable */}
-                <div className="divide-y divide-gray-200 flex-1 overflow-y-auto w-full min-w-full">
+                {/* Table Body - scrollable and takes remaining space */}
+                <div className="divide-y divide-gray-200 flex-1 overflow-y-auto w-full min-w-full min-h-0">
                     {data.map((item, index) => (
                         <div
                             key={index}

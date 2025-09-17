@@ -11,6 +11,9 @@ export default function PasswordField({
     placeholder = "Password",
     required = false,
     className = "",
+    labelSize = "1rem",
+    placeholderSize = "0.875rem",
+    fieldHeight = "0.75rem",
 }) {
     const [show, setShow] = useState(false);
     const id = name;
@@ -20,9 +23,11 @@ export default function PasswordField({
             {label && (
                 <label
                     htmlFor={id}
-                    className="mb-2 block text-base font-semibold text-black"
+                    className="mb-2 block font-semibold text-black"
+                    style={{ fontSize: labelSize }}
                 >
                     {label}
+                    {required && <span className="text-red-500 ml-1">*</span>}
                 </label>
             )}
 
@@ -36,17 +41,22 @@ export default function PasswordField({
                     placeholder={placeholder}
                     required={required}
                     autoComplete={name === "password" ? "new-password" : "off"}
-                    className="w-full rounded-full border border-gray-300 px-5 py-3 pr-12 text-sm text-gray-700 focus:border-black focus:outline-none"
+                    className="w-full rounded-full border border-gray-300 bg-white px-4 pr-12 text-gray-700 placeholder-gray-400 focus:border-black focus:outline-none transition-colors"
+                    style={{
+                        fontSize: placeholderSize,
+                        paddingTop: fieldHeight,
+                        paddingBottom: fieldHeight
+                    }}
                 />
                 <button
                     type="button"
                     onClick={() => setShow((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-black focus:outline-none transition-colors"
                 >
                     {show ? (
-                        <EyeOff className="h-5 w-5" />
+                        <EyeOff className="h-4 w-4" />
                     ) : (
-                        <Eye className="h-5 w-5" />
+                        <Eye className="h-4 w-4" />
                     )}
                 </button>
             </div>

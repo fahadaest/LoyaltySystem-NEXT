@@ -6,7 +6,7 @@ import ProductsGrid from "@/components/product/ProductGrid";
 import Modal from "@/components/ui/Modal";
 import AddProductComponent from "@/components/product/AddProductComponent";
 
-const AddProductPage = () => {
+const ProductPage = () => {
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
 
     const handleAddClick = () => {
@@ -87,4 +87,4 @@ const AddProductPage = () => {
     );
 };
 
-export default AddProductPage;
+export default ProductPage;

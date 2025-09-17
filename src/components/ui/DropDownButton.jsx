@@ -7,7 +7,10 @@ const DropdownButton = ({
     textColor = 'black',
     circleColor = 'black',
     iconColor = 'white',
-    onClick
+    onClick,
+    width = 'auto',
+    height = 'auto',
+    fontSize = '12px'
 }) => {
     return (
         <button
@@ -18,7 +21,10 @@ const DropdownButton = ({
                 color: textColor,
                 borderRadius: '36px',
                 fontFamily: 'Poppins, sans-serif',
-                fontSize: '12px'
+                fontSize: fontSize,
+                width: width,
+                height: height,
+                minHeight: height === 'auto' ? 'auto' : height
             }}
         >
             <span>{text}</span>
