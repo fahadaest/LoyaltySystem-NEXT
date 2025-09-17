@@ -5,10 +5,12 @@ import { adminApis } from './slices/adminApis';
 import { subscriptionApis } from './slices/subscriptionApis';
 import { userProfileApis } from './slices/userProfileApis';
 import authSlice from './slices/authSlice';
+import alertSlice from './slices/alertSlice';
 
 export const store = configureStore({
     reducer: {
         auth: authSlice,
+        alert: alertSlice,
         [authenticationApis.reducerPath]: authenticationApis.reducer,
         [adminApis.reducerPath]: adminApis.reducer,
         [subscriptionApis.reducerPath]: subscriptionApis.reducer,

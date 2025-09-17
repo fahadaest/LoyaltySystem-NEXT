@@ -25,40 +25,40 @@ const NoDataComponent = ({
             title: 'No Products Found',
             subtitle: 'Start building your catalog by adding your first product.',
             buttonText: 'Add New Product',
-            iconColor: 'text-green-500',
-            bgColor: 'bg-green-50'
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
         },
         subscriptions: {
             icon: CreditCard,
             title: 'No Subscriptions Found',
             subtitle: 'Create subscription plans to start managing your services.',
             buttonText: 'Create Subscription',
-            iconColor: 'text-purple-500',
-            bgColor: 'bg-purple-50'
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
         },
         users: {
             icon: Users,
             title: 'No Users Found',
             subtitle: 'Your user list is empty. Users will appear here once they join.',
             buttonText: 'Invite Users',
-            iconColor: 'text-indigo-500',
-            bgColor: 'bg-indigo-50'
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
         },
         settings: {
             icon: Settings,
             title: 'No Configuration Found',
             subtitle: 'Set up your system configuration to get started.',
             buttonText: 'Configure Settings',
-            iconColor: 'text-gray-500',
-            bgColor: 'bg-gray-50'
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
         },
         general: {
             icon: FileX,
             title: 'No Data Found',
             subtitle: 'There is no data available at the moment.',
             buttonText: 'Add New Item',
-            iconColor: 'text-gray-500',
-            bgColor: 'bg-gray-50'
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
         }
     };
 

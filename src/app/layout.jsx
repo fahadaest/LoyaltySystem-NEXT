@@ -2,6 +2,7 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import ReduxProvider from '@/providers/ReduxProvider';
 import ActivityTracker from '@/components/permissions/ActivityTracker';
+import CustomAlert from '@/components/ui/CustomAlert';
 
 const poppins = Poppins({
     subsets: ['latin'],
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
             <body className="font-poppins antialiased">
                 <ReduxProvider>
                     <ActivityTracker>
+                        <CustomAlert />
                         {children}
                     </ActivityTracker>
                 </ReduxProvider>

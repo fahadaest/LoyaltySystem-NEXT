@@ -52,7 +52,7 @@ export default function DatePickerField({
                     required={required}
                     min={min}
                     max={max}
-                    className="w-full rounded-full border border-gray-300 bg-white px-5 pr-12 text-gray-700 focus:border-black focus:outline-none transition-colors"
+                    className="w-full rounded-full border border-gray-300 bg-white px-5 pr-2 text-gray-700 focus:border-black focus:outline-none transition-colors"
                     style={{
                         fontSize: placeholderSize,
                         paddingTop: fieldHeight,
@@ -64,7 +64,7 @@ export default function DatePickerField({
                     <button
                         type="button"
                         onClick={handleIconClick}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer hover:opacity-80 transition-opacity"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer hover:opacity-80 transition-opacity"
                         title="Open calendar"
                     >
                         <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">

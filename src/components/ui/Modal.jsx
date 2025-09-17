@@ -40,7 +40,7 @@ const Modal = ({
             >
                 {/* Header */}
                 {(title || showCloseButton) && (
-                    <div className="flex justify-between items-start p-5 pb-3">
+                    <div className="flex justify-between items-start p-4 ">
                         <div>
                             {title && (
                                 <h2
@@ -92,18 +92,14 @@ const Modal = ({
                 )}
 
                 {/* Content */}
-                <div className="px-5 py-3 overflow-auto flex-1" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+                <div className="px-3 pt-3 overflow-auto flex-1" style={{ maxHeight: 'calc(100vh - 200px)' }}>
                     {children}
                 </div>
 
                 {/* Footer */}
                 {footer && (
                     <>
-                        <div
-                            className="border-t mx-5"
-                            style={{ borderColor: '#E2E2E2' }}
-                        />
-                        <div className="p-5 pt-3">
+                        <div className="py-3 px-5">
                             {footer}
                         </div>
                     </>
