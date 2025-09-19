@@ -29,6 +29,69 @@ const ProductLoyalty = () => {
             product: "Espresso (Large)",
             purchaseQuantity: "10",
             rewardProduct: "Espresso"
+        },
+        {
+            id: 1,
+            title: "Buy 4 Hot Chocolate and get 2 FREE",
+            product: "Hot Chocolate (Small)",
+            purchaseQuantity: "10",
+            rewardProduct: "Hot Chocolate"
+        },
+        {
+            id: 2,
+            title: "Buy 3 Cappuccino and get 2 FREE",
+            product: "Cappuccino (Medium)",
+            purchaseQuantity: "10",
+            rewardProduct: "Cappuccino"
+        },
+        {
+            id: 3,
+            title: "Buy 6 Espresso Shots and get 2 FREE",
+            product: "Espresso (Large)",
+            purchaseQuantity: "10",
+            rewardProduct: "Espresso"
+        },
+        {
+            id: 1,
+            title: "Buy 4 Hot Chocolate and get 2 FREE",
+            product: "Hot Chocolate (Small)",
+            purchaseQuantity: "10",
+            rewardProduct: "Hot Chocolate"
+        },
+        {
+            id: 2,
+            title: "Buy 3 Cappuccino and get 2 FREE",
+            product: "Cappuccino (Medium)",
+            purchaseQuantity: "10",
+            rewardProduct: "Cappuccino"
+        },
+        {
+            id: 3,
+            title: "Buy 6 Espresso Shots and get 2 FREE",
+            product: "Espresso (Large)",
+            purchaseQuantity: "10",
+            rewardProduct: "Espresso"
+        },
+        {
+            id: 1,
+            title: "Buy 4 Hot Chocolate and get 2 FREE",
+            product: "Hot Chocolate (Small)",
+            purchaseQuantity: "10",
+            rewardProduct: "Hot Chocolate"
+        },
+        {
+            id: 2,
+            title: "Buy 3 Cappuccino and get 2 FREE",
+            product: "Cappuccino (Medium)",
+            purchaseQuantity: "10",
+            rewardProduct: "Cappuccino"
+        },
+        {
+            id: 3,
+            title: "Buy 6 Espresso Shots and get 2 FREE",
+            product: "Espresso (Large)",
+            purchaseQuantity: "10",
+            rewardProduct: "Espresso"
         }
     ];
 

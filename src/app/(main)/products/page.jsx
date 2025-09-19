@@ -68,7 +68,6 @@ const ProductPage = () => {
 
             <ProductsGrid />
 
-            {/* Add Product Modal with Footer */}
             <Modal
                 isOpen={isAddProductModalOpen}
                 onClose={handleCloseModal}

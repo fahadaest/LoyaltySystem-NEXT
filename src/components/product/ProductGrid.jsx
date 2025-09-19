@@ -2,7 +2,6 @@ import React from 'react';
 import ProductCard from './ProductCard';
 
 const ProductsGrid = () => {
-    // Sample products data
     const products = [
         {
             id: 1,

@@ -10,7 +10,8 @@ const Modal = ({
     maxWidth,
     maxHeight,
     showCloseButton = true,
-    footer
+    footer,
+    hideHeader = false // New prop to hide header
 }) => {
     if (!isOpen) return null;
 
@@ -38,9 +39,9 @@ const Modal = ({
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Header */}
-                {(title || showCloseButton) && (
-                    <div className="flex justify-between items-start p-4 ">
+                {/* Header - Only show if not hidden and has title or close button */}
+                {!hideHeader && (title || showCloseButton) && (
+                    <div className="flex justify-between items-start p-4">
                         <div>
                             {title && (
                                 <h2
@@ -83,8 +84,8 @@ const Modal = ({
                     </div>
                 )}
 
-                {/* Divider */}
-                {(title || showCloseButton) && (
+                {/* Divider - Only show if header is visible */}
+                {!hideHeader && (title || showCloseButton) && (
                     <div
                         className="border-t mx-5"
                         style={{ borderColor: '#E2E2E2' }}
@@ -92,17 +93,18 @@ const Modal = ({
                 )}
 
                 {/* Content */}
-                <div className="px-3 pt-3 overflow-auto flex-1" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+                <div
+                    className={`overflow-auto flex-1 ${hideHeader ? 'p-3' : 'px-3 pt-3'}`}
+                    style={{ maxHeight: 'calc(100vh - 200px)' }}
+                >
                     {children}
                 </div>
 
                 {/* Footer */}
                 {footer && (
-                    <>
-                        <div className="py-3 px-5">
-                            {footer}
-                        </div>
-                    </>
+                    <div className="py-3 px-5">
+                        {footer}
+                    </div>
                 )}
             </div>
         </div>
