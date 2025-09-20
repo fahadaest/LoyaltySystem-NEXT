@@ -1,20 +1,9 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { getCookie } from '@/utils/cookieUtils';
-
-const baseQuery = fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || '/api',
-    prepareHeaders: (headers, { getState }) => {
-        const token = getState().auth.token || getCookie('token');
-        if (token) {
-            headers.set('authorization', `Bearer ${token}`);
-        }
-        return headers;
-    },
-});
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { createDynamicBaseQuery } from '@/hooks/dynamicBaseQuery';
 
 export const authenticationApis = createApi({
     reducerPath: 'api',
-    baseQuery,
+    baseQuery: createDynamicBaseQuery(),
     tagTypes: ['Auth'],
     endpoints: (builder) => ({
         login: builder.mutation({
