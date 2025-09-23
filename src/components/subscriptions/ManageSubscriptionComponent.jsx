@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import InputField from "../input-fields/InputField";
 import DropdownButton from "../ui/DropDownButton";
 import DatePickerField from "../input-fields/DatePickerField";
-import PriceField from "../ui/PriceField";
+import PriceField from "../input-fields/PriceField";
 
 const ManageSubscriptionComponent = ({ onSubmit, editingSubscription = null, isEditMode = false, triggerSubmit = false }) => {
     const [formData, setFormData] = useState({

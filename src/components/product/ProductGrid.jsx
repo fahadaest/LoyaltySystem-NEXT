@@ -1,81 +1,58 @@
 import React from 'react';
 import ProductCard from './ProductCard';
+import NoDataComponent from '@/components/ui/NoDataComponent';
+import { useGetAllProductsQuery, useDeleteProductMutation } from '@/store/slices/productsApis';
 
-const ProductsGrid = () => {
-    const products = [
-        {
-            id: 1,
-            name: "Espresso",
-            description: "Pure, rich, and intense",
-            price: "35.00",
-            size: "Large",
-            image: "/img/sample/productSample1.svg"
-        },
-        {
-            id: 2,
-            name: "Cappuccino",
-            description: "Espresso, steamed milk....",
-            price: "30.00",
-            size: "Medium",
-            image: "/img/sample/productSample2.svg"
-        },
-        {
-            id: 3,
-            name: "Matcha Latte",
-            description: "Green tea powder with mi..",
-            price: "25.00",
-            size: "Small",
-            image: "/img/sample/productSample3.svg"
-        },
-        {
-            id: 4,
-            name: "Affogato",
-            description: "Vanilla ice cream \"dron...",
-            price: "30.00",
-            size: "Medium",
-            image: "/img/sample/productSample4.svg"
-        },
-        {
-            id: 5,
-            name: "Iced Latte",
-            description: "Espresso with cold mi..",
-            price: "30.00",
-            size: "Large",
-            image: "/img/sample/productSample5.svg"
-        },
-        {
-            id: 6,
-            name: "Matcha",
-            description: "Green tea powder with...",
-            price: "25.00",
-            size: "Small",
-            image: "/img/sample/productSample6.svg"
-        },
-        {
-            id: 7,
-            name: "Spanish Latte",
-            description: "Espresso with cold mil...",
-            price: "30.00",
-            size: "Medium",
-            image: "/img/sample/productSample7.svg"
-        },
-        {
-            id: 8,
-            name: "Hot Chocolate",
-            description: "Pure, rich, and intense",
-            price: "45.00",
-            size: "Large",
-            image: "/img/sample/productSample8.svg"
-        }
-    ];
+const ProductsGrid = ({ onAddProduct, onEditProduct }) => {
+    const { data: products = [], isLoading, error } = useGetAllProductsQuery();
+    const [deleteProduct] = useDeleteProductMutation();
 
     const handleEdit = (product) => {
-        console.log("Edit product:", product);
+        if (onEditProduct) {
+            onEditProduct(product);
+        }
     };
 
-    const handleDelete = (product) => {
-        console.log("Delete product:", product);
+    const handleDelete = async (product) => {
+        if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
+            try {
+                await deleteProduct(product.id).unwrap();
+            } catch (error) {
+                console.error("Failed to delete product:", error);
+            }
+        }
     };
+
+    if (isLoading) {
+        return (
+            <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
+                <div className="flex items-center justify-center">
+                    <div className="text-gray-500">Loading products...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
+                <div className="flex items-center justify-center">
+                    <div className="text-red-500">Failed to load products</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (products.length === 0) {
+        return (
+            <div className="bg-white border border-gray-200 rounded-3xl shadow-sm h-full min-h-[calc(100vh-13rem)] flex items-center justify-center">
+                <NoDataComponent
+                    type="products"
+                    onButtonClick={onAddProduct}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white border border-gray-200 rounded-3xl p-2 shadow-sm">
@@ -83,7 +60,14 @@ const ProductsGrid = () => {
                 {products.map((product) => (
                     <ProductCard
                         key={product.id}
-                        product={product}
+                        product={{
+                            id: product.id,
+                            name: product.name,
+                            description: product.description,
+                            price: product.price || '0.00',
+                            size: product?.size?.size || 'N/A',
+                            image: product.image,
+                        }}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                     />

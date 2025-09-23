@@ -4,6 +4,8 @@ import { authenticationApis } from './slices/authentication';
 import { adminApis } from './slices/adminApis';
 import { subscriptionApis } from './slices/subscriptionApis';
 import { userProfileApis } from './slices/userProfileApis';
+import { productsApis } from './slices/productsApis';
+import { productSizesApis } from './slices/productSizesApis';
 import authSlice from './slices/authSlice';
 import alertSlice from './slices/alertSlice';
 
@@ -15,13 +17,17 @@ export const store = configureStore({
         [adminApis.reducerPath]: adminApis.reducer,
         [subscriptionApis.reducerPath]: subscriptionApis.reducer,
         [userProfileApis.reducerPath]: userProfileApis.reducer,
+        [productsApis.reducerPath]: productsApis.reducer,
+        [productSizesApis.reducerPath]: productSizesApis.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
             authenticationApis.middleware,
             adminApis.middleware,
             subscriptionApis.middleware,
-            userProfileApis.middleware
+            userProfileApis.middleware,
+            productsApis.middleware,
+            productSizesApis.middleware,
         ),
 });
 

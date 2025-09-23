@@ -86,6 +86,16 @@ const ComponentHeader = ({
                             iconPosition={button.iconPosition || 'right'}
                             disabled={button.disabled || false}
                             className={button.className || ''}
+                            height={button.height}
+                            fontSize={button.fontSize}
+                            padding={button.padding}
+                            fontWeight={button.fontWeight}
+                            borderRadius={button.borderRadius}
+                            gap={button.gap}
+                            iconWidth={button.iconWidth}
+                            iconHeight={button.iconHeight}
+                            iconImageWidth={button.iconImageWidth}
+                            iconImageHeight={button.iconImageHeight}
                         />
                     ))}
                 </div>

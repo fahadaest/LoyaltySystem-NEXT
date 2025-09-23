@@ -231,19 +231,21 @@ export default function SignUpForm({ onSignupSuccess }) {
 
             {/* Domain - full width */}
             <div className="mt-4">
-                <div className="flex items-center">
-                    <InputField
-                        label="Domain"
-                        name="domain"
-                        type="text"
-                        placeholder="your-domain"
-                        value={formData.domain}
-                        onChange={handleChange}
-                        required
-                        labelSize="0.8rem"
-                        placeholderSize="0.75rem"
-                        fieldHeight="0.6rem"
-                    />
+                <div className="flex items-center w-full">
+                    <div className="flex-1">
+                        <InputField
+                            label="Domain"
+                            name="domain"
+                            type="text"
+                            placeholder="your-domain"
+                            value={formData.domain}
+                            onChange={handleChange}
+                            required
+                            labelSize="0.8rem"
+                            placeholderSize="0.75rem"
+                            fieldHeight="0.6rem"
+                        />
+                    </div>
                     {getDomainIndicator()}
                 </div>
                 {errors.domain && <p className="text-red-500 text-xs mt-1">{errors.domain}</p>}

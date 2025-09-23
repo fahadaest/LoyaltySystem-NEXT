@@ -1,13 +1,15 @@
 import React from 'react';
+import { getImageUrl } from '@/utils/imageUtils';
 
 const ProductCard = ({ product, onEdit, onDelete }) => {
+    console.log("product", product)
     return (
         <div className="bg-gray-100 border border-gray-200 rounded-3xl p-2 w-full">
             {/* Product Image */}
             <div className="relative w-full h-40 mb-4 rounded-3xl overflow-hidden group">
                 <div
                     className="w-full h-full bg-cover bg-center rounded-3xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2"
-                    style={{ backgroundImage: `url(${product.image})` }}
+                    style={{ backgroundImage: `url(${getImageUrl(product.image) || '/img/sample/productSample1.svg'})` }}
                 />
 
                 {/* Dark Overlay on Hover */}

@@ -59,5 +59,4 @@ export const createDynamicBaseQuery = () => {
     });
 };
 
-// Export helper function for debugging
 export const getCurrentApiUrl = getDynamicApiUrl;
