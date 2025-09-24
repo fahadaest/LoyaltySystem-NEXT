@@ -6,6 +6,7 @@ import { subscriptionApis } from './slices/subscriptionApis';
 import { userProfileApis } from './slices/userProfileApis';
 import { productsApis } from './slices/productsApis';
 import { productSizesApis } from './slices/productSizesApis';
+import { loyaltyApis } from './slices/loyaltyApis';
 import authSlice from './slices/authSlice';
 import alertSlice from './slices/alertSlice';
 
@@ -19,6 +20,7 @@ export const store = configureStore({
         [userProfileApis.reducerPath]: userProfileApis.reducer,
         [productsApis.reducerPath]: productsApis.reducer,
         [productSizesApis.reducerPath]: productSizesApis.reducer,
+        [loyaltyApis.reducerPath]: loyaltyApis.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -27,7 +29,7 @@ export const store = configureStore({
             subscriptionApis.middleware,
             userProfileApis.middleware,
             productsApis.middleware,
-            productSizesApis.middleware,
+            loyaltyApis.middleware,
         ),
 });
 

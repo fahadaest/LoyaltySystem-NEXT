@@ -19,9 +19,13 @@ const WalletCardCustomizer = ({
     const handleFileUpload = (field, event) => {
         const file = event.target.files[0];
         if (file) {
+            // Store the actual File object for API submission
+            updateFormData(field, file, 'customCard');
+
+            // If you need preview, store preview URL separately
             const reader = new FileReader();
             reader.onload = (e) => {
-                updateFormData(field, e.target.result, 'customCard');
+                updateFormData(`${field}Preview`, e.target.result, 'customCard');
             };
             reader.readAsDataURL(file);
         }
@@ -40,12 +44,14 @@ const WalletCardCustomizer = ({
                 ? {
                     backgroundColor: '#FFFFFF',
                     backgroundImg: null,
+                    backgroundImage: null,
                     collectedStampImg: null,
                     uncollectedStampImg: null
                 }
                 : {
                     backgroundColor: '#FFFFFF',
                     backgroundImg: null,
+                    backgroundImage: null,
                     backgroundTitle: ''
                 };
 
@@ -62,6 +68,7 @@ const WalletCardCustomizer = ({
             return {
                 backgroundColor: '#FFFFFF',
                 backgroundImg: null,
+                backgroundImage: null,
                 collectedStampImg: null,
                 uncollectedStampImg: null,
                 ...customCardSettings
@@ -70,6 +77,7 @@ const WalletCardCustomizer = ({
             return {
                 backgroundColor: '#FFFFFF',
                 backgroundImg: null,
+                backgroundImage: null,
                 backgroundTitle: '',
                 ...customCardSettings
             };
@@ -77,7 +85,6 @@ const WalletCardCustomizer = ({
     };
 
     const safeCardData = getDefaultCardData();
-
 
     return (
         <div className="w-full mx-auto bg-gray-50">
@@ -111,8 +118,62 @@ const WalletCardCustomizer = ({
 
                         <div className="border-b border-gray-300"></div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className='flex flex-col gap-3'>
+                        {loyaltyType === LOYALTY_TYPES.PRODUCT ? (
+                            // Product loyalty layout with stamps
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className='flex flex-col gap-3'>
+                                    <ColorPicker
+                                        label="Background Color*"
+                                        name="backgroundColor"
+                                        value={safeCardData.backgroundColor}
+                                        onChange={(e) => handleCardUpdate('backgroundColor', e.target.value)}
+                                        placeholder="Choose background color"
+                                        labelSize="0.675rem"
+                                        placeholderSize="0.575rem"
+                                        fieldHeight="0.8rem"
+                                        colorPreviewSize="1.875rem"
+                                        iconSize="0.875rem"
+                                    />
+                                    <FileUploadArea
+                                        label="Card Background Image"
+                                        name="backgroundImage"
+                                        onChange={(e) => handleFileUpload('backgroundImage', e)}
+                                        placeholder="Click to Upload background image"
+                                        labelSize="0.675rem"
+                                        placeholderSize="0.575rem"
+                                        containerHeight="10.2rem"
+                                        iconSize="1.75rem"
+                                        borderRadius="1rem"
+                                    />
+                                </div>
+
+                                <FileUploadArea
+                                    label="Stamp Collected"
+                                    name="collectedStampImg"
+                                    onChange={(e) => handleFileUpload('collectedStampImg', e)}
+                                    placeholder="Click to Upload collected stamp image"
+                                    labelSize="0.675rem"
+                                    placeholderSize="0.575rem"
+                                    containerHeight="15rem"
+                                    iconSize="1.75rem"
+                                    borderRadius="1rem"
+                                />
+
+                                <FileUploadArea
+                                    label="Uncollected Stamp"
+                                    name="uncollectedStampImg"
+                                    onChange={(e) => handleFileUpload('uncollectedStampImg', e)}
+                                    placeholder="Click to Upload uncollected stamp image"
+                                    labelSize="0.675rem"
+                                    placeholderSize="0.575rem"
+                                    containerHeight="15rem"
+                                    iconSize="1.75rem"
+                                    borderRadius="1rem"
+                                />
+                            </div>
+                        ) : (
+                            // Point loyalty layout without stamps
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <ColorPicker
                                     label="Background Color*"
                                     name="backgroundColor"
@@ -125,43 +186,20 @@ const WalletCardCustomizer = ({
                                     colorPreviewSize="1.875rem"
                                     iconSize="0.875rem"
                                 />
+
                                 <FileUploadArea
                                     label="Card Background Image"
                                     name="backgroundImage"
                                     onChange={(e) => handleFileUpload('backgroundImage', e)}
-                                    placeholder="Click to Upload product image"
+                                    placeholder="Click to Upload background image"
                                     labelSize="0.675rem"
                                     placeholderSize="0.575rem"
-                                    containerHeight="10.2rem"
+                                    containerHeight="7rem"
                                     iconSize="1.75rem"
                                     borderRadius="1rem"
                                 />
                             </div>
-
-                            <FileUploadArea
-                                label="Stamp Collected"
-                                name="backgroundImage"
-                                onChange={(e) => handleFileUpload('backgroundImage', e)}
-                                placeholder="Click to Upload product image"
-                                labelSize="0.675rem"
-                                placeholderSize="0.575rem"
-                                containerHeight="15rem"
-                                iconSize="1.75rem"
-                                borderRadius="1rem"
-                            />
-
-                            <FileUploadArea
-                                label="Uncollected Stamp"
-                                name="backgroundImage"
-                                onChange={(e) => handleFileUpload('backgroundImage', e)}
-                                placeholder="Click to Upload product image"
-                                labelSize="0.675rem"
-                                placeholderSize="0.575rem"
-                                containerHeight="15rem"
-                                iconSize="1.75rem"
-                                borderRadius="1rem"
-                            />
-                        </div>
+                        )}
                     </div>
 
                     {/* Card Preview */}
@@ -174,10 +212,10 @@ const WalletCardCustomizer = ({
                         <WalletCardPreview
                             loyaltyType={loyaltyType}
                             backgroundColor={safeCardData.backgroundColor}
-                            backgroundImg={safeCardData.backgroundImg}
+                            backgroundImg={safeCardData.backgroundImagePreview || safeCardData.backgroundImage || safeCardData.backgroundImg}
                             backgroundTitle={safeCardData.backgroundTitle}
-                            collectedStampImg={safeCardData.collectedStampImg}
-                            uncollectedStampImg={safeCardData.uncollectedStampImg}
+                            collectedStampImg={safeCardData.collectedStampImgPreview || safeCardData.collectedStampImg}
+                            uncollectedStampImg={safeCardData.uncollectedStampImgPreview || safeCardData.uncollectedStampImg}
                             rewardTitle={formData?.rewardTitle || 'Sample Reward'}
                         />
                     </div>

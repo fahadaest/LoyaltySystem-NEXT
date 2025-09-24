@@ -30,7 +30,6 @@ const WalletCardPreview = ({
                 className="relative overflow-hidden shadow-lg border border-gray-200"
                 style={{
                     backgroundColor: backgroundColor,
-                    backgroundImage: backgroundImg ? `url(${backgroundImg})` : 'none',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     height: '350px',
@@ -70,10 +69,10 @@ const WalletCardPreview = ({
                     </div>
                 </div>
 
-                {/* Stamps Grid */}
-                <div className="absolute bg-pink-100 top-[55px] overflow-hidden"
+                {/* Stamps Grid - Single Row */}
+                <div className="absolute bg-pink-100 top-[55px] left-0 right-0 overflow-hidden"
                     style={{
-                        backgroundImage: 'url(/img/loyalty/card_background_image.png)',
+                        backgroundImage: backgroundImg ? `url(${backgroundImg})` : 'url(/img/loyalty/card_background_image.png)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -81,31 +80,33 @@ const WalletCardPreview = ({
                 >
                     <div className="absolute inset-0 bg-black bg-opacity-20"></div>
 
-                    <div className="relative z-10 p-2">
-                        <div className="grid grid-cols-5 gap-[7px]">
-                            {Array.from({ length: 5 }, (_, index) => (
+                    <div className="relative z-10 px-2 py-6 flex items-center justify-center" style={{ height: '100px' }}>
+                        <div className="grid grid-cols-5 gap-[8px]">
+                            {Array.from({ length: sampleData.totalStamps }, (_, index) => (
                                 <div
                                     key={index}
                                     className="relative"
                                     style={{
-                                        width: '42px',
-                                        height: '40px'
+                                        width: '32px',
+                                        height: '32px'
                                     }}
                                 >
                                     <div
-                                        className="w-full h-full border border-white flex items-center justify-center"
-                                        style={{ borderRadius: '8px' }}
+                                        className="w-full h-full rounded-full flex items-center justify-center"
+                                        style={{
+                                            border: index < sampleData.currentStamps ? '2px solid #FFFFFF' : '2px solid rgba(255, 255, 255, 0.3)',
+                                        }}
                                     >
                                         {index < sampleData.currentStamps ? (
                                             collectedStampImg ? (
                                                 <img
                                                     src={collectedStampImg}
                                                     alt="Collected stamp"
-                                                    className="w-5 h-5 object-cover"
+                                                    className="w-5 h-5 object-cover rounded-full"
                                                 />
                                             ) : (
                                                 <div className="w-5 h-5 bg-white rounded-full opacity-90 flex items-center justify-center">
-                                                    <div className="w-4 h-4 bg-amber-800 rounded-full"></div>
+                                                    <div className="w-3 h-3 bg-amber-600 rounded-full"></div>
                                                 </div>
                                             )
                                         ) : (
@@ -115,49 +116,10 @@ const WalletCardPreview = ({
                                 </div>
                             ))}
                         </div>
-
-                        {/* Second row */}
-                        <div className="grid grid-cols-5 gap-[7px] mt-[7px]">
-                            {Array.from({ length: 5 }, (_, index) => {
-                                const stampIndex = index + 5;
-                                return (
-                                    <div
-                                        key={stampIndex}
-                                        className="relative"
-                                        style={{
-                                            width: '42px',
-                                            height: '40px'
-                                        }}
-                                    >
-                                        <div
-                                            className="w-full h-full flex items-center justify-center"
-                                            style={{
-                                                border: stampIndex < sampleData.currentStamps ? '1px solid #FFFFFF' : '1px solid rgba(255, 255, 255, 0.2)',
-                                                borderRadius: '8px'
-                                            }}
-                                        >
-                                            {stampIndex < sampleData.currentStamps ? (
-                                                collectedStampImg ? (
-                                                    <img
-                                                        src={collectedStampImg}
-                                                        alt="Collected stamp"
-                                                        className="w-5 h-5 object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-5 h-5 bg-white rounded-full opacity-90 flex items-center justify-center">
-                                                        <div className="w-4 h-4 bg-amber-800 rounded-full"></div>
-                                                    </div>
-                                                )
-                                            ) : (
-                                                <div></div>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
                     </div>
                 </div>
+
+
 
                 {/* Footer Section */}
                 <div className="absolute bottom-[150px] left-[12px] right-[12px]">

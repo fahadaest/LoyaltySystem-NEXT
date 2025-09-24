@@ -1,76 +1,86 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useRouter } from 'next/navigation';
 import ComponentHeader from "@/components/ui/ComponentHeader";
 import Button from "@/components/buttons/Button";
 import Table from "@/components/ui/Table";
+import NoDataComponent from "@/components/ui/NoDataComponent";
+import DeleteConfirmationComponent from "@/components/ui/DeleteConfirmationModal";
+import { useGetAllLoyaltyProgramsQuery, useDeleteLoyaltyProgramMutation } from "@/store/slices/loyaltyApis";
 
 const PointLoyalty = () => {
-    // Pagination state
+    const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(2);
+    const itemsPerPage = 10;
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
-    const mockLoyaltyPrograms = [
-        {
-            id: 1,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "100"
-        },
-        {
-            id: 2,
-            name: "Spend AED 100 and Get AED 10",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "200"
-        },
-        {
-            id: 3,
-            name: "Spend AED 100 and Get AED 5",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "50"
-        },
-        {
-            id: 4,
-            name: "Earn Points on Every Purchase!",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "70"
-        },
-        {
-            id: 5,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "90"
-        },
-        {
-            id: 1,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "100"
-        },
-        {
-            id: 2,
-            name: "Spend AED 100 and Get AED 10",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "200"
-        },
-        {
-            id: 3,
-            name: "Spend AED 100 and Get AED 5",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "50"
-        },
-        {
-            id: 4,
-            name: "Earn Points on Every Purchase!",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "70"
-        },
-        {
-            id: 5,
-            name: "Earn Points on Every Purchase",
-            spendingAmount: "AED 1,300",
-            rewardPoints: "90"
+    const {
+        data: loyaltyData,
+        isLoading,
+        isError,
+        error,
+        refetch
+    } = useGetAllLoyaltyProgramsQuery({ loyaltyType: 'point' });
+
+    const [deleteLoyaltyProgram, { isLoading: isDeleting }] = useDeleteLoyaltyProgramMutation();
+
+    const transformedData = useMemo(() => {
+        if (!loyaltyData || !Array.isArray(loyaltyData)) return [];
+
+        return loyaltyData.map(item => ({
+            id: item.id,
+            name: item.rewardTitle,
+            spendingAmount: `AED ${item.loyaltyDetail?.spendingAmount || 0}`,
+            rewardPoints: item.loyaltyDetail?.rewardPoints?.toString() || "0",
+            originalData: item
+        }));
+    }, [loyaltyData]);
+
+    const totalItems = transformedData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedData = transformedData.slice(startIndex, endIndex);
+
+    const handleDelete = (item) => {
+        setItemToDelete(item);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (itemToDelete) {
+            try {
+                await deleteLoyaltyProgram(itemToDelete.id).unwrap();
+                console.log('Loyalty program deleted successfully');
+            } catch (error) {
+                console.error('Failed to delete loyalty program:', error);
+            }
         }
-    ];
+        setShowDeleteModal(false);
+        setItemToDelete(null);
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setItemToDelete(null);
+    };
+
+    const handleView = (item) => {
+        console.log("View clicked for:", item.originalData);
+    };
+
+    const handleEdit = (item) => {
+        console.log("Edit clicked for:", item.originalData);
+    };
+
+    const handleDuplicate = (item) => {
+        console.log("Duplicate clicked for:", item.originalData);
+    };
+
+    const handleAddNewLoyalty = () => {
+        router.push('/manage-loyalty/points');
+    };
 
     const tableHeaders = [
         {
@@ -105,104 +115,29 @@ const PointLoyalty = () => {
             align: "center",
             render: (item) => (
                 <div className="flex items-center justify-center gap-2">
-                    <Button
-                        text={"View"}
-                        onClick={null}
-                        backgroundColor={'#EDEDED'}
-                        textColor={'#000000'}
-                        icon={"/img/general/detail_eye.svg"}
-                        showIcon={true}
-                        iconPosition={'right'}
-                        disabled={false}
-                        height={'2rem'}
-                        fontSize={'0.7rem'}
-                        padding={'0px 4px 0px 12px'}
-                        iconBackgroundColor={'#000000'}
-                        iconWidth={'1.4rem'}
-                        iconHeight={'1.4rem'}
-                        iconImageWidth={'1rem'}
-                        iconImageHeight={'1rem'}
-                        gap={'12px'}
-                    />
-
-                    <Button
-                        text={"Edit"}
-                        onClick={null}
-                        backgroundColor={'#41CC40'}
-                        textColor={'#000000'}
-                        disabled={false}
-                        height={'2rem'}
-                        fontSize={'0.7rem'}
-                        padding={'0px 12px'}
-                    />
-
-                    <Button
-                        text={""}
-                        onClick={null}
-                        backgroundColor={'#EDEDED'}
-                        textColor={'#000000'}
-                        icon={"/img/general/trash.svg"}
-                        showIcon={true}
-                        iconPosition={'center'}
-                        disabled={false}
-                        height={'2rem'}
-                        width={'2rem'}
-                        fontSize={'0.7rem'}
-                        padding={'0px'}
-                        iconWidth={'1rem'}
-                        iconHeight={'1rem'}
-                        iconImageWidth={'0.8rem'}
-                        iconImageHeight={'0.8rem'}
-                        borderRadius={'50%'}
-                    />
-
-                    <Button
-                        text={""}
-                        onClick={null}
-                        backgroundColor={'#000000'}
-                        textColor={'#FFFFFF'}
-                        icon={"/img/general/copy.svg"}
-                        showIcon={true}
-                        iconPosition={'center'}
-                        disabled={false}
-                        height={'2rem'}
-                        width={'2rem'}
-                        fontSize={'0.7rem'}
-                        padding={'0px'}
-                        iconWidth={'1rem'}
-                        iconHeight={'1rem'}
-                        iconImageWidth={'0.8rem'}
-                        iconImageHeight={'0.8rem'}
-                        borderRadius={'50%'}
-                    />
+                    <Button text={"View"} onClick={() => handleView(item)} backgroundColor={'#EDEDED'} textColor={'#000000'} icon={"/img/general/detail_eye.svg"} showIcon={true} iconPosition={'right'} disabled={false} height={'2rem'} fontSize={'0.7rem'} padding={'0px 4px 0px 12px'} iconBackgroundColor={'#000000'} iconWidth={'1.4rem'} iconHeight={'1.4rem'} iconImageWidth={'1rem'} iconImageHeight={'1rem'} gap={'12px'} />
+                    <Button text={"Edit"} onClick={() => handleEdit(item)} backgroundColor={'#41CC40'} textColor={'#000000'} disabled={false} height={'2rem'} fontSize={'0.7rem'} padding={'0px 12px'} />
+                    <Button text={""} onClick={() => handleDelete(item)} backgroundColor={'#EDEDED'} textColor={'#000000'} iconBackgroundColor={'#EDEDED'} icon={"/img/general/delete_icon.svg"} showIcon={true} iconPosition={'center'} disabled={isDeleting} height={'2rem'} width={'2rem'} fontSize={'0.7rem'} padding={'0px'} iconWidth={'1.2rem'} iconHeight={'1.2rem'} iconImageWidth={'1rem'} iconImageHeight={'1rem'} borderRadius={'50%'} />
+                    <Button text={""} onClick={() => handleDuplicate(item)} backgroundColor={'#000000'} textColor={'#FFFFFF'} icon={"/img/general/copy.svg"} showIcon={true} iconPosition={'center'} disabled={false} height={'2rem'} width={'2rem'} fontSize={'0.7rem'} padding={'0px'} iconWidth={'1rem'} iconHeight={'1rem'} iconImageWidth={'0.8rem'} iconImageHeight={'0.8rem'} borderRadius={'50%'} />
                 </div>
             )
         }
     ];
 
-    const handleRowAction = (row) => {
-        console.log("Action clicked for:", row);
-        // Handle the action here
-    };
-
     const handlePrevious = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
-            console.log("Previous page:", currentPage - 1);
         }
     };
 
     const handleNext = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
-            console.log("Next page:", currentPage + 1);
         }
     };
 
-    // Footer pagination info
     const paginationInfo = `page ${currentPage} of ${totalPages}`;
 
-    // Footer buttons
     const footerButtons = [
         {
             text: "Previous",
@@ -243,6 +178,27 @@ const PointLoyalty = () => {
         }
     ];
 
+    if (!transformedData || transformedData.length === 0) {
+        return (
+            <main className="h-[80vh] flex flex-col overflow-hidden">
+                <div className="flex items-start justify-between flex-shrink-0">
+                    <ComponentHeader
+                        title="Point Loyalty"
+                        subtitle="Manage Point-Based Loyalties Reward"
+                        infoMessage="This page allows you to add, edit, and manage all your loyalty programs. Use the Add New Loyalty button to create new reward programs."
+                    />
+                </div>
+
+                <div className="flex-1 flex items-center justify-center">
+                    <NoDataComponent
+                        type="pointloyalty"
+                        onButtonClick={handleAddNewLoyalty}
+                    />
+                </div>
+            </main>
+        );
+    }
+
     return (
         <main className="h-[80vh] flex flex-col overflow-hidden">
             <div className="flex items-start justify-between flex-shrink-0">
@@ -251,37 +207,30 @@ const PointLoyalty = () => {
                     subtitle="Manage Point-Based Loyalties Reward"
                     infoMessage="This page allows you to add, edit, and manage all your loyalty programs. Use the Add New Loyalty button to create new reward programs."
                 />
-
-                <Button
-                    text={"Add New Loyalty"}
-                    onClick={null}
-                    backgroundColor={'#000000'}
-                    textColor={'#FFFFFF'}
-                    icon={"/img/general/plus.svg"}
-                    showIcon={true}
-                    iconPosition={'right'}
-                    disabled={false}
-                    height={'2rem'}
-                    fontSize={'0.7rem'}
-                    padding={'0px 4px 0px 12px'}
-                    iconWidth={'1.4rem'}
-                    iconHeight={'1.4rem'}
-                    iconImageWidth={'1rem'}
-                    iconImageHeight={'1rem'}
-                    gap={'12px'}
-                />
             </div>
 
-            <div className="flex-1 min-h-0">
+            <div className="w-full h-[calc(100vh-14rem)] flex-1">
                 <Table
                     headers={tableHeaders}
-                    data={mockLoyaltyPrograms}
+                    data={paginatedData}
                     headerFontSize="0.8rem"
                     bodyFontSize="0.675rem"
                     paginationInfo={paginationInfo}
                     footerButtons={footerButtons}
                 />
             </div>
+
+            {showDeleteModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-4 max-w-md w-full mx-4">
+                        <DeleteConfirmationComponent
+                            onConfirm={confirmDelete}
+                            onCancel={cancelDelete}
+                            itemName={itemToDelete?.name || "this item"}
+                        />
+                    </div>
+                </div>
+            )}
         </main>
     );
 };

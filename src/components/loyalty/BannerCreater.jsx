@@ -15,9 +15,13 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
     const handleFileUpload = (field, event) => {
         const file = event.target.files[0];
         if (file) {
+            // Store the actual File object for API submission
+            updateFormData(field, file, 'bannerSetting');
+
+            // If you need preview, store preview URL separately
             const reader = new FileReader();
             reader.onload = (e) => {
-                updateFormData(field, e.target.result, 'bannerSetting');
+                updateFormData(`${field}Preview`, e.target.result, 'bannerSetting');
             };
             reader.readAsDataURL(file);
         }
@@ -244,23 +248,6 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                         </div>
                     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     {/* Banner Preview - Using the separate component */}
                     <div className="w-[16%] lg:w-auto p-5 bg-white rounded-3xl bg-green-100">
                         <div className="flex items-center space-x-2 mb-6">
@@ -273,11 +260,11 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
                             bannerTitle={safeFormData.bannerTitle}
                             titleColor={safeFormData.titleColor}
                             backgroundColor={safeFormData.backgroundColor}
-                            backgroundImage={safeFormData.backgroundImage}
+                            backgroundImage={safeFormData.backgroundImagePreview || safeFormData.backgroundImage}
                             backgroundImg={safeFormData.backgroundImg}
-                            icon1={safeFormData.icon1}
-                            icon2={safeFormData.icon2}
-                            icon3={safeFormData.icon3}
+                            icon1={safeFormData.icon1Preview || safeFormData.icon1}
+                            icon2={safeFormData.icon2Preview || safeFormData.icon2}
+                            icon3={safeFormData.icon3Preview || safeFormData.icon3}
                             text1={safeFormData.text1}
                             text2={safeFormData.text2}
                             text3={safeFormData.text3}

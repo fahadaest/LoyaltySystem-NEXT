@@ -14,7 +14,6 @@ const ProductPage = () => {
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
     const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
     const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
-    const { data: apiSizes = [] } = useGetAllProductSizesQuery();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [sizeToDelete, setSizeToDelete] = useState(null);
     const [sizeIdToDelete, setSizeIdToDelete] = useState(null);

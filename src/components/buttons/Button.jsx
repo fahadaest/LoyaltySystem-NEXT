@@ -10,6 +10,7 @@ const Button = ({
     iconPosition = 'right',
     disabled = false,
     height = '35px',
+    width,
     className = '',
     fontSize = '12px',
     fontWeight = '600',
@@ -38,6 +39,7 @@ const Button = ({
         fontWeight: fontWeight,
         lineHeight: lineHeight,
         height: height,
+        width: width,
         borderRadius: borderRadius,
         border: border,
         color: textColor,
@@ -93,6 +95,26 @@ const Button = ({
         }
     };
 
+    const renderContent = () => {
+        if (iconPosition === 'center') {
+            return iconElement;
+        } else if (iconPosition === 'left') {
+            return (
+                <>
+                    {iconElement}
+                    <span>{text}</span>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <span>{text}</span>
+                    {iconElement}
+                </>
+            );
+        }
+    };
+
     return (
         <button
             onClick={onClick}
@@ -106,9 +128,7 @@ const Button = ({
             onMouseLeave={handleMouseLeave}
             {...restProps}
         >
-            {iconPosition === 'left' && iconElement}
-            <span>{text}</span>
-            {iconPosition === 'right' && iconElement}
+            {renderContent()}
         </button>
     );
 };
