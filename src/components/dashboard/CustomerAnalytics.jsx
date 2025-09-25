@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DropdownButton from '../ui/DropDownButton';
+import DropdownButton from '../input-fields/DropDownButton';
 import AreaChart from '../ui/AreaGraph';
 
 const CustomerAnalytics = () => {

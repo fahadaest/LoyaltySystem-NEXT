@@ -1,96 +1,48 @@
 "use client";
 import React, { useState } from "react";
+import { Plus } from 'lucide-react';
 import ComponentHeader from "@/components/ui/ComponentHeader";
 import Button from "@/components/buttons/Button";
 import Table from "@/components/ui/Table";
+import Modal from "@/components/ui/Modal";
+import AddSalesPersonComponent from "@/components/salesperson/AddSalesPersonComponent";
+import DeleteConfirmationComponent from "@/components/ui/DeleteConfirmationModal";
+import NoDataComponent from "@/components/ui/NoDataComponent";
+import {
+    useCreateSalespersonMutation,
+    useGetAllSalespersonsQuery,
+    useUpdateSalespersonMutation,
+    useDeleteSalespersonMutation,
+} from "@/store/slices/salespersonsApis";
+import { useGetAllManagersQuery } from "@/store/slices/managersApis";
+import { useGetAllPermissionsQuery } from "@/store/slices/permissionsApis";
 
 const SalesPersonPage = () => {
+    // Modal state
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [salespersonToEdit, setSalespersonToEdit] = useState(null);
+    const [salespersonToDelete, setSalespersonToDelete] = useState(null);
+
+    // API hooks
+    const { data: salespersonsData = [], isLoading, error } = useGetAllSalespersonsQuery();
+    const { data: managers = [] } = useGetAllManagersQuery();
+    const { data: permissions = [] } = useGetAllPermissionsQuery();
+    const [createSalesperson, { isLoading: isCreating }] = useCreateSalespersonMutation();
+    const [updateSalesperson, { isLoading: isUpdating }] = useUpdateSalespersonMutation();
+    const [deleteSalesperson, { isLoading: isDeleting }] = useDeleteSalespersonMutation();
+
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(10);
+    const itemsPerPage = 10;
 
-    const mockSalesPersons = [
-        {
-            id: 1,
-            firstName: "Omar",
-            lastName: "Khalid",
-            email: "omar.khalid@example.com",
-            permissions: "1 Permission",
-            permissionDetails: "Scan Cards"
-        },
-        {
-            id: 2,
-            firstName: "Sara",
-            lastName: "Al Mansouri",
-            email: "sara.almansouri@example.com",
-            permissions: "3 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma..."
-        },
-        {
-            id: 3,
-            firstName: "Faisal",
-            lastName: "Rahman",
-            email: "faisal.rahman@example.com",
-            permissions: "5 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma..."
-        },
-        {
-            id: 4,
-            firstName: "Layla",
-            lastName: "Haddad",
-            email: "layla.haddad@example.com",
-            permissions: "4 Permission",
-            permissionDetails: "Scan Cards, Customers, Ma..."
-        },
-        {
-            id: 5,
-            firstName: "Ahmed",
-            lastName: "Al Farsi",
-            email: "ahmed.alfarsi@example.com",
-            permissions: "2 Permission",
-            permissionDetails: "Customers, Managers"
-        },
-        {
-            id: 6,
-            firstName: "Noor",
-            lastName: "Al Zahra",
-            email: "noor.alzahra@example.com",
-            permissions: "1 Permission",
-            permissionDetails: "Scan Cards"
-        },
-        {
-            id: 7,
-            firstName: "Zayed",
-            lastName: "Hassan",
-            email: "zayed.hassan@example.com",
-            permissions: "3 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma..."
-        },
-        {
-            id: 8,
-            firstName: "Mariam",
-            lastName: "Yusuf",
-            email: "mariam.yusuf@example.com",
-            permissions: "4 Permission",
-            permissionDetails: "Scan Cards, Customers, Ma..."
-        },
-        {
-            id: 9,
-            firstName: "Khalifa",
-            lastName: "Saeed",
-            email: "khalifa.saeed@example.com",
-            permissions: "6 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma..."
-        },
-        {
-            id: 10,
-            firstName: "Hana",
-            lastName: "Al Qasimi",
-            email: "hana.alqasimi@example.com",
-            permissions: "1 Permission",
-            permissionDetails: "Scan Cards"
-        }
-    ];
+    // Calculate pagination
+    const totalItems = salespersonsData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentData = salespersonsData.slice(startIndex, endIndex);
 
     const tableHeaders = [
         {
@@ -118,8 +70,13 @@ const SalesPersonPage = () => {
             align: "left",
             render: (item) => (
                 <div>
-                    <div className="font-medium text-black">{item.permissions}</div>
-                    <div className="text-xs text-gray-500">{item.permissionDetails}</div>
+                    <div className="font-medium text-black">
+                        {item.permissionIds?.length || 0} Permission{item.permissionIds?.length !== 1 ? 's' : ''}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                        {item.permissionNames?.slice(0, 3).join(', ') || 'No permissions'}
+                        {item.permissionNames?.length > 3 && '...'}
+                    </div>
                 </div>
             )
         },
@@ -175,36 +132,106 @@ const SalesPersonPage = () => {
     ];
 
     const handleEdit = (item) => {
-        console.log("Edit clicked for:", item);
-        // Handle the edit action here
+        setSalespersonToEdit(item);
+        setIsEditModalOpen(true);
     };
 
     const handleDelete = (item) => {
-        console.log("Delete clicked for:", item);
-        // Handle the delete action here
+        setSalespersonToDelete(item);
+        setIsDeleteModalOpen(true);
     };
 
     const handleAddNewSalesPerson = () => {
-        console.log("Add new sales person clicked");
-        // Handle add new sales person
+        setIsAddModalOpen(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setIsAddModalOpen(false);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setSalespersonToEdit(null);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setSalespersonToDelete(null);
+    };
+
+    const handleSubmitSalesperson = async (salespersonData) => {
+        try {
+            await createSalesperson(salespersonData).unwrap();
+            setIsAddModalOpen(false);
+            console.log("Salesperson created successfully");
+        } catch (error) {
+            console.error("Error creating salesperson:", error);
+        }
+    };
+
+    const handleUpdateSalesperson = async (salespersonData) => {
+        try {
+            await updateSalesperson({
+                id: salespersonToEdit.id,
+                ...salespersonData
+            }).unwrap();
+            setIsEditModalOpen(false);
+            setSalespersonToEdit(null);
+            console.log("Salesperson updated successfully");
+        } catch (error) {
+            console.error("Error updating salesperson:", error);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (salespersonToDelete) {
+            try {
+                await deleteSalesperson(salespersonToDelete.id).unwrap();
+                setIsDeleteModalOpen(false);
+                setSalespersonToDelete(null);
+                console.log("Salesperson deleted successfully");
+            } catch (error) {
+                console.error("Error deleting salesperson:", error);
+            }
+        }
     };
 
     const handlePrevious = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
-            console.log("Previous page:", currentPage - 1);
         }
     };
 
     const handleNext = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
-            console.log("Next page:", currentPage + 1);
         }
     };
 
+    const getModalFooter = (isEditMode) => (
+        <div className="flex justify-end gap-3">
+            <button
+                onClick={isEditMode ? handleCloseEditModal : handleCloseAddModal}
+                disabled={isEditMode ? isUpdating : isCreating}
+                className="h-10 px-6 bg-gray-50 border border-gray-200 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-50 font-['Poppins']"
+            >
+                Cancel
+            </button>
+            <button
+                onClick={() => document.querySelector('form').requestSubmit()}
+                disabled={isEditMode ? isUpdating : isCreating}
+                className="h-10 px-6 bg-black rounded-full flex items-center gap-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 font-['Poppins']"
+            >
+                {isEditMode ? (isUpdating ? "Updating..." : "Update Sales Person") : (isCreating ? "Adding..." : "Add New Sales Person")}
+                <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                    <Plus className="w-3 h-3 text-black" />
+                </div>
+            </button>
+        </div>
+    );
+
     // Footer pagination info
-    const paginationInfo = `page ${currentPage} of ${totalPages}`;
+    const paginationInfo = `page ${currentPage} of ${totalPages || 1}`;
 
     // Footer buttons
     const footerButtons = [
@@ -247,6 +274,14 @@ const SalesPersonPage = () => {
         }
     ];
 
+    if (isLoading) {
+        return (
+            <main className="h-[80vh] flex flex-col items-center justify-center">
+                <div className="text-lg font-medium text-gray-600">Loading salespersons...</div>
+            </main>
+        );
+    }
+
     return (
         <main className="h-[80vh] flex flex-col overflow-hidden">
             <div className="flex items-start justify-between flex-shrink-0">
@@ -277,15 +312,72 @@ const SalesPersonPage = () => {
             </div>
 
             <div className="flex-1 min-h-0">
-                <Table
-                    headers={tableHeaders}
-                    data={mockSalesPersons}
-                    headerFontSize="0.8rem"
-                    bodyFontSize="0.675rem"
-                    paginationInfo={paginationInfo}
-                    footerButtons={footerButtons}
-                />
+                {salespersonsData.length === 0 ? (
+                    <NoDataComponent
+                        type="salesperson"
+                        onButtonClick={handleAddNewSalesPerson}
+                    />
+                ) : (
+                    <Table
+                        headers={tableHeaders}
+                        data={currentData}
+                        headerFontSize="0.8rem"
+                        bodyFontSize="0.675rem"
+                        paginationInfo={paginationInfo}
+                        footerButtons={footerButtons}
+                    />
+                )}
             </div>
+
+            {/* Add Sales Person Modal */}
+            <Modal
+                isOpen={isAddModalOpen}
+                onClose={handleCloseAddModal}
+                title="Add Sales Person"
+                subtitle="Please provide the information required to add sales person"
+                maxWidth="40vw"
+                maxHeight="70vh"
+                footer={getModalFooter(false)}
+            >
+                <AddSalesPersonComponent
+                    onSubmit={handleSubmitSalesperson}
+                    managers={managers}
+                    permissions={permissions}
+                />
+            </Modal>
+
+            {/* Edit Sales Person Modal */}
+            <Modal
+                isOpen={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                title="Edit Sales Person"
+                subtitle="Update sales person information and permissions"
+                maxWidth="40vw"
+                maxHeight="70vh"
+                footer={getModalFooter(true)}
+            >
+                <AddSalesPersonComponent
+                    onSubmit={handleUpdateSalesperson}
+                    editMode={true}
+                    initialData={salespersonToEdit}
+                    managers={managers}
+                    permissions={permissions}
+                />
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && salespersonToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                        <DeleteConfirmationComponent
+                            itemName={`${salespersonToDelete.firstName} ${salespersonToDelete.lastName}`}
+                            onConfirm={handleConfirmDelete}
+                            onCancel={handleCloseDeleteModal}
+                            isLoading={isDeleting}
+                        />
+                    </div>
+                </div>
+            )}
         </main>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DropdownButton from '../ui/DropDownButton';
+import DropdownButton from '../input-fields/DropDownButton';
 import Table from '../ui/Table';
 
 const TopCustomers = () => {

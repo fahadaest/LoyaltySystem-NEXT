@@ -7,6 +7,9 @@ import { userProfileApis } from './slices/userProfileApis';
 import { productsApis } from './slices/productsApis';
 import { productSizesApis } from './slices/productSizesApis';
 import { loyaltyApis } from './slices/loyaltyApis';
+import { salespersonsApis } from './slices/salespersonsApis';
+import { managersApis } from './slices/managersApis';
+import { permissionsApis } from './slices/permissionsApis';
 import authSlice from './slices/authSlice';
 import alertSlice from './slices/alertSlice';
 
@@ -21,6 +24,9 @@ export const store = configureStore({
         [productsApis.reducerPath]: productsApis.reducer,
         [productSizesApis.reducerPath]: productSizesApis.reducer,
         [loyaltyApis.reducerPath]: loyaltyApis.reducer,
+        [salespersonsApis.reducerPath]: salespersonsApis.reducer,
+        [managersApis.reducerPath]: managersApis.reducer,
+        [permissionsApis.reducerPath]: permissionsApis.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -30,6 +36,9 @@ export const store = configureStore({
             userProfileApis.middleware,
             productsApis.middleware,
             loyaltyApis.middleware,
+            salespersonsApis.middleware,
+            managersApis.middleware,
+            permissionsApis.middleware,
         ),
 });
 

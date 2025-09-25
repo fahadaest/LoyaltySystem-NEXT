@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, FileX, Users, Package, Settings, CreditCard, Award } from 'lucide-react';
+import { Plus, FileX, Users, Package, Settings, CreditCard, Award, UserCheck } from 'lucide-react';
 import Button from '@/components/buttons/Button';
 
 const NoDataComponent = ({
@@ -65,6 +65,14 @@ const NoDataComponent = ({
             title: 'No Point Loyalty Programs Found',
             subtitle: 'Start rewarding your customers! Create your first point-based loyalty program to encourage repeat purchases.',
             buttonText: 'Add New Loyalty',
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
+        },
+        salesperson: {
+            icon: UserCheck,
+            title: 'No Sales Persons Found',
+            subtitle: 'Build your sales team by adding sales persons. They will help you manage customers and drive sales.',
+            buttonText: 'Add New Sales Person',
             iconColor: 'text-black',
             bgColor: 'bg-gray-200'
         },
