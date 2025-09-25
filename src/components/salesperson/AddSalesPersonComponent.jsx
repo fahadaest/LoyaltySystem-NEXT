@@ -15,10 +15,11 @@ const AddSalesPersonComponent = ({
         lastName: initialData?.lastName || '',
         email: initialData?.email || '',
         password: '',
+        confirmPassword: '', // Separate field for password confirmation
         permissionIds: initialData?.permissions?.map(p => p.id) || []
     });
 
-    const [showPermissionsDropdown, setShowPermissionsDropdown] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (editMode && initialData) {
@@ -27,6 +28,7 @@ const AddSalesPersonComponent = ({
                 lastName: initialData.lastName || '',
                 email: initialData.email || '',
                 password: '',
+                confirmPassword: '',
                 permissionIds: initialData.permissions?.map(p => p.id) || []
             });
         }
@@ -34,19 +36,49 @@ const AddSalesPersonComponent = ({
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+        // Clear error when user starts typing
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: '' }));
+        }
     };
 
-    const handlePermissionToggle = (permissionId) => {
-        setFormData(prev => ({
-            ...prev,
-            permissionIds: prev.permissionIds.includes(permissionId)
-                ? prev.permissionIds.filter(id => id !== permissionId)
-                : [...prev.permissionIds, permissionId]
-        }));
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Required field validation
+        if (!formData.firstName.trim()) {
+            newErrors.firstName = 'First name is required';
+        }
+        if (!formData.lastName.trim()) {
+            newErrors.lastName = 'Last name is required';
+        }
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email is required';
+        }
+
+        // Password validation (only for create mode or when password is provided)
+        if (!editMode || formData.password) {
+            if (!formData.password) {
+                newErrors.password = 'Password is required';
+            }
+            if (!formData.confirmPassword) {
+                newErrors.confirmPassword = 'Please confirm your password';
+            } else if (formData.password !== formData.confirmPassword) {
+                newErrors.confirmPassword = 'Passwords do not match';
+            }
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
         if (onSubmit) {
             const payload = {
                 name: `${formData.firstName} ${formData.lastName}`.trim(),
@@ -88,6 +120,15 @@ const AddSalesPersonComponent = ({
 
     const selectedPermissions = flatPermissions.filter(p => formData.permissionIds.includes(p.id));
 
+    const handlePermissionToggle = (permissionId) => {
+        setFormData(prev => ({
+            ...prev,
+            permissionIds: prev.permissionIds.includes(permissionId)
+                ? prev.permissionIds.filter(id => id !== permissionId)
+                : [...prev.permissionIds, permissionId]
+        }));
+    };
+
     return (
         <div className="w-full">
             <form onSubmit={handleSubmit} className="w-full">
@@ -95,99 +136,144 @@ const AddSalesPersonComponent = ({
 
                     {/* Personal Information Section */}
                     <div className="mb-3">
-                        <h3 className="text-[0.7rem] font-semibold text-black mb-2 ">
+                        <h3 className="text-[0.7rem] font-semibold text-black mb-2">
                             Personal Information
                         </h3>
                         <div className="grid grid-cols-2 gap-6">
-                            <InputField
-                                label="First Name"
-                                name="firstName"
-                                type="text"
-                                placeholder="Enter first name"
-                                value={formData.firstName}
-                                onChange={(e) => handleInputChange('firstName', e.target.value)}
-                                required={true}
-                                labelSize="0.6rem"
-                                placeholderSize="0.6rem"
-                                fieldHeight="8px"
-                                customStyles={{
-                                    container: "w-full",
-                                    label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
-                                    input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
-                                }}
-                            />
+                            <div>
+                                <InputField
+                                    label="First Name"
+                                    name="firstName"
+                                    type="text"
+                                    placeholder="Enter first name"
+                                    value={formData.firstName}
+                                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                                    required={true}
+                                    labelSize="0.6rem"
+                                    placeholderSize="0.6rem"
+                                    fieldHeight="8px"
+                                    customStyles={{
+                                        container: "w-full",
+                                        label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
+                                        input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
+                                    }}
+                                />
+                                {errors.firstName && (
+                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.firstName}</span>
+                                )}
+                            </div>
 
-                            <InputField
-                                label="Last Name"
-                                name="lastName"
-                                type="text"
-                                placeholder="Enter last name"
-                                value={formData.lastName}
-                                onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                required={true}
-                                labelSize="0.6rem"
-                                placeholderSize="0.6rem"
-                                fieldHeight="8px"
-                                customStyles={{
-                                    container: "w-full",
-                                    label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
-                                    input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
-                                }}
-                            />
+                            <div>
+                                <InputField
+                                    label="Last Name"
+                                    name="lastName"
+                                    type="text"
+                                    placeholder="Enter last name"
+                                    value={formData.lastName}
+                                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                                    required={true}
+                                    labelSize="0.6rem"
+                                    placeholderSize="0.6rem"
+                                    fieldHeight="8px"
+                                    customStyles={{
+                                        container: "w-full",
+                                        label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
+                                        input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
+                                    }}
+                                />
+                                {errors.lastName && (
+                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.lastName}</span>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {/* Account Information Section */}
                     <div className="mb-3">
-                        <h3 className="text-[0.7rem] font-semibold text-black mb-2 ">
+                        <h3 className="text-[0.7rem] font-semibold text-black mb-2">
                             Account Information
                         </h3>
-                        <div className="grid grid-cols-2 gap-6">
-                            <InputField
-                                label="Email Address"
-                                name="email"
-                                type="email"
-                                placeholder="Enter email"
-                                value={formData.email}
-                                onChange={(e) => handleInputChange('email', e.target.value)}
-                                required={true}
-                                labelSize="0.6rem"
-                                placeholderSize="0.6rem"
-                                fieldHeight="8px"
-                                customStyles={{
-                                    container: "w-full",
-                                    label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
-                                    input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
-                                }}
-                            />
+                        <div className="grid grid-cols-1 gap-6 mb-4">
+                            <div>
+                                <InputField
+                                    label="Email Address"
+                                    name="email"
+                                    type="email"
+                                    placeholder="Enter email"
+                                    value={formData.email}
+                                    onChange={(e) => handleInputChange('email', e.target.value)}
+                                    required={true}
+                                    labelSize="0.6rem"
+                                    placeholderSize="0.6rem"
+                                    fieldHeight="8px"
+                                    customStyles={{
+                                        container: "w-full",
+                                        label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
+                                        input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
+                                    }}
+                                />
+                                {errors.email && (
+                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.email}</span>
+                                )}
+                            </div>
+                        </div>
 
-                            <PasswordField
-                                label="Password"
-                                name="password"
-                                placeholder="Enter password"
-                                value={formData.password}
-                                onChange={(e) => handleInputChange('password', e.target.value)}
-                                required={!editMode}
-                                labelSize="0.6rem"
-                                placeholderSize="0.6rem"
-                                fieldHeight="8px"
-                                customStyles={{
-                                    container: "w-full",
-                                    label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
-                                    input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
-                                }}
-                            />
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <PasswordField
+                                    label="Password"
+                                    name="password"
+                                    placeholder={editMode ? "Leave blank to keep current" : "Enter password"}
+                                    value={formData.password}
+                                    onChange={(e) => handleInputChange('password', e.target.value)}
+                                    required={!editMode}
+                                    labelSize="0.6rem"
+                                    placeholderSize="0.6rem"
+                                    fieldHeight="8px"
+                                    customStyles={{
+                                        container: "w-full",
+                                        label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
+                                        input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
+                                    }}
+                                />
+                                {errors.password && (
+                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.password}</span>
+                                )}
+                            </div>
+
+                            <div>
+                                <PasswordField
+                                    label="Confirm Password"
+                                    name="confirmPassword"
+                                    placeholder={editMode ? "Confirm new password" : "Confirm password"}
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                                    required={!editMode || formData.password} // Required if not edit mode or if password is provided
+                                    labelSize="0.6rem"
+                                    placeholderSize="0.6rem"
+                                    fieldHeight="8px"
+                                    customStyles={{
+                                        container: "w-full",
+                                        label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
+                                        input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
+                                    }}
+                                />
+                                {errors.confirmPassword && (
+                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.confirmPassword}</span>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {/* Permissions & Access Section */}
                     <div>
-                        <h3 className="text-[0.7rem] font-semibold text-black mb-2 ">
+                        <h3 className="text-[0.7rem] font-semibold text-black mb-2">
                             Permissions & Access
                         </h3>
 
                         <div className="mb-6">
                             <MultiSelectDropdown
+                                forcePosition="top"
                                 label="Select Permissions"
                                 text="Select permissions"
                                 placeholder="Select permissions"
@@ -210,7 +296,6 @@ const AddSalesPersonComponent = ({
                                 }}
                             />
                         </div>
-
                     </div>
 
                     {/* Selected Permissions Display */}

@@ -19,9 +19,11 @@ const MultiSelectDropdown = ({
     showSelectedCount = true,
     required = false,
     labelSize = "12px",
-    customStyles = {}
+    customStyles = {},
+    forcePosition // Add this prop to force position
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState('bottom');
     const dropdownRef = useRef(null);
 
     // Close dropdown when clicking outside
@@ -37,6 +39,47 @@ const MultiSelectDropdown = ({
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    // Calculate dropdown position based on available space
+    useEffect(() => {
+        if (isOpen && dropdownRef.current) {
+            // If forcePosition is set, use that
+            if (forcePosition) {
+                setDropdownPosition(forcePosition);
+                return;
+            }
+
+            const rect = dropdownRef.current.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const dropdownHeight = 240; // max-h-60 = 240px approximately
+
+            // Check for modal container
+            const modalContainer = dropdownRef.current.closest('[class*="modal"]') ||
+                dropdownRef.current.closest('[class*="Modal"]') ||
+                dropdownRef.current.closest('[style*="position: fixed"]') ||
+                dropdownRef.current.closest('[role="dialog"]');
+
+            let containerBottom = viewportHeight;
+            let spaceBelow, spaceAbove;
+
+            if (modalContainer) {
+                const modalRect = modalContainer.getBoundingClientRect();
+                containerBottom = modalRect.bottom;
+                spaceBelow = containerBottom - rect.bottom - 20; // 20px padding from modal bottom
+                spaceAbove = rect.top - modalRect.top - 20; // 20px padding from modal top
+            } else {
+                spaceBelow = viewportHeight - rect.bottom;
+                spaceAbove = rect.top;
+            }
+
+            // If not enough space below but enough space above, open upward
+            if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+                setDropdownPosition('top');
+            } else {
+                setDropdownPosition('bottom');
+            }
+        }
+    }, [isOpen, forcePosition]);
 
     const handleButtonClick = () => {
         setIsOpen(!isOpen);
@@ -137,7 +180,12 @@ const MultiSelectDropdown = ({
 
             {/* Dropdown Options with Checkboxes */}
             {isOpen && options.length > 0 && (
-                <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-300 rounded-2xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                <div
+                    className={`absolute left-0 w-full bg-white border border-gray-300 rounded-2xl shadow-lg z-50 max-h-60 overflow-y-auto ${dropdownPosition === 'top'
+                            ? 'bottom-full mb-1'
+                            : 'top-full mt-1'
+                        }`}
+                >
                     {options.map((option, index) => {
                         const optionValue = option.value || option.name || option;
                         const optionLabel = option.label || option.name || option;
