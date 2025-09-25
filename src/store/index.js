@@ -11,6 +11,7 @@ import { salespersonsApis } from './slices/salespersonsApis';
 import { managersApis } from './slices/managersApis';
 import { permissionsApis } from './slices/permissionsApis';
 import { customerApis } from './slices/customerApis';
+import { adminSettingsApis } from './slices/adminSettingsApis';
 import authSlice from './slices/authSlice';
 import alertSlice from './slices/alertSlice';
 
@@ -29,6 +30,7 @@ export const store = configureStore({
         [managersApis.reducerPath]: managersApis.reducer,
         [permissionsApis.reducerPath]: permissionsApis.reducer,
         [customerApis.reducerPath]: customerApis.reducer,
+        [adminSettingsApis.reducerPath]: adminSettingsApis.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -42,6 +44,7 @@ export const store = configureStore({
             managersApis.middleware,
             permissionsApis.middleware,
             customerApis.middleware,
+            adminSettingsApis.middleware,
         ),
 });
 

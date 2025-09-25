@@ -3,54 +3,33 @@ import React, { useState } from "react";
 import ComponentHeader from "@/components/ui/ComponentHeader";
 import Button from "@/components/buttons/Button";
 import Table from "@/components/ui/Table";
+import Modal from "@/components/ui/Modal";
+import NoDataComponent from "@/components/ui/NoDataComponent";
+import DeleteConfirmationComponent from "@/components/ui/DeleteConfirmationModal";
+import AddAddressComponent from "@/components/settings/AddAddressComponent";
+import {
+    useGetAllAddressesQuery,
+    useCreateAddressMutation,
+    useUpdateAddressMutation,
+    useDeleteAddressMutation
+} from "@/store/slices/adminSettingsApis"; // Update path as needed
 
 const StoreAddressesPage = () => {
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(10);
+    // Modal states
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [addressToEdit, setAddressToEdit] = useState(null);
+    const [addressToDelete, setAddressToDelete] = useState(null);
 
-    const mockAddresses = [
-        {
-            id: 1,
-            address: "123 Sheikh Zayed Road, Dubai, UAE"
-        },
-        {
-            id: 2,
-            address: "45 Corniche Street, Abu Dhabi, UAE"
-        },
-        {
-            id: 3,
-            address: "78 Al Majaz Area, Sharjah, UAE"
-        },
-        {
-            id: 4,
-            address: "22 Al Nuaimiya, Ajman, UAE"
-        },
-        {
-            id: 5,
-            address: "56 Al Hamra Village, Ras Al Khaimah, UAE"
-        },
-        {
-            id: 6,
-            address: "89 King Faisal Street, Fujairah, UAE"
-        },
-        {
-            id: 7,
-            address: "15 Al Qasba, Sharjah, UAE"
-        },
-        {
-            id: 8,
-            address: "67 Marina Walk, Dubai, UAE"
-        },
-        {
-            id: 9,
-            address: "34 Khalifa Street, Abu Dhabi, UAE"
-        },
-        {
-            id: 10,
-            address: "12 Al Wahda Street, Sharjah, UAE"
-        }
-    ];
+    // API hooks
+    const { data: addressesResponse, error, isLoading, refetch } = useGetAllAddressesQuery();
+    const [createAddress, { isLoading: isCreating }] = useCreateAddressMutation();
+    const [updateAddress, { isLoading: isUpdating }] = useUpdateAddressMutation();
+    const [deleteAddress, { isLoading: isDeleting }] = useDeleteAddressMutation();
+
+    // Extract addresses data
+    const addresses = addressesResponse?.data || addressesResponse || [];
 
     const tableHeaders = [
         {
@@ -111,77 +90,95 @@ const StoreAddressesPage = () => {
     ];
 
     const handleEdit = (item) => {
-        console.log("Edit clicked for:", item);
-        // Handle the edit action here
+        setAddressToEdit(item);
+        setIsEditModalOpen(true);
     };
 
     const handleDelete = (item) => {
-        console.log("Delete clicked for:", item);
-        // Handle the delete action here
+        setAddressToDelete(item);
+        setShowDeleteModal(true);
     };
 
     const handleAddNewAddress = () => {
-        console.log("Add new address clicked");
-        // Handle add new address
+        console.log("abcd")
+        setIsAddModalOpen(true);
     };
 
-    const handlePrevious = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-            console.log("Previous page:", currentPage - 1);
+    const handleCloseAddModal = () => {
+        setIsAddModalOpen(false);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setAddressToEdit(null);
+    };
+
+    const handleSubmitAddress = async (addressData) => {
+        try {
+            await createAddress(addressData).unwrap();
+            setIsAddModalOpen(false);
+        } catch (error) {
+            console.error("Failed to create address:", error);
+            alert(`Error creating address: ${error.message || 'Unknown error'}`);
         }
     };
 
-    const handleNext = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1);
-            console.log("Next page:", currentPage + 1);
+    const handleUpdateAddress = async (addressData) => {
+        try {
+            await updateAddress({
+                addressId: addressToEdit.id,
+                addressData
+            }).unwrap();
+            setIsEditModalOpen(false);
+            setAddressToEdit(null);
+        } catch (error) {
+            console.error("Failed to update address:", error);
+            alert(`Error updating address: ${error.message || 'Unknown error'}`);
         }
     };
 
-    // Footer pagination info
-    const paginationInfo = `page ${currentPage} of ${totalPages}`;
-
-    // Footer buttons
-    const footerButtons = [
-        {
-            text: "Previous",
-            onClick: handlePrevious,
-            backgroundColor: '#FFFFFF',
-            textColor: '#000000',
-            iconBackgroundColor: '#000000',
-            icon: "/img/general/arrow_left_white.svg",
-            showIcon: true,
-            iconPosition: 'left',
-            disabled: currentPage === 1,
-            height: '1.5rem',
-            fontSize: '0.5rem',
-            padding: '0px 12px 0px 4px',
-            iconWidth: '1rem',
-            iconHeight: '1rem',
-            iconImageWidth: '0.5rem',
-            iconImageHeight: '0.5rem',
-            gap: '8px'
-        },
-        {
-            text: "Next",
-            onClick: handleNext,
-            backgroundColor: '#000000',
-            textColor: '#FFFFFF',
-            icon: "/img/general/arrow_right_black.svg",
-            showIcon: true,
-            iconPosition: 'right',
-            disabled: currentPage === totalPages,
-            height: '1.5rem',
-            fontSize: '0.5rem',
-            padding: '0px 4px 0px 12px',
-            iconWidth: '1rem',
-            iconHeight: '1rem',
-            iconImageWidth: '0.6rem',
-            iconImageHeight: '0.6rem',
-            gap: '8px'
+    const handleConfirmDelete = async () => {
+        try {
+            await deleteAddress(addressToDelete.id).unwrap();
+            setShowDeleteModal(false);
+            setAddressToDelete(null);
+        } catch (error) {
+            console.error("Failed to delete address:", error);
+            alert(`Error deleting address: ${error.message || 'Unknown error'}`);
         }
-    ];
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeleteModal(false);
+        setAddressToDelete(null);
+    };
+
+    // Modal footer for add/edit modals
+    const getModalFooter = (isEditMode) => (
+        <div className="flex justify-end gap-3">
+            <button
+                onClick={isEditMode ? handleCloseEditModal : handleCloseAddModal}
+                disabled={isEditMode ? isUpdating : isCreating}
+                className="h-10 px-6 bg-gray-50 border border-gray-200 rounded-full text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
+            >
+                Cancel
+            </button>
+            <button
+                onClick={() => {
+                    const form = document.querySelector('form');
+                    if (form) form.requestSubmit();
+                }}
+                disabled={isEditMode ? isUpdating : isCreating}
+                className="h-10 px-6 bg-black rounded-full text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+            >
+                {isEditMode
+                    ? (isUpdating ? "Updating..." : "Update Address")
+                    : (isCreating ? "Adding..." : "Add Address")
+                }
+            </button>
+        </div>
+    );
+
 
     return (
         <main className="h-[80vh] flex flex-col overflow-hidden">
@@ -213,15 +210,70 @@ const StoreAddressesPage = () => {
             </div>
 
             <div className="flex-1 min-h-0">
-                <Table
-                    headers={tableHeaders}
-                    data={mockAddresses}
-                    headerFontSize="0.8rem"
-                    bodyFontSize="0.675rem"
-                    paginationInfo={paginationInfo}
-                    footerButtons={footerButtons}
-                />
+                {addresses.length > 0 ? (
+                    <Table
+                        headers={tableHeaders}
+                        data={addresses}
+                        headerFontSize="0.8rem"
+                        bodyFontSize="0.675rem"
+                    />
+                ) : (
+                    <NoDataComponent
+                        type="general"
+                        title="No Addresses Found"
+                        subtitle="You haven't added any store addresses yet. Start by adding your first address."
+                        showButton={false}
+                    />
+                )}
             </div>
+
+            {/* Add Address Modal */}
+            <Modal
+                isOpen={isAddModalOpen}
+                onClose={handleCloseAddModal}
+                title="Add Address"
+                subtitle="Add, edit information provided"
+                maxWidth="743px"
+                maxHeight="528px"
+                footer={getModalFooter(false)}
+            >
+                <AddAddressComponent
+                    onSubmit={handleSubmitAddress}
+                    onClose={handleCloseAddModal}
+                />
+            </Modal>
+
+            {/* Edit Address Modal */}
+            <Modal
+                isOpen={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                title="Edit Address"
+                subtitle="Update address information"
+                maxWidth="743px"
+                maxHeight="528px"
+                footer={getModalFooter(true)}
+            >
+                <AddAddressComponent
+                    onSubmit={handleUpdateAddress}
+                    editMode={true}
+                    initialData={addressToEdit}
+                    onClose={handleCloseEditModal}
+                />
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && addressToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-4 max-w-md w-full mx-4">
+                        <DeleteConfirmationComponent
+                            itemName={`address: ${addressToDelete.address}`}
+                            onConfirm={handleConfirmDelete}
+                            onCancel={handleCancelDelete}
+                            isLoading={isDeleting}
+                        />
+                    </div>
+                </div>
+            )}
         </main>
     );
 };
