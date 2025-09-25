@@ -3,84 +3,46 @@ import React, { useState } from "react";
 import ComponentHeader from "@/components/ui/ComponentHeader";
 import Button from "@/components/buttons/Button";
 import Table from "@/components/ui/Table";
+import NoDataComponent from "@/components/ui/NoDataComponent";
+import { useGetAllCustomersQuery } from "@/store/slices/customerApis";
 
 const CustomersPage = () => {
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(10);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [limit, setLimit] = useState(10);
 
-    const mockCustomers = [
-        {
-            id: 1,
-            name: "Omar Khalid",
-            email: "omar.khalid@example.com",
-            phone: "+971 50 123 4501",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 2,
-            name: "Sara Al Mansouri",
-            email: "sara.almansouri@example.com",
-            phone: "+971 50 123 4502",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 3,
-            name: "Faisal Rahman",
-            email: "faisal.rahman@example.com",
-            phone: "+971 50 123 4503",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 4,
-            name: "Layla Haddad",
-            email: "layla.haddad@example.com",
-            phone: "+971 50 123 4504",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 5,
-            name: "Ahmed Al Farsi",
-            email: "ahmed.alfarsi@example.com",
-            phone: "+971 50 123 4505",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 6,
-            name: "Noor Al Zahra",
-            email: "noor.alzahra@example.com",
-            phone: "+971 50 123 4506",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 7,
-            name: "Zayed Hassan",
-            email: "zayed.hassan@example.com",
-            phone: "+971 50 123 4507",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 8,
-            name: "Mariam Yusuf",
-            email: "mariam.yusuf@example.com",
-            phone: "+971 50 123 4508",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 9,
-            name: "Khalifa Saeed",
-            email: "khalifa.saeed@example.com",
-            phone: "+971 50 123 4509",
-            createdAt: "2025-08-09 (11:50AM)"
-        },
-        {
-            id: 10,
-            name: "Hana Al Qasimi",
-            email: "hana.alqasimi@example.com",
-            phone: "+971 50 123 4510",
-            createdAt: "2025-08-09 (11:50AM)"
-        }
-    ];
+    // API call to get all customers
+    const {
+        data: customersResponse,
+        error,
+        isLoading,
+        isFetching,
+        refetch
+    } = useGetAllCustomersQuery({
+        search: searchTerm,
+        limit: limit
+    });
+
+    // Extract customers data and handle loading/error states
+    const customers = customersResponse?.data || [];
+    const totalPages = Math.ceil((customersResponse?.total || 0) / limit);
+
+    // Format customer data for table display
+    const formattedCustomers = customers.map(customer => ({
+        id: customer.id,
+        name: customer.name || `${customer.firstName || ''} ${customer.lastName || ''}`.trim(),
+        email: customer.email,
+        phone: customer.phoneNumber,
+        createdAt: customer.createdAt ? new Date(customer.createdAt).toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }) : 'N/A'
+    }));
 
     const tableHeaders = [
         {
@@ -116,7 +78,7 @@ const CustomersPage = () => {
                 <div className="flex items-center justify-center">
                     <Button
                         text={"Details"}
-                        onClick={null}
+                        onClick={() => handleRowAction(item)}
                         backgroundColor={'#EDEDED'}
                         textColor={'#000000'}
                         icon={"/img/general/detail_eye.svg"}
@@ -140,7 +102,8 @@ const CustomersPage = () => {
 
     const handleRowAction = (row) => {
         console.log("Details clicked for:", row);
-        // Handle the details action here
+        // Handle the details action here - you can navigate to customer detail page
+        // Example: router.push(`/customers/${row.id}`);
     };
 
     const handlePrevious = () => {
@@ -157,6 +120,13 @@ const CustomersPage = () => {
         }
     };
 
+    const handleFilter = () => {
+        console.log("Filter clicked");
+        // Implement filter functionality here
+        // You could open a modal or sidebar with filter options
+        refetch(); // Refetch data if needed
+    };
+
     // Footer pagination info
     const paginationInfo = `page ${currentPage} of ${totalPages}`;
 
@@ -168,10 +138,10 @@ const CustomersPage = () => {
             backgroundColor: '#FFFFFF',
             textColor: '#000000',
             iconBackgroundColor: '#000000',
-            icon: "/img/general/arrow_left_white.svg", // Changed to a more appropriate icon
+            icon: "/img/general/arrow_left_white.svg",
             showIcon: true,
             iconPosition: 'left',
-            // disabled: currentPage === 1,
+            disabled: currentPage === 1 || isLoading,
             height: '1.5rem',
             fontSize: '0.5rem',
             padding: '0px 12px 0px 4px',
@@ -186,10 +156,10 @@ const CustomersPage = () => {
             onClick: handleNext,
             backgroundColor: '#000000',
             textColor: '#FFFFFF',
-            icon: "/img/general/arrow_right_black.svg", // Changed to a more appropriate icon
+            icon: "/img/general/arrow_right_black.svg",
             showIcon: true,
             iconPosition: 'right',
-            disabled: currentPage === totalPages,
+            disabled: currentPage === totalPages || isLoading,
             height: '1.5rem',
             fontSize: '0.5rem',
             padding: '0px 4px 0px 12px',
@@ -201,9 +171,95 @@ const CustomersPage = () => {
         }
     ];
 
+    // Handle loading state
+    if (isLoading) {
+        return (
+            <main className="h-[80vh] flex flex-col overflow-hidden">
+                <div className="flex items-start justify-between flex-shrink-0">
+                    <ComponentHeader
+                        title="Customers"
+                        subtitle="View customer list"
+                        infoMessage="This page allows you to add, edit, and manage all your customers. Use the Filter button to refine your search."
+                    />
+                    <Button
+                        text={"Filter"}
+                        onClick={handleFilter}
+                        backgroundColor={'#000000'}
+                        textColor={'#FFFFFF'}
+                        icon={"/img/general/filter.svg"}
+                        showIcon={true}
+                        iconPosition={'right'}
+                        disabled={true}
+                        height={'2rem'}
+                        fontSize={'0.7rem'}
+                        padding={'0px 4px 0px 12px'}
+                        iconWidth={'1.4rem'}
+                        iconHeight={'1.4rem'}
+                        iconImageWidth={'1rem'}
+                        iconImageHeight={'1rem'}
+                        gap={'12px'}
+                    />
+                </div>
+                <div className="flex-1 min-h-0 flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading customers...</p>
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
+    // Handle error state
+    if (error) {
+        return (
+            <main className="h-[80vh] flex flex-col overflow-hidden">
+                <div className="flex items-start justify-between flex-shrink-0">
+                    <ComponentHeader
+                        title="Customers"
+                        subtitle="View customer list"
+                        infoMessage="This page allows you to add, edit, and manage all your customers. Use the Filter button to refine your search."
+                    />
+                    <Button
+                        text={"Filter"}
+                        onClick={handleFilter}
+                        backgroundColor={'#000000'}
+                        textColor={'#FFFFFF'}
+                        icon={"/img/general/filter.svg"}
+                        showIcon={true}
+                        iconPosition={'right'}
+                        disabled={false}
+                        height={'2rem'}
+                        fontSize={'0.7rem'}
+                        padding={'0px 4px 0px 12px'}
+                        iconWidth={'1.4rem'}
+                        iconHeight={'1.4rem'}
+                        iconImageWidth={'1rem'}
+                        iconImageHeight={'1rem'}
+                        gap={'12px'}
+                    />
+                </div>
+                <div className="flex-1 min-h-0 flex items-center justify-center">
+                    <div className="text-center">
+                        <p className="text-red-600 mb-4">Error loading customers</p>
+                        <Button
+                            text={"Retry"}
+                            onClick={() => refetch()}
+                            backgroundColor={'#000000'}
+                            textColor={'#FFFFFF'}
+                            height={'2rem'}
+                            fontSize={'0.7rem'}
+                            padding={'0px 12px'}
+                        />
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
     return (
         <main className="h-[80vh] flex flex-col overflow-hidden">
-            <div className="flex items-start justify-between flex-shrink-0 ">
+            <div className="flex items-start justify-between flex-shrink-0">
                 <ComponentHeader
                     title="Customers"
                     subtitle="View customer list"
@@ -212,13 +268,13 @@ const CustomersPage = () => {
 
                 <Button
                     text={"Filter"}
-                    onClick={null}
+                    onClick={handleFilter}
                     backgroundColor={'#000000'}
                     textColor={'#FFFFFF'}
                     icon={"/img/general/filter.svg"}
                     showIcon={true}
                     iconPosition={'right'}
-                    disabled={false}
+                    disabled={isFetching}
                     height={'2rem'}
                     fontSize={'0.7rem'}
                     padding={'0px 4px 0px 12px'}
@@ -231,14 +287,18 @@ const CustomersPage = () => {
             </div>
 
             <div className="flex-1 min-h-0">
-                <Table
-                    headers={tableHeaders}
-                    data={mockCustomers}
-                    headerFontSize="0.8rem"
-                    bodyFontSize="0.675rem"
-                    paginationInfo={paginationInfo}
-                    footerButtons={footerButtons}
-                />
+                {formattedCustomers.length > 0 ? (
+                    <Table
+                        headers={tableHeaders}
+                        data={formattedCustomers}
+                        headerFontSize="0.8rem"
+                        bodyFontSize="0.675rem"
+                        paginationInfo={paginationInfo}
+                        footerButtons={footerButtons}
+                    />
+                ) : (
+                    <NoDataComponent type="customers" showButton={false} />
+                )}
             </div>
         </main>
     );

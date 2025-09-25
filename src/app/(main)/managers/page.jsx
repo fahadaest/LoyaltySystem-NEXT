@@ -1,114 +1,48 @@
 "use client";
 import React, { useState } from "react";
+import { Plus } from 'lucide-react';
 import ComponentHeader from "@/components/ui/ComponentHeader";
 import Button from "@/components/buttons/Button";
 import Table from "@/components/ui/Table";
+import Modal from "@/components/ui/Modal";
+import AddManagerComponent from "@/components/managers/AddManagerComponent";
+import DeleteConfirmationComponent from "@/components/ui/DeleteConfirmationModal";
+import NoDataComponent from "@/components/ui/NoDataComponent";
+import {
+    useCreateManagerMutation,
+    useGetAllManagersQuery,
+    useUpdateManagerMutation,
+    useDeleteManagerMutation,
+} from "@/store/slices/managersApis";
+import { useGetAllPermissionsQuery } from "@/store/slices/permissionsApis";
 
 const ManagersPage = () => {
+    // Modal state
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [managerToEdit, setManagerToEdit] = useState(null);
+    const [managerToDelete, setManagerToDelete] = useState(null);
+
+    // API hooks
+    const { data: managersData = [], isLoading, error } = useGetAllManagersQuery();
+    const { data: permissions = [] } = useGetAllPermissionsQuery();
+    const [createManager, { isLoading: isCreating }] = useCreateManagerMutation();
+    const [updateManager, { isLoading: isUpdating }] = useUpdateManagerMutation();
+    const [deleteManager, { isLoading: isDeleting }] = useDeleteManagerMutation();
+
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(10);
+    const itemsPerPage = 10;
 
-    const mockManagers = [
-        {
-            id: 8,
-            firstName: "Omar",
-            lastName: "Khalid",
-            email: "omar.khalid@example.com",
-            permissions: "1 Permission",
-            permissionDetails: "Scan Cards",
-            status: "Active"
-        },
-        {
-            id: 5,
-            firstName: "Sara",
-            lastName: "Al Mansouri",
-            email: "sara.almansouri@example.com",
-            permissions: "3 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma...",
-            status: "Active"
-        },
-        {
-            id: 3,
-            firstName: "Faisal",
-            lastName: "Rahman",
-            email: "faisal.rahman@example.com",
-            permissions: "5 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma...",
-            status: "Active"
-        },
-        {
-            id: 6,
-            firstName: "Layla",
-            lastName: "Haddad",
-            email: "layla.haddad@example.com",
-            permissions: "4 Permission",
-            permissionDetails: "Scan Cards, Customers, Ma...",
-            status: "Active"
-        },
-        {
-            id: 7,
-            firstName: "Ahmed",
-            lastName: "Al Farsi",
-            email: "ahmed.alfarsi@example.com",
-            permissions: "2 Permission",
-            permissionDetails: "Customers, Managers",
-            status: "Active"
-        },
-        {
-            id: 2,
-            firstName: "Noor",
-            lastName: "Al Zahra",
-            email: "noor.alzahra@example.com",
-            permissions: "1 Permission",
-            permissionDetails: "Scan Cards",
-            status: "Active"
-        },
-        {
-            id: 4,
-            firstName: "Zayed",
-            lastName: "Hassan",
-            email: "zayed.hassan@example.com",
-            permissions: "3 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma...",
-            status: "Active"
-        },
-        {
-            id: 1,
-            firstName: "Mariam",
-            lastName: "Yusuf",
-            email: "mariam.yusuf@example.com",
-            permissions: "4 Permission",
-            permissionDetails: "Scan Cards, Customers, Ma...",
-            status: "Active"
-        },
-        {
-            id: 9,
-            firstName: "Khalifa",
-            lastName: "Saeed",
-            email: "khalifa.saeed@example.com",
-            permissions: "6 Permission",
-            permissionDetails: "Customers, Scan Cards, Ma...",
-            status: "Active"
-        },
-        {
-            id: 10,
-            firstName: "Hana",
-            lastName: "Al Qasimi",
-            email: "hana.alqasimi@example.com",
-            permissions: "1 Permission",
-            permissionDetails: "Scan Cards",
-            status: "Active"
-        }
-    ];
+    // Calculate pagination
+    const totalItems = managersData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentData = managersData.slice(startIndex, endIndex);
 
     const tableHeaders = [
-        {
-            label: "ID",
-            key: "id",
-            className: "flex-[0.5]",
-            align: "left"
-        },
         {
             label: "First Name",
             key: "firstName",
@@ -134,8 +68,13 @@ const ManagersPage = () => {
             align: "left",
             render: (item) => (
                 <div>
-                    <div className="font-medium text-black">{item.permissions}</div>
-                    <div className="text-xs text-gray-500">{item.permissionDetails}</div>
+                    <div className="font-medium text-black">
+                        {item.permissionIds?.length || 0} Permission{item.permissionIds?.length !== 1 ? 's' : ''}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                        {item.permissionNames?.slice(0, 3).join(', ') || 'No permissions'}
+                        {item.permissionNames?.length > 3 && '...'}
+                    </div>
                 </div>
             )
         },
@@ -147,7 +86,7 @@ const ManagersPage = () => {
             render: (item) => (
                 <div className="flex justify-center">
                     <span className="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-                        {item.status}
+                        {item.status || 'Active'}
                     </span>
                 </div>
             )
@@ -204,36 +143,106 @@ const ManagersPage = () => {
     ];
 
     const handleEdit = (item) => {
-        console.log("Edit clicked for:", item);
-        // Handle the edit action here
+        setManagerToEdit(item);
+        setIsEditModalOpen(true);
     };
 
     const handleDelete = (item) => {
-        console.log("Delete clicked for:", item);
-        // Handle the delete action here
+        setManagerToDelete(item);
+        setIsDeleteModalOpen(true);
     };
 
     const handleAddNewManager = () => {
-        console.log("Add new manager clicked");
-        // Handle add new manager
+        setIsAddModalOpen(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setIsAddModalOpen(false);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setManagerToEdit(null);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setManagerToDelete(null);
+    };
+
+    const handleSubmitManager = async (managerData) => {
+        try {
+            await createManager(managerData).unwrap();
+            setIsAddModalOpen(false);
+            console.log("Manager created successfully");
+        } catch (error) {
+            console.error("Error creating manager:", error);
+        }
+    };
+
+    const handleUpdateManager = async (managerData) => {
+        try {
+            await updateManager({
+                id: managerToEdit.id,
+                ...managerData
+            }).unwrap();
+            setIsEditModalOpen(false);
+            setManagerToEdit(null);
+            console.log("Manager updated successfully");
+        } catch (error) {
+            console.error("Error updating manager:", error);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (managerToDelete) {
+            try {
+                await deleteManager(managerToDelete.id).unwrap();
+                setIsDeleteModalOpen(false);
+                setManagerToDelete(null);
+                console.log("Manager deleted successfully");
+            } catch (error) {
+                console.error("Error deleting manager:", error);
+            }
+        }
     };
 
     const handlePrevious = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
-            console.log("Previous page:", currentPage - 1);
         }
     };
 
     const handleNext = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
-            console.log("Next page:", currentPage + 1);
         }
     };
 
+    const getModalFooter = (isEditMode) => (
+        <div className="flex justify-end gap-3">
+            <button
+                onClick={isEditMode ? handleCloseEditModal : handleCloseAddModal}
+                disabled={isEditMode ? isUpdating : isCreating}
+                className="h-10 px-6 bg-gray-50 border border-gray-200 rounded-full text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-50 font-['Poppins']"
+            >
+                Cancel
+            </button>
+            <button
+                onClick={() => document.querySelector('form').requestSubmit()}
+                disabled={isEditMode ? isUpdating : isCreating}
+                className="h-10 px-6 bg-black rounded-full flex items-center gap-2 text-sm font-medium text-white hover:bg-gray-800 transition-colors disabled:opacity-50 font-['Poppins']"
+            >
+                {isEditMode ? (isUpdating ? "Updating..." : "Update Manager") : (isCreating ? "Adding..." : "Add New Manager")}
+                <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                    <Plus className="w-3 h-3 text-black" />
+                </div>
+            </button>
+        </div>
+    );
+
     // Footer pagination info
-    const paginationInfo = `page ${currentPage} of ${totalPages}`;
+    const paginationInfo = `page ${currentPage} of ${totalPages || 1}`;
 
     // Footer buttons
     const footerButtons = [
@@ -276,6 +285,14 @@ const ManagersPage = () => {
         }
     ];
 
+    if (isLoading) {
+        return (
+            <main className="h-[80vh] flex flex-col items-center justify-center">
+                <div className="text-lg font-medium text-gray-600">Loading managers...</div>
+            </main>
+        );
+    }
+
     return (
         <main className="h-[80vh] flex flex-col overflow-hidden">
             <div className="flex items-start justify-between flex-shrink-0">
@@ -306,15 +323,70 @@ const ManagersPage = () => {
             </div>
 
             <div className="flex-1 min-h-0">
-                <Table
-                    headers={tableHeaders}
-                    data={mockManagers}
-                    headerFontSize="0.8rem"
-                    bodyFontSize="0.675rem"
-                    paginationInfo={paginationInfo}
-                    footerButtons={footerButtons}
-                />
+                {managersData.length === 0 ? (
+                    <NoDataComponent
+                        type="manager"
+                        onButtonClick={handleAddNewManager}
+                    />
+                ) : (
+                    <Table
+                        headers={tableHeaders}
+                        data={currentData}
+                        headerFontSize="0.8rem"
+                        bodyFontSize="0.675rem"
+                        paginationInfo={paginationInfo}
+                        footerButtons={footerButtons}
+                    />
+                )}
             </div>
+
+            {/* Add Manager Modal */}
+            <Modal
+                isOpen={isAddModalOpen}
+                onClose={handleCloseAddModal}
+                title="Add Manager"
+                subtitle="Please provide the information required to add manager"
+                maxWidth="40vw"
+                maxHeight="70vh"
+                footer={getModalFooter(false)}
+            >
+                <AddManagerComponent
+                    onSubmit={handleSubmitManager}
+                    permissions={permissions}
+                />
+            </Modal>
+
+            {/* Edit Manager Modal */}
+            <Modal
+                isOpen={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                title="Edit Manager"
+                subtitle="Update manager information and permissions"
+                maxWidth="40vw"
+                maxHeight="70vh"
+                footer={getModalFooter(true)}
+            >
+                <AddManagerComponent
+                    onSubmit={handleUpdateManager}
+                    editMode={true}
+                    initialData={managerToEdit}
+                    permissions={permissions}
+                />
+            </Modal>
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && managerToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                        <DeleteConfirmationComponent
+                            itemName={`${managerToDelete.firstName} ${managerToDelete.lastName}`}
+                            onConfirm={handleConfirmDelete}
+                            onCancel={handleCloseDeleteModal}
+                            isLoading={isDeleting}
+                        />
+                    </div>
+                </div>
+            )}
         </main>
     );
 };

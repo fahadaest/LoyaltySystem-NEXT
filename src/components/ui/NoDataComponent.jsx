@@ -44,6 +44,14 @@ const NoDataComponent = ({
             iconColor: 'text-black',
             bgColor: 'bg-gray-200'
         },
+        customers: {
+            icon: Users,
+            title: 'No Customers Found',
+            subtitle: 'Your customer list is empty. Customers will appear here automatically when they register through your forms.',
+            buttonText: 'Add New Customer',
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
+        },
         settings: {
             icon: Settings,
             title: 'No Configuration Found',
@@ -73,6 +81,14 @@ const NoDataComponent = ({
             title: 'No Sales Persons Found',
             subtitle: 'Build your sales team by adding sales persons. They will help you manage customers and drive sales.',
             buttonText: 'Add New Sales Person',
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
+        },
+        manager: {
+            icon: UserCheck,
+            title: 'No Managers Found',
+            subtitle: 'Build your managers team by adding managers. They will help you manage customers, sales persons and drive sales.',
+            buttonText: 'Add New Manager',
             iconColor: 'text-black',
             bgColor: 'bg-gray-200'
         },
