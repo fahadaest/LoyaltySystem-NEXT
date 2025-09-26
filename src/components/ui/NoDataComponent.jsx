@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, FileX, Users, Package, Settings, CreditCard, Award, UserCheck } from 'lucide-react';
+import { Plus, FileX, Users, Package, Settings, CreditCard, Award, UserCheck, MapPin } from 'lucide-react';
 import Button from '@/components/buttons/Button';
 
 const NoDataComponent = ({
@@ -89,6 +89,14 @@ const NoDataComponent = ({
             title: 'No Managers Found',
             subtitle: 'Build your managers team by adding managers. They will help you manage customers, sales persons and drive sales.',
             buttonText: 'Add New Manager',
+            iconColor: 'text-black',
+            bgColor: 'bg-gray-200'
+        },
+        beacons: {
+            icon: MapPin,
+            title: 'No Beacons Found',
+            subtitle: 'Create location-based beacons to engage customers when they visit your physical locations. Start building your proximity marketing strategy.',
+            buttonText: 'Add New Beacon',
             iconColor: 'text-black',
             bgColor: 'bg-gray-200'
         },

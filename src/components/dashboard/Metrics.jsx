@@ -21,29 +21,11 @@ const Metrics = () => {
             title: "Loyalty Programs",
             text: "7"
         },
-        {
-            id: 4,
-            iconUrl: "/img/metrics/custom_wallet_card.svg",
-            title: "Custom Wallet Cards",
-            text: "3"
-        },
-        {
-            id: 5,
-            iconUrl: "/img/metrics/points_loyalty.svg",
-            title: "Product Loyalty",
-            text: "23"
-        },
-        {
-            id: 6,
-            iconUrl: "/img/metrics/points_loyalty.svg",
-            title: "Point Loyalties",
-            text: "15"
-        }
     ];
 
     return (
         <div className="">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                 {metricsData.map((metric) => (
                     <ReportCard
                         key={metric.id}
