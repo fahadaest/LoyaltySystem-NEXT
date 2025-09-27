@@ -55,7 +55,7 @@ const ProductsGrid = ({ onAddProduct, onEditProduct }) => {
     }
 
     return (
-        <div className="bg-white border border-gray-200 rounded-3xl p-2 shadow-sm">
+        <div className="">
             <div className="grid grid-cols-5 gap-4">
                 {products.map((product) => (
                     <ProductCard

@@ -141,7 +141,7 @@ const ProductPage = () => {
                 />
             </div>
 
-            <div className="flex-1">
+            <div className="h-[calc(100vh-13rem)] overflow-y-auto bg-white border border-gray-200 rounded-3xl p-2 shadow-sm">
                 <ProductsGrid onAddProduct={handleAddClick} onEditProduct={handleEditClick} />
             </div>
 

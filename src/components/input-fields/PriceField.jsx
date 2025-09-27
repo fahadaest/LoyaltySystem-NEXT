@@ -1,21 +1,79 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const PriceField = ({ label, name, value, onChange, placeholder, required = false, error = "" }) => {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState("AED");
+    const dropdownRef = useRef(null);
+
+    const currencies = [
+        { code: "AED", name: "UAE Dirham" },
+    ];
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleCurrencySelect = (currency) => {
+        setSelectedCurrency(currency.code);
+        setIsDropdownOpen(false);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
     return (
         <div>
             <label className="text-[10px] font-medium text-black mb-2 block">
                 {label}
                 {required && <span className="text-red-500 ml-1">*</span>}
             </label>
-            <div className="relative">
-                <div className="absolute left-1 top-1 bottom-1 bg-gray-200 rounded-full px-3 flex items-center z-10">
-                    <span className="text-[10px] font-medium text-black">AED</span>
-                    <div className="ml-1 w-4 h-4 bg-black rounded-full flex items-center justify-center">
-                        <svg width="5" height="7" viewBox="0 0 7 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 1L5.5 4.5L1 8" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+            <div className="relative" ref={dropdownRef}>
+                <div
+                    className="absolute left-1 top-1 bottom-1 bg-gray-200 rounded-full pl-3 pr-1.5 flex items-center z-20 cursor-pointer"
+                    onClick={toggleDropdown}
+                >
+                    <span className="text-[10px] font-medium text-black">{selectedCurrency}</span>
+                    <div
+                        className="ml-4 w-4 h-4 bg-black rounded-full flex items-center justify-center transition-transform duration-200"
+                        style={{
+                            transform: isDropdownOpen ? 'rotate(-90deg)' : 'rotate(90deg)'
+                        }}
+                    >
+                        <img
+                            src="/img/general/arrow_right_white.svg"
+                            alt="Arrow"
+                            className="w-[5px] h-[7px]"
+                        />
                     </div>
                 </div>
+
+                {/* Dropdown Menu - Made smaller with scrolling */}
+                {isDropdownOpen && (
+                    <div className="absolute top-full left-1 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-30 w-[100px] max-h-[120px] overflow-y-auto">
+                        {currencies.map((currency) => (
+                            <div
+                                key={currency.code}
+                                className="px-2 py-1.5 text-[9px] hover:bg-gray-50 cursor-pointer flex flex-col border-b border-gray-100 last:border-b-0"
+                                onClick={() => handleCurrencySelect(currency)}
+                            >
+                                <span className="font-medium text-black">{currency.code}</span>
+                                <span className="text-gray-500 text-[8px] leading-tight">{currency.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 <input
                     type="text"
                     name={name}

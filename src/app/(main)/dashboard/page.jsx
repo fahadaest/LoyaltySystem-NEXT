@@ -12,7 +12,7 @@ const DashboardFinal = () => {
     const userRole = useSelector(selectUserRole);
 
     return (
-        <main className="min-h-[78vh]">
+        <main className="h-[calc(100vh-9rem)] overflow-y-auto">
             <div className="">
                 {userRole === 'superadmin' ? (
                     <p>coming soon</p>

@@ -6,20 +6,26 @@ const Metrics = () => {
         {
             id: 1,
             iconUrl: "/img/metrics/total_customers.svg",
-            title: "Total Customers",
-            text: "2,847"
+            title: "Total Customers (last 30 days)",
+            text: "2,847",
+            percentage: 15.2,
+            trend: "up"
         },
         {
             id: 2,
-            iconUrl: "/img/metrics/total_products.svg",
-            title: "Total Products",
-            text: "12"
+            iconUrl: "/img/metrics/roi.svg",
+            title: "ROI (last 30 days)",
+            text: "12%",
+            percentage: 8.7,
+            trend: "up"
         },
         {
             id: 3,
             iconUrl: "/img/metrics/loyalty_programs.svg",
-            title: "Loyalty Programs",
-            text: "7"
+            title: "Retention Rate (last 30 days)",
+            text: "7%",
+            percentage: 3.2,
+            trend: "down"
         },
     ];
 
@@ -32,6 +38,8 @@ const Metrics = () => {
                         iconUrl={metric.iconUrl}
                         title={metric.title}
                         text={metric.text}
+                        percentage={metric.percentage}
+                        trend={metric.trend}
                     />
                 ))}
             </div>

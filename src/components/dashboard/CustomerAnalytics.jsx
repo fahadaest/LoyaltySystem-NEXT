@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DropdownButton from '../input-fields/DropDownButton';
 import AreaChart from '../ui/AreaGraph';
+import Button from '../buttons/Button';
 
 const CustomerAnalytics = () => {
     // Sample data for the area chart
@@ -25,13 +26,12 @@ const CustomerAnalytics = () => {
     };
 
     return (
-        <div className="w-full mx-auto mt-3">
+        <div className="w-full mx-auto mt-3 ">
             {/* Main Container */}
             <div
-                className="relative bg-gray-50 border border-gray-200 rounded-3xl p-4 w-full"
+                className="relative bg-[#FCFCFC] border border-gray-200 rounded-3xl p-4 w-full"
                 style={{
                     minHeight: '450px',
-                    background: '#FCFCFC',
                     border: '1px solid #E2E2E2',
                     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.02)',
                     borderRadius: '30px'
@@ -55,7 +55,7 @@ const CustomerAnalytics = () => {
                             className="text-gray-500 text-xs"
                             style={{
                                 fontFamily: 'Poppins, sans-serif',
-                                fontSize: '10px',
+                                fontSize: '9px',
                                 fontWeight: '500',
                                 lineHeight: '130%',
                                 color: '#636363'
@@ -66,10 +66,17 @@ const CustomerAnalytics = () => {
                     </div>
 
                     {/* Filter Buttons */}
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex gap-1.5 bg-[#EDEDED] rounded-[2rem] px-3 py-2">
                         <DropdownButton
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
                             text="View"
-                            backgroundColor="#EDEDED"
+                            backgroundColor="#FFFFFF"
                             textColor="black"
                             circleColor="black"
                             iconColor="white"
@@ -78,7 +85,14 @@ const CustomerAnalytics = () => {
 
                         <DropdownButton
                             text="Filter"
-                            backgroundColor="#EDEDED"
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
+                            backgroundColor="#FFFFFF"
                             textColor="black"
                             circleColor="black"
                             iconColor="white"
@@ -86,6 +100,13 @@ const CustomerAnalytics = () => {
                         />
 
                         <DropdownButton
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
                             text="Week"
                             backgroundColor="black"
                             textColor="white"
@@ -93,14 +114,23 @@ const CustomerAnalytics = () => {
                             iconColor="black"
                             onClick={() => handleDropdownClick('Week')}
                         />
+
+                        <Button
+                            text="Export"
+                            fontSize='10px'
+                            textColor="black"
+                            backgroundColor="#FFFFFF"
+                            height="auto"
+                            border="1px solid black"
+                            onClick={() => handleDropdownClick('Week')}
+                        />
                     </div>
                 </div>
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4">
-                    {/* Total Customers */}
-                    <div
-                        className="bg-gray-100 rounded-2xl p-3 flex items-center space-x-3 w-full"
+
+                    <div className="bg-gray-100 rounded-2xl p-3 flex items-center space-x-3 w-full pl-6"
                         style={{
                             height: '65px',
                             background: '#F5F5F5',
@@ -112,29 +142,29 @@ const CustomerAnalytics = () => {
                             className="text-black font-semibold flex-1 min-w-0"
                             style={{
                                 fontFamily: 'Poppins, sans-serif',
-                                fontSize: '12px',
+                                fontSize: '10px',
                                 fontWeight: '600'
                             }}
                         >
                             Total Customers
                         </span>
                         <div
-                            className="bg-brandColor text-white rounded-xl px-2.5 py-1.5 text-base font-medium flex-shrink-0"
+                            className="bg-brandColor text-white rounded-xl text-base font-medium flex-shrink-0 flex items-center justify-center"
                             style={{
-
+                                width: '40px',
+                                height: '40px',
                                 borderRadius: '12px',
                                 fontFamily: 'Poppins, sans-serif',
                                 fontSize: '16px',
                                 fontWeight: '500'
                             }}
                         >
-                            161
+                            0
                         </div>
                     </div>
 
-                    {/* Total Products */}
                     <div
-                        className="bg-gray-100 rounded-2xl p-3 flex items-center space-x-3 w-full"
+                        className="bg-gray-100 rounded-2xl p-3 flex items-center space-x-3 w-full pl-6"
                         style={{
                             height: '65px',
                             background: '#F5F5F5',
@@ -146,29 +176,29 @@ const CustomerAnalytics = () => {
                             className="text-black font-semibold flex-1 min-w-0"
                             style={{
                                 fontFamily: 'Poppins, sans-serif',
-                                fontSize: '12px',
+                                fontSize: '10px',
                                 fontWeight: '600'
                             }}
                         >
-                            Total Products
+                            Point Loyalty Customers
                         </span>
                         <div
-                            className="bg-gray-400 text-white rounded-xl px-2.5 py-1.5 text-base font-medium flex-shrink-0"
+                            className="bg-gray-400 text-white rounded-xl text-base font-medium flex-shrink-0 flex items-center justify-center"
                             style={{
-                                background: '#B6B6B6',
+                                width: '40px',
+                                height: '40px',
                                 borderRadius: '12px',
                                 fontFamily: 'Poppins, sans-serif',
                                 fontSize: '16px',
                                 fontWeight: '500'
                             }}
                         >
-                            6
+                            0
                         </div>
                     </div>
 
-                    {/* Loyalty Programs */}
                     <div
-                        className="bg-gray-100 rounded-2xl p-3 flex items-center space-x-3 w-full"
+                        className="bg-gray-100 rounded-2xl p-3 flex items-center space-x-3 w-full pl-6"
                         style={{
                             height: '65px',
                             background: '#F5F5F5',
@@ -180,22 +210,24 @@ const CustomerAnalytics = () => {
                             className="text-black font-semibold flex-1 min-w-0"
                             style={{
                                 fontFamily: 'Poppins, sans-serif',
-                                fontSize: '12px',
+                                fontSize: '10px',
                                 fontWeight: '600'
                             }}
                         >
-                            Loyalty Programs
+                            Product Loyalty Customers
                         </span>
                         <div
-                            className="bg-black text-white rounded-xl px-2.5 py-1.5 text-base font-medium flex-shrink-0"
+                            className="bg-black text-white rounded-xl text-base font-medium flex-shrink-0 flex items-center justify-center"
                             style={{
+                                width: '40px',
+                                height: '40px',
                                 borderRadius: '12px',
                                 fontFamily: 'Poppins, sans-serif',
                                 fontSize: '16px',
                                 fontWeight: '500'
                             }}
                         >
-                            7
+                            0
                         </div>
                     </div>
                 </div>

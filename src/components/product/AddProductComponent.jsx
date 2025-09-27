@@ -3,6 +3,7 @@ import { X, ChevronDown, ChevronUp, Upload, Plus, Check, Trash2 } from 'lucide-r
 import Button from '@/components/buttons/Button';
 import InputField from '../input-fields/InputField';
 import PriceField from '../input-fields/PriceField';
+import ImageCropperComponent from '../ui/ImageCropperComponent';
 import { useGetAllProductSizesQuery, useCreateProductSizeMutation } from '@/store/slices/productSizesApis';
 import { getImageUrl } from '@/utils/imageUtils';
 
@@ -65,11 +66,13 @@ const AddProductComponent = ({
         }
     };
 
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setFormData(prev => ({ ...prev, productImage: file }));
-        }
+    // Handle cropped image from the ImageCropperComponent
+    const handleImageCropped = (file, imageUrl) => {
+        setFormData(prev => ({
+            ...prev,
+            productImage: file,
+            existingImageUrl: null // Clear existing image when new one is selected
+        }));
     };
 
     const handleSubmit = () => {
@@ -78,6 +81,8 @@ const AddProductComponent = ({
             const payload = {
                 name: formData.productName,
                 description: formData.productDescription,
+                productPrice: formData.productPrice, // Include price in payload
+                currency: 'USD', // You might want to make this dynamic
                 sizeId: selectedSizeObject?.id || selectedSizeObject?._id,
                 image: formData.productImage
             };
@@ -134,7 +139,7 @@ const AddProductComponent = ({
                                 onChange={(e) => handleInputChange('productName', e.target.value)}
                                 required={true}
                                 labelSize="0.65rem"
-                                placeholderSize="0.75rem"
+                                placeholderSize="0.55rem"
                                 fieldHeight="0.4rem"
                             />
                         </div>
@@ -151,21 +156,33 @@ const AddProductComponent = ({
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-black mb-1">Product Size*</label>
+                            <label className="block text-[0.65rem] font-medium text-black mb-2">
+                                Product Size
+                                <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <div className="relative">
                                 <button
                                     type="button"
                                     onClick={() => setShowSizeDropdown(!showSizeDropdown)}
-                                    className="w-full h-7 px-3 bg-gray-200 border border-gray-200 rounded-full flex items-center justify-between text-xs text-black"
+                                    className="w-full h-[calc(0.4rem+24px)] px-3 bg-gray-200 border border-gray-200 rounded-full flex items-center justify-between text-[0.55rem] text-black"
                                 >
                                     {sizesLoading ? "Loading sizes..." : (formData.selectedSize || "Select your product size")}
-                                    <div className="w-4 h-4 bg-black rounded-full flex items-center justify-center">
-                                        <ChevronUp className="w-1.5 h-1.5 text-white" />
+                                    <div
+                                        className="w-4 h-4 bg-black rounded-full flex items-center justify-center transition-transform duration-200"
+                                        style={{
+                                            transform: showSizeDropdown ? 'rotate(-90deg)' : 'rotate(90deg)'
+                                        }}
+                                    >
+                                        <img
+                                            src="/img/general/arrow_right_white.svg"
+                                            alt="Arrow"
+                                            className="w-[5px] h-[7px]"
+                                        />
                                     </div>
                                 </button>
 
                                 {showSizeDropdown && !sizesLoading && (
-                                    <div className="absolute top-8 left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-20 flex flex-col max-h-48">
+                                    <div className="absolute top-[calc(0.4rem+28px)] left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-20 flex flex-col max-h-48">
                                         <div className="relative">
                                             <div className="max-h-32 overflow-y-auto sizes-scroll-container flex-shrink-0" onScroll={handleScroll}>
                                                 {availableSizes.map((size, index) => (
@@ -266,7 +283,9 @@ const AddProductComponent = ({
 
                     <div className="grid grid-cols-3 gap-4">
                         <div className="col-span-2">
-                            <label className="block text-xs font-medium text-black mb-1">Product Description*</label>
+                            <label className="block text-[0.65rem] font-medium text-black mb-1">Product Description
+                                <span className="text-red-500 ml-1">*</span>
+                            </label>
                             <textarea
                                 placeholder="Enter a detailed product description"
                                 value={formData.productDescription}
@@ -277,44 +296,17 @@ const AddProductComponent = ({
                         </div>
 
                         <div className="col-span-1">
-                            <label className="block text-xs font-medium text-black mb-1">Product Image*</label>
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageUpload}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    id="image-upload"
-                                    required={!editMode}
-                                />
-                                <label
-                                    htmlFor="image-upload"
-                                    className="w-full h-[180px] border-2 border-dashed border-gray-200 rounded-[15px] bg-white flex flex-col items-center justify-center cursor-pointer hover:border-gray-300 transition-colors"
-                                >
-                                    {formData.productImage ? (
-                                        <div className="text-center">
-                                            <Check className="w-14 h-14 text-green-500 mb-2 mx-auto" />
-                                            <span className="text-xs text-gray-700">{formData.productImage.name}</span>
-                                        </div>
-                                    ) : formData.existingImageUrl ? (
-                                        <div className="text-center w-full h-full relative">
-                                            <img
-                                                src={getImageUrl(formData.existingImageUrl)}
-                                                alt="Product"
-                                                className="w-full h-full object-cover rounded-[15px]"
-                                            />
-                                            <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 rounded-[15px] flex items-center justify-center">
-                                                <span className="text-white text-xs opacity-0 hover:opacity-100">Click to change image</span>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <Upload className="w-14 h-14 text-gray-400 mb-2" />
-                                            <span className="text-xs text-gray-500 text-center">Click to Upload product image</span>
-                                        </>
-                                    )}
-                                </label>
-                            </div>
+                            {/* Replace the old image upload with the new ImageCropperComponent */}
+                            <ImageCropperComponent
+                                label="Product Image"
+                                required={!editMode}
+                                aspectRatio={9 / 7}
+                                width="100%"
+                                height="180px"
+                                onImageCropped={handleImageCropped}
+                                initialImage={formData.existingImageUrl ? getImageUrl(formData.existingImageUrl) : null}
+                                placeholder="Click to upload product image"
+                            />
                         </div>
                     </div>
                 </div>

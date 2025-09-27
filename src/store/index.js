@@ -39,6 +39,7 @@ export const store = configureStore({
             subscriptionApis.middleware,
             userProfileApis.middleware,
             productsApis.middleware,
+            productSizesApis.middleware,
             loyaltyApis.middleware,
             salespersonsApis.middleware,
             managersApis.middleware,

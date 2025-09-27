@@ -1,443 +1,251 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-const AreaChart = ({
-    data,
-    width = "100%",
-    height = 375,
-    maxValue = 500,
-    chartHeight = 250,
-    showGrid = true,
-    showXAxisLabels = true,
-    showYAxisLabels = true,
-    containerStyle = {}
-}) => {
-    const [isClient, setIsClient] = useState(false);
+const AreaChart = ({ width = "100%", height = 375 }) => {
+    // Data points for the curves - adjusted to match the visual patterns
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    // Green area data (bottom layer)
+    const greenData = [120, 140, 100, 160, 180, 200, 170, 190, 220, 140, 160, 400];
 
-    // Fixed dimensions for proper text rendering
-    const svgWidth = 1200;
-    const svgHeight = height;
-    const chartArea = {
-        left: 60,
-        top: 40,
-        width: svgWidth - 80,
-        height: chartHeight
-    };
+    // Blue area data (middle layer)
+    const blueData = [200, 220, 180, 250, 300, 350, 280, 320, 340, 200, 240, 420];
 
-    // Fixed seed for consistent random-like behavior
-    const seededMath = {
-        sin: (x) => Math.sin(x),
-        cos: (x) => Math.cos(x),
-        pow: (x, y) => Math.pow(x, y),
-        PI: Math.PI,
-        floor: (x) => Math.floor(x),
-        min: (a, b) => Math.min(a, b)
-    };
+    // Gray area data (top layer)
+    const grayData = [480, 220, 200, 260, 380, 460, 400, 350, 360, 300, 400, 440];
 
-    // Create dramatic mountain-like curves with consistent precision
-    const createDramaticMountainPath = (chartData, key, maxVal = maxValue) => {
-        if (chartData.length === 0) return '';
+    // Black area data (topmost layer)
+    const blackData = [500, 250, 230, 290, 420, 480, 430, 380, 390, 330, 430, 460];
 
-        // Extract base trend from data
-        const basePoints = chartData.map((item, index) => {
-            const x = chartArea.left + (index / (chartData.length - 1)) * chartArea.width;
-            const y = chartArea.top + chartArea.height - (item[key] / maxVal) * chartArea.height;
-            return { x: Number(x.toFixed(2)), y: Number(y.toFixed(2)) };
-        });
+    // Create ultra-smooth SVG path using advanced curve interpolation
+    const createSmoothPath = (data, maxHeight = 500) => {
+        const chartWidth = 1352;
+        const chartHeight = 300;
+        const padding = 50;
 
-        // Create many more interpolated points for dramatic mountain shapes
-        const mountainPoints = [];
-        const segments = 80; // More segments for detailed mountain shapes
+        const xStep = (chartWidth - 2 * padding) / (data.length - 1);
+        const yScale = (chartHeight - 2 * padding) / maxHeight;
 
-        for (let i = 0; i < segments; i++) {
-            const t = i / (segments - 1);
-            const dataIndex = t * (basePoints.length - 1);
-            const lowerIndex = seededMath.floor(dataIndex);
-            const upperIndex = seededMath.min(lowerIndex + 1, basePoints.length - 1);
-            const localT = dataIndex - lowerIndex;
+        // Convert data to points
+        const points = data.map((value, index) => ({
+            x: padding + index * xStep,
+            y: chartHeight - padding - (value * yScale)
+        }));
 
-            const x = chartArea.left + t * chartArea.width;
-            const baseY = basePoints[lowerIndex].y + (basePoints[upperIndex].y - basePoints[lowerIndex].y) * localT;
+        // Calculate control points for smooth curves
+        const getControlPoints = (points) => {
+            const controlPoints = [];
 
-            // Create dramatic mountain variations based on position
-            let mountainOffset = 0;
+            for (let i = 0; i < points.length; i++) {
+                if (i === 0 || i === points.length - 1) {
+                    controlPoints.push({ cp1: null, cp2: null });
+                    continue;
+                }
 
-            // Strong peaks at beginning (Jan)
-            if (t < 0.1) {
-                mountainOffset = seededMath.sin(t * seededMath.PI * 20) * 15 * (1 - t * 8);
-            }
-            // Deep valley in Feb-Mar (t = 0.08 - 0.25)
-            else if (t >= 0.08 && t < 0.25) {
-                const valleyT = (t - 0.08) / (0.25 - 0.08);
-                mountainOffset = -seededMath.sin(valleyT * seededMath.PI) * 20 + seededMath.cos(valleyT * seededMath.PI * 6) * 12;
-            }
-            // Moderate variations in middle months
-            else if (t >= 0.25 && t < 0.75) {
-                mountainOffset = seededMath.sin(t * seededMath.PI * 8) * 10 + seededMath.cos(t * seededMath.PI * 12) * 6;
-            }
-            // Strong upward trend at end (Nov-Dec)
-            else if (t >= 0.75) {
-                const endT = (t - 0.75) / 0.25;
-                mountainOffset = seededMath.sin(endT * seededMath.PI * 8) * 18 + seededMath.pow(endT, 2) * 25;
+                const prev = points[i - 1];
+                const curr = points[i];
+                const next = points[i + 1];
+
+                // Calculate the slope through the current point
+                const dx1 = curr.x - prev.x;
+                const dy1 = curr.y - prev.y;
+                const dx2 = next.x - curr.x;
+                const dy2 = next.y - curr.y;
+
+                // Average slope for smoother curves
+                const slope = (dy1 / dx1 + dy2 / dx2) * 0.5;
+
+                // Control point distance (adjust for smoothness)
+                const tension = 0.3;
+                const distance1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) * tension;
+                const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) * tension;
+
+                controlPoints.push({
+                    cp1: {
+                        x: curr.x - distance1 / Math.sqrt(1 + slope * slope),
+                        y: curr.y - (distance1 * slope) / Math.sqrt(1 + slope * slope)
+                    },
+                    cp2: {
+                        x: curr.x + distance2 / Math.sqrt(1 + slope * slope),
+                        y: curr.y + (distance2 * slope) / Math.sqrt(1 + slope * slope)
+                    }
+                });
             }
 
-            const y = baseY + mountainOffset;
-            mountainPoints.push({
-                x: Number(x.toFixed(2)),
-                y: Number(y.toFixed(2))
-            });
-        }
+            return controlPoints;
+        };
 
-        // Build dramatic SVG path
-        let path = `M ${chartArea.left},${chartArea.top + chartArea.height} L ${mountainPoints[0].x},${mountainPoints[0].y}`;
+        const controlPoints = getControlPoints(points);
+        let path = `M ${points[0].x} ${points[0].y}`;
 
-        // Create sharp mountain peaks and valleys
-        for (let i = 1; i < mountainPoints.length; i++) {
-            const prev = mountainPoints[i - 1];
-            const curr = mountainPoints[i];
-            const next = mountainPoints[i + 1];
+        for (let i = 1; i < points.length; i++) {
+            const prevPoint = points[i - 1];
+            const currPoint = points[i];
+            const prevControl = controlPoints[i - 1];
+            const currControl = controlPoints[i];
 
-            if (next && i < mountainPoints.length - 2) {
-                // Use tighter control points for sharper mountain features
-                const cpX1 = Number((prev.x + (curr.x - prev.x) * 0.3).toFixed(2));
-                const cpY1 = Number((prev.y + (curr.y - prev.y) * 0.2).toFixed(2));
-                const cpX2 = Number((curr.x - (next.x - curr.x) * 0.3).toFixed(2));
-                const cpY2 = Number((curr.y - (next.y - curr.y) * 0.2).toFixed(2));
+            if (i === 1) {
+                // First curve segment
+                const cp1x = prevPoint.x + (currPoint.x - prevPoint.x) * 0.25;
+                const cp1y = prevPoint.y;
+                const cp2x = currControl.cp1 ? currControl.cp1.x : currPoint.x - (currPoint.x - prevPoint.x) * 0.25;
+                const cp2y = currControl.cp1 ? currControl.cp1.y : currPoint.y;
 
-                path += ` C ${cpX1},${cpY1} ${cpX2},${cpY2} ${curr.x},${curr.y}`;
+                path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currPoint.x} ${currPoint.y}`;
+            } else if (i === points.length - 1) {
+                // Last curve segment
+                const cp1x = prevControl.cp2 ? prevControl.cp2.x : prevPoint.x + (currPoint.x - prevPoint.x) * 0.25;
+                const cp1y = prevControl.cp2 ? prevControl.cp2.y : prevPoint.y;
+                const cp2x = currPoint.x - (currPoint.x - prevPoint.x) * 0.25;
+                const cp2y = currPoint.y;
+
+                path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currPoint.x} ${currPoint.y}`;
             } else {
-                path += ` L ${curr.x},${curr.y}`;
+                // Middle curve segments
+                const cp1x = prevControl.cp2 ? prevControl.cp2.x : prevPoint.x + (currPoint.x - prevPoint.x) * 0.3;
+                const cp1y = prevControl.cp2 ? prevControl.cp2.y : prevPoint.y;
+                const cp2x = currControl.cp1 ? currControl.cp1.x : currPoint.x - (currPoint.x - prevPoint.x) * 0.3;
+                const cp2y = currControl.cp1 ? currControl.cp1.y : currPoint.y;
+
+                path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currPoint.x} ${currPoint.y}`;
             }
         }
 
-        path += ` L ${chartArea.left + chartArea.width},${chartArea.top + chartArea.height} Z`;
-        return path;
-    };
-
-    const createDramaticMountainLinePath = (chartData, key, maxVal = maxValue) => {
-        if (chartData.length === 0) return '';
-
-        const basePoints = chartData.map((item, index) => {
-            const x = chartArea.left + (index / (chartData.length - 1)) * chartArea.width;
-            const y = chartArea.top + chartArea.height - (item[key] / maxVal) * chartArea.height;
-            return { x: Number(x.toFixed(2)), y: Number(y.toFixed(2)) };
-        });
-
-        const mountainPoints = [];
-        const segments = 80;
-
-        for (let i = 0; i < segments; i++) {
-            const t = i / (segments - 1);
-            const dataIndex = t * (basePoints.length - 1);
-            const lowerIndex = seededMath.floor(dataIndex);
-            const upperIndex = seededMath.min(lowerIndex + 1, basePoints.length - 1);
-            const localT = dataIndex - lowerIndex;
-
-            const x = chartArea.left + t * chartArea.width;
-            const baseY = basePoints[lowerIndex].y + (basePoints[upperIndex].y - basePoints[lowerIndex].y) * localT;
-
-            let mountainOffset = 0;
-
-            if (t < 0.1) {
-                mountainOffset = seededMath.sin(t * seededMath.PI * 20) * 15 * (1 - t * 8);
-            }
-            else if (t >= 0.08 && t < 0.25) {
-                const valleyT = (t - 0.08) / (0.25 - 0.08);
-                mountainOffset = -seededMath.sin(valleyT * seededMath.PI) * 20 + seededMath.cos(valleyT * seededMath.PI * 6) * 12;
-            }
-            else if (t >= 0.25 && t < 0.75) {
-                mountainOffset = seededMath.sin(t * seededMath.PI * 8) * 10 + seededMath.cos(t * seededMath.PI * 12) * 6;
-            }
-            else if (t >= 0.75) {
-                const endT = (t - 0.75) / 0.25;
-                mountainOffset = seededMath.sin(endT * seededMath.PI * 8) * 18 + seededMath.pow(endT, 2) * 25;
-            }
-
-            const y = baseY + mountainOffset;
-            mountainPoints.push({
-                x: Number(x.toFixed(2)),
-                y: Number(y.toFixed(2))
-            });
-        }
-
-        let path = `M ${mountainPoints[0].x},${mountainPoints[0].y}`;
-
-        for (let i = 1; i < mountainPoints.length; i++) {
-            const prev = mountainPoints[i - 1];
-            const curr = mountainPoints[i];
-            const next = mountainPoints[i + 1];
-
-            if (next && i < mountainPoints.length - 2) {
-                const cpX1 = Number((prev.x + (curr.x - prev.x) * 0.3).toFixed(2));
-                const cpY1 = Number((prev.y + (curr.y - prev.y) * 0.2).toFixed(2));
-                const cpX2 = Number((curr.x - (next.x - curr.x) * 0.3).toFixed(2));
-                const cpY2 = Number((curr.y - (next.y - curr.y) * 0.2).toFixed(2));
-
-                path += ` C ${cpX1},${cpY1} ${cpX2},${cpY2} ${curr.x},${curr.y}`;
-            } else {
-                path += ` L ${curr.x},${curr.y}`;
-            }
-        }
+        // Close the path to create area
+        const lastPoint = points[points.length - 1];
+        path += ` L ${lastPoint.x} ${chartHeight - padding}`;
+        path += ` L ${points[0].x} ${chartHeight - padding}`;
+        path += ' Z';
 
         return path;
     };
 
-    // Sample data that creates the dramatic mountain shape you requested
-    const dramaticData = [
-        { month: 'Jan', customers: 480, products: 320, loyalty: 280 },
-        { month: 'Feb', customers: 180, products: 120, loyalty: 80 },
-        { month: 'Mar', customers: 160, products: 100, loyalty: 60 },
-        { month: 'Apr', customers: 220, products: 140, loyalty: 90 },
-        { month: 'May', customers: 260, products: 180, loyalty: 120 },
-        { month: 'Jun', customers: 240, products: 160, loyalty: 100 },
-        { month: 'Jul', customers: 280, products: 190, loyalty: 130 },
-        { month: 'Aug', customers: 270, products: 180, loyalty: 120 },
-        { month: 'Sep', customers: 300, products: 200, loyalty: 140 },
-        { month: 'Oct', customers: 350, products: 240, loyalty: 180 },
-        { month: 'Nov', customers: 420, products: 300, loyalty: 260 },
-        { month: 'Dec', customers: 450, products: 320, loyalty: 400 }
-    ];
-
-    const chartData = data || dramaticData;
-
-    const defaultContainerStyle = {
-        height: `${height}px`,
-        background: '#FFFFFF',
-        border: '1px solid rgba(0, 0, 0, 0.1)',
-        boxShadow: '0px 3.5px 5.5px rgba(0, 0, 0, 0.02)',
-        borderRadius: '37px'
-    };
-
-    // Don't render the complex paths during SSR
-    if (!isClient) {
-        return (
-            <div
-                className="bg-white border rounded-3xl relative w-full overflow-hidden"
-                style={{ ...defaultContainerStyle, ...containerStyle }}
-            >
-                <svg
-                    width="100%"
-                    height={height}
-                    viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-                    className="absolute inset-0"
-                    preserveAspectRatio="xMidYMid meet"
-                >
-                    {/* Grid Lines */}
-                    {showGrid && [0, 1, 2, 3, 4, 5].map((i) => {
-                        const y = chartArea.top + (i / 5) * chartArea.height;
-                        return (
-                            <line
-                                key={i}
-                                x1={chartArea.left}
-                                y1={y}
-                                x2={chartArea.left + chartArea.width}
-                                y2={y}
-                                stroke="#E2E8F0"
-                                strokeDasharray="2,2"
-                                strokeWidth="1"
-                            />
-                        );
-                    })}
-
-                    {/* Y-axis labels */}
-                    {showYAxisLabels && [500, 400, 300, 200, 100, 0].map((value, i) => {
-                        const y = chartArea.top + (i / 5) * chartArea.height;
-                        return (
-                            <text
-                                key={i}
-                                x={chartArea.left - 10}
-                                y={y + 4}
-                                fill="#636363"
-                                fontSize="12"
-                                fontFamily="Poppins, sans-serif"
-                                fontWeight="500"
-                                textAnchor="end"
-                                dominantBaseline="middle"
-                            >
-                                {value}
-                            </text>
-                        );
-                    })}
-
-                    {/* X-axis labels */}
-                    {showXAxisLabels && chartData.map((item, i) => {
-                        const x = chartArea.left + (i / (chartData.length - 1)) * chartArea.width;
-                        return (
-                            <text
-                                key={i}
-                                x={x}
-                                y={chartArea.top + chartArea.height + 25}
-                                fill="#636363"
-                                fontSize="12"
-                                fontFamily="Poppins, sans-serif"
-                                fontWeight="500"
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                            >
-                                {item.month}
-                            </text>
-                        );
-                    })}
-
-                    {/* Gradient Definitions */}
-                    <defs>
-                        <linearGradient id="grayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0.88%" stopColor="#B6B6B6" stopOpacity="1" />
-                            <stop offset="32.16%" stopColor="rgba(182, 182, 182, 0.576923)" />
-                            <stop offset="77%" stopColor="rgba(182, 182, 182, 0)" />
-                        </linearGradient>
-
-                        <linearGradient id="blackGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0.24%" stopColor="rgba(0, 0, 0, 0.6)" />
-                            <stop offset="67.63%" stopColor="rgba(0, 0, 0, 0.354808)" />
-                            <stop offset="117.05%" stopColor="rgba(255, 255, 255, 0)" />
-                        </linearGradient>
-
-                        <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stopColor="rgba(65, 204, 64, 0.61)" />
-                            <stop offset="78.42%" stopColor="rgba(65, 204, 64, 0.34899)" />
-                            <stop offset="117.34%" stopColor="rgba(255, 255, 255, 0)" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
+    // Create grid lines
+    const gridLines = [];
+    for (let i = 0; i <= 5; i++) {
+        const y = 50 + (i * 50);
+        gridLines.push(
+            <line
+                key={i}
+                x1="50"
+                y1={y}
+                x2="1400"
+                y2={y}
+                stroke="#E2E8F0"
+                strokeWidth="1"
+                strokeDasharray="5,5"
+            />
         );
     }
 
     return (
         <div
-            className="bg-white border rounded-3xl relative w-full overflow-hidden"
-            style={{ ...defaultContainerStyle, ...containerStyle }}
+            style={{
+                width: width,
+                height: `${height}px`,
+                background: '#FFFFFF',
+                border: '1px solid rgba(0, 0, 0, 0.1)',
+                boxShadow: '0px 3.5px 5.5px rgba(0, 0, 0, 0.02)',
+                borderRadius: '37px',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
         >
             <svg
                 width="100%"
-                height={height}
-                viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-                className="absolute inset-0"
-                preserveAspectRatio="xMidYMid meet"
+                height="100%"
+                viewBox="0 0 1453 375"
+                style={{ position: 'absolute', top: 0, left: 0 }}
             >
-                {/* Grid Lines */}
-                {showGrid && [0, 1, 2, 3, 4, 5].map((i) => {
-                    const y = chartArea.top + (i / 5) * chartArea.height;
-                    return (
-                        <line
-                            key={i}
-                            x1={chartArea.left}
-                            y1={y}
-                            x2={chartArea.left + chartArea.width}
-                            y2={y}
-                            stroke="#E2E8F0"
-                            strokeDasharray="2,2"
-                            strokeWidth="1"
-                        />
-                    );
-                })}
+                {/* Grid lines */}
+                {gridLines}
 
                 {/* Y-axis labels */}
-                {showYAxisLabels && [500, 400, 300, 200, 100, 0].map((value, i) => {
-                    const y = chartArea.top + (i / 5) * chartArea.height;
-                    return (
-                        <text
-                            key={i}
-                            x={chartArea.left - 10}
-                            y={y + 4}
-                            fill="#636363"
-                            fontSize="12"
-                            fontFamily="Poppins, sans-serif"
-                            fontWeight="500"
-                            textAnchor="end"
-                            dominantBaseline="middle"
-                        >
-                            {value}
-                        </text>
-                    );
-                })}
+                <text x="25" y="320" fontSize="10" fontFamily="Poppins" fontWeight="600" fill="#636363">0</text>
+                <text x="20" y="270" fontSize="10" fontFamily="Poppins" fontWeight="600" fill="#636363">100</text>
+                <text x="20" y="220" fontSize="10" fontFamily="Poppins" fontWeight="600" fill="#636363">200</text>
+                <text x="20" y="170" fontSize="10" fontFamily="Poppins" fontWeight="600" fill="#636363">300</text>
+                <text x="20" y="120" fontSize="10" fontFamily="Poppins" fontWeight="600" fill="#636363">400</text>
+                <text x="20" y="70" fontSize="10" fontFamily="Poppins" fontWeight="600" fill="#636363">500</text>
 
-                {/* Area Charts - Bottom to Top */}
-
-                {/* Gray Area (Background) - Total Customers */}
+                {/* Black area (topmost) */}
                 <path
-                    d={createDramaticMountainPath(chartData, 'customers')}
+                    d={createSmoothPath(blackData)}
+                    fill="url(#blackGradient)"
+                    opacity="0.6"
+                />
+
+                {/* Gray area */}
+                <path
+                    d={createSmoothPath(grayData)}
                     fill="url(#grayGradient)"
                 />
 
-                {/* Black/Dark Area (Middle) - Total Products */}
+                {/* Blue area */}
                 <path
-                    d={createDramaticMountainPath(chartData, 'products')}
-                    fill="url(#blackGradient)"
+                    d={createSmoothPath(blueData)}
+                    fill="url(#blueGradient)"
+                    stroke="rgba(0, 0, 0, 0.58)"
+                    strokeWidth="1"
+                    strokeDasharray="3,3"
                 />
 
-                {/* Green Area (Top) - Loyalty Programs */}
+                {/* Green area (bottom) */}
                 <path
-                    d={createDramaticMountainPath(chartData, 'loyalty')}
+                    d={createSmoothPath(greenData)}
                     fill="url(#greenGradient)"
+                    stroke="#41CC40"
+                    strokeWidth="1"
                 />
 
-                {/* Area borders */}
+                {/* Gray line */}
                 <path
-                    d={createDramaticMountainLinePath(chartData, 'customers')}
+                    d={createSmoothPath(grayData)}
                     fill="none"
                     stroke="#B6B6B6"
-                    strokeWidth="1.5"
+                    strokeWidth="1"
                 />
 
-                <path
-                    d={createDramaticMountainLinePath(chartData, 'products')}
-                    fill="none"
-                    stroke="#666666"
-                    strokeWidth="1.5"
-                />
-
-                <path
-                    d={createDramaticMountainLinePath(chartData, 'loyalty')}
-                    fill="none"
-                    stroke="#41CC40"
-                    strokeWidth="1.5"
-                />
-
-                {/* X-axis labels */}
-                {showXAxisLabels && chartData.map((item, i) => {
-                    const x = chartArea.left + (i / (chartData.length - 1)) * chartArea.width;
-                    return (
-                        <text
-                            key={i}
-                            x={x}
-                            y={chartArea.top + chartArea.height + 25}
-                            fill="#636363"
-                            fontSize="12"
-                            fontFamily="Poppins, sans-serif"
-                            fontWeight="500"
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                        >
-                            {item.month}
-                        </text>
-                    );
-                })}
-
-                {/* Gradient Definitions */}
+                {/* Gradients */}
                 <defs>
+                    <linearGradient id="blackGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="rgba(0, 0, 0, 0.6)" />
+                        <stop offset="67%" stopColor="rgba(0, 0, 0, 0.35)" />
+                        <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
+                    </linearGradient>
+
                     <linearGradient id="grayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0.88%" stopColor="#B6B6B6" stopOpacity="1" />
-                        <stop offset="32.16%" stopColor="rgba(182, 182, 182, 0.576923)" />
+                        <stop offset="0%" stopColor="#B6B6B6" />
+                        <stop offset="32%" stopColor="rgba(182, 182, 182, 0.58)" />
                         <stop offset="77%" stopColor="rgba(182, 182, 182, 0)" />
                     </linearGradient>
 
-                    <linearGradient id="blackGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0.24%" stopColor="rgba(0, 0, 0, 0.6)" />
-                        <stop offset="67.63%" stopColor="rgba(0, 0, 0, 0.354808)" />
-                        <stop offset="117.05%" stopColor="rgba(255, 255, 255, 0)" />
+                    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="rgba(68, 88, 200, 0.6)" />
+                        <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
                     </linearGradient>
 
                     <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stopColor="rgba(65, 204, 64, 0.61)" />
-                        <stop offset="78.42%" stopColor="rgba(65, 204, 64, 0.34899)" />
-                        <stop offset="117.34%" stopColor="rgba(255, 255, 255, 0)" />
+                        <stop offset="78%" stopColor="rgba(65, 204, 64, 0.35)" />
+                        <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
                     </linearGradient>
                 </defs>
+
+                {/* X-axis labels */}
+                {months.map((month, index) => (
+                    <text
+                        key={month}
+                        x={50 + (index * ((1352 - 100) / (months.length - 1)))}
+                        y="350"
+                        fontSize="10"
+                        fontFamily="Poppins"
+                        fontWeight="600"
+                        fill="#636363"
+                        textAnchor="middle"
+                    >
+                        {month}
+                    </text>
+                ))}
             </svg>
         </div>
     );
