@@ -10,8 +10,8 @@ import { createBannerSetting } from '@/utils/loyaltyFormData';
 
 const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
     const [dropdowns, setDropdowns] = useState({
-        purchasingProduct: false,
-        rewardProduct: false
+        productId: false,
+        rewardProductId: false
     });
 
     const handleImageCropped = (field, file, previewUrl) => {

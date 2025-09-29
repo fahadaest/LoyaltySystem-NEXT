@@ -5,7 +5,7 @@ const ProductLoyaltyCard = ({
     title,
     product,
     purchaseQuantity,
-    rewardProduct,
+    rewardProductId,
     onView,
     onEdit,
     onCopy,
@@ -34,7 +34,7 @@ const ProductLoyaltyCard = ({
 
                 <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-500">Reward Product:</span>
-                    <span className="text-xs text-gray-500">{rewardProduct}</span>
+                    <span className="text-xs text-gray-500">{rewardProductId}</span>
                 </div>
             </div>
 

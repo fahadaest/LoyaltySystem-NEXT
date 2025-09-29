@@ -24,9 +24,9 @@ export const loyaltyApis = createApi({
                         formData.append('rewardPointsAmount', loyaltyData.loyaltyDetail.rewardPointsAmount || '');
                     } else if (loyaltyData.loyaltyType === 'product') {
                         formData.append('purchaseQuantity', loyaltyData.loyaltyDetail.purchaseQuantity || '');
-                        formData.append('purchasingProduct', loyaltyData.loyaltyDetail.purchasingProduct || '');
+                        formData.append('productId', loyaltyData.loyaltyDetail.productId || '');
                         formData.append('rewardQuantity', loyaltyData.loyaltyDetail.rewardQuantity || '');
-                        formData.append('rewardProduct', loyaltyData.loyaltyDetail.rewardProduct || '');
+                        formData.append('rewardProductId', loyaltyData.loyaltyDetail.rewardProductId || '');
                     }
                 }
 

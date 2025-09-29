@@ -145,16 +145,14 @@ const WalletCardCustomizer = ({
                                         colorPreviewSize="1.875rem"
                                         iconSize="0.875rem"
                                     />
-                                    <FileUploadArea
+                                    <ImageCropperComponent
                                         label="Card Background Image"
-                                        name="backgroundImage"
-                                        onChange={(e) => handleFileUpload('backgroundImage', e)}
+                                        aspectRatio={21 / 9}
+                                        width="100%"
+                                        height="10.2rem"
                                         placeholder="Click to Upload background image"
-                                        labelSize="0.675rem"
-                                        placeholderSize="0.575rem"
-                                        containerHeight="10.2rem"
-                                        iconSize="1.75rem"
-                                        borderRadius="1rem"
+                                        initialImage={safeCardData.backgroundImagePreview || safeCardData.backgroundImage}
+                                        onImageCropped={(file, previewUrl) => handleImageCropped('backgroundImage', file, previewUrl)}
                                     />
                                 </div>
 

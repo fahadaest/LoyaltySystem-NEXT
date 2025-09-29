@@ -93,11 +93,11 @@ const LoyaltyManagementPage = () => {
             if (!rewardPoints || rewardPoints <= 0) errors.push('Reward Points must be greater than 0');
             if (!rewardPointsAmount || rewardPointsAmount <= 0) errors.push('Reward Points Amount must be greater than 0');
         } else if (loyaltyType === LOYALTY_TYPES.PRODUCT) {
-            const { purchaseQuantity, purchasingProduct, rewardQuantity, rewardProduct } = loyaltyDetail || {};
+            const { purchaseQuantity, productId, rewardQuantity, rewardProductId } = loyaltyDetail || {};
             if (!purchaseQuantity || purchaseQuantity <= 0) errors.push('Purchase Quantity must be greater than 0');
-            if (!purchasingProduct?.trim()) errors.push('Purchasing Product is required');
+            if (!productId?.trim()) errors.push('Purchasing Product is required');
             if (!rewardQuantity || rewardQuantity <= 0) errors.push('Reward Quantity must be greater than 0');
-            if (!rewardProduct?.trim()) errors.push('Reward Product is required');
+            if (!rewardProductId?.trim()) errors.push('Reward Product is required');
         }
 
         return errors;

@@ -31,9 +31,9 @@ const ProductLoyalty = () => {
         return loyaltyData.map(item => ({
             id: item.id,
             title: item.rewardTitle,
-            product: item.loyaltyDetail?.purchasingProduct || "Unknown Product",
+            product: item.loyaltyDetail?.productId || "Unknown Product",
             purchaseQuantity: item.loyaltyDetail?.purchaseQuantity?.toString() || "0",
-            rewardProduct: item.loyaltyDetail?.rewardProduct || "Unknown Reward",
+            rewardProductId: item.loyaltyDetail?.rewardProductId || "Unknown Reward",
             rewardQuantity: item.loyaltyDetail?.rewardQuantity?.toString() || "0",
             originalData: item
         }));
@@ -199,7 +199,7 @@ const ProductLoyalty = () => {
                             title={program.title}
                             product={program.product}
                             purchaseQuantity={program.purchaseQuantity}
-                            rewardProduct={program.rewardProduct}
+                            rewardProductId={program.rewardProductId}
                             rewardQuantity={program.rewardQuantity}
                             onView={() => handleView(program)}
                             onEdit={() => handleEdit(program)}

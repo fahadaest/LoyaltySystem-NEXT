@@ -3,17 +3,19 @@ import { ChevronDown } from 'lucide-react';
 import InputField from '../input-fields/InputField';
 import DropdownField from '../input-fields/Dropdown';
 import { LOYALTY_TYPES } from '@/utils/loyaltyFormData';
+import { useGetAllProductsQuery } from '@/store/slices/productsApis';
 
 const LoyaltyDetails = ({ formData, updateFormData, loyaltyType }) => {
+    const { data: products = [], isLoading, error } = useGetAllProductsQuery();
     const [dropdowns, setDropdowns] = useState({
-        purchasingProduct: false,
-        rewardProduct: false
+        productId: false,
+        rewardProductId: false
     });
 
-    const productOptions = [
-        { value: 'product1', label: 'Product 1' },
-        { value: 'product2', label: 'Product 2' },
-    ];
+    const productOptions = products.map(product => ({
+        value: product.id.toString(),
+        label: `${product.name} (${product?.size?.size})- $${product.price}`
+    }));
 
     const handleInputChange = (field, value, section = null) => {
         updateFormData(field, value, section);
@@ -36,7 +38,7 @@ const LoyaltyDetails = ({ formData, updateFormData, loyaltyType }) => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-3">
                     <InputField
-                        label="Reward Title*"
+                        label="Reward Title"
                         name="rewardTitle"
                         value={formData.rewardTitle || ''}
                         onChange={(e) => handleInputChange('rewardTitle', e.target.value)}
@@ -58,6 +60,7 @@ const LoyaltyDetails = ({ formData, updateFormData, loyaltyType }) => {
                         placeholderSize="0.55rem"
                         fieldHeight="0.7rem"
                         className="lg:col-span-3"
+                        required
                     />
                 </div>
 
@@ -67,7 +70,7 @@ const LoyaltyDetails = ({ formData, updateFormData, loyaltyType }) => {
                         <h2 className=" font-semibold text-[1rem] text-black mb-4">Purchases</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
                             <InputField
-                                label="Purchase Quantity*"
+                                label="Purchase Quantity"
                                 name="purchaseQuantity"
                                 value={formData.loyaltyDetail?.purchaseQuantity || ''}
                                 onChange={(e) => handleInputChange('purchaseQuantity', e.target.value, 'loyaltyDetail')}
@@ -79,21 +82,22 @@ const LoyaltyDetails = ({ formData, updateFormData, loyaltyType }) => {
                             />
 
                             <DropdownField
-                                label="Select Purchasing Product*"
-                                name="purchasingProduct"
-                                value={formData.loyaltyDetail?.purchasingProduct || ''}
-                                onChange={(value) => handleInputChange('purchasingProduct', value, 'loyaltyDetail')}
+                                label="Select Purchasing Product"
+                                name="productId"
+                                value={formData.loyaltyDetail?.productId || ''}
+                                onChange={(value) => handleInputChange('productId', value, 'loyaltyDetail')}
                                 options={productOptions}
-                                placeholder="Select"
+                                placeholder={isLoading ? "Loading products..." : "Select"}
                                 required
                                 size="xs"
                                 labelSize="0.675rem"
                                 placeholderSize="0.55rem"
                                 fieldHeight="0.6rem"
+                                disabled={isLoading}
                             />
 
                             <InputField
-                                label="Reward Quantity*"
+                                label="Reward Quantity"
                                 name="rewardQuantity"
                                 value={formData.loyaltyDetail?.rewardQuantity || ''}
                                 onChange={(e) => handleInputChange('rewardQuantity', e.target.value, 'loyaltyDetail')}
@@ -105,17 +109,18 @@ const LoyaltyDetails = ({ formData, updateFormData, loyaltyType }) => {
                             />
 
                             <DropdownField
-                                label="Select Reward Product*"
-                                name="rewardProduct"
-                                value={formData.loyaltyDetail?.rewardProduct || ''}
-                                onChange={(value) => handleInputChange('rewardProduct', value, 'loyaltyDetail')}
+                                label="Select Reward Product"
+                                name="rewardProductId"
+                                value={formData.loyaltyDetail?.rewardProductId || ''}
+                                onChange={(value) => handleInputChange('rewardProductId', value, 'loyaltyDetail')}
                                 options={productOptions}
-                                placeholder="Select a reward product"
+                                placeholder={isLoading ? "Loading products..." : "Select a reward product"}
                                 required
                                 size="xs"
                                 labelSize="0.675rem"
                                 placeholderSize="0.55rem"
                                 fieldHeight="0.6rem"
+                                disabled={isLoading}
                             />
                         </div>
                     </>

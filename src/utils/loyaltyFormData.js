@@ -18,9 +18,9 @@ export const createPointLoyaltyDetail = () => ({
 
 export const createProductLoyaltyDetail = () => ({
     purchaseQuantity: '',
-    purchasingProduct: '',
+    productId: '',
     rewardQuantity: '',
-    rewardProduct: ''
+    rewardProductId: ''
 });
 
 export const createBannerSetting = () => ({
