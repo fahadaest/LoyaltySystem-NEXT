@@ -6,6 +6,7 @@ const ProductLoyaltyCard = ({
     product,
     purchaseQuantity,
     rewardProductId,
+    rewardProduct,
     onView,
     onEdit,
     onCopy,
@@ -34,7 +35,7 @@ const ProductLoyaltyCard = ({
 
                 <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-500">Reward Product:</span>
-                    <span className="text-xs text-gray-500">{rewardProductId}</span>
+                    <span className="text-xs text-gray-500">{rewardProduct}</span>
                 </div>
             </div>
 
@@ -42,7 +43,7 @@ const ProductLoyaltyCard = ({
             <div className="border-t border-gray-200 mx-5 mb-3"></div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-center gap-2 px-5 pb-3">
+            <div className="flex items-center gap-2 px-5 pb-3">
                 <Button
                     text={"View"}
                     onClick={onView}
@@ -53,6 +54,7 @@ const ProductLoyaltyCard = ({
                     fontSize={'0.55rem'}
                     padding={'0px 12px'}
                     borderRadius={'81px'}
+                    className="flex-1"  // Full width flex
                 />
 
                 <Button
@@ -65,6 +67,7 @@ const ProductLoyaltyCard = ({
                     fontSize={'0.55rem'}
                     padding={'0px 12px'}
                     borderRadius={'81px'}
+                    className="flex-1"  // Full width flex
                 />
 
                 <Button
@@ -78,6 +81,7 @@ const ProductLoyaltyCard = ({
                     padding={'0px 12px'}
                     borderRadius={'81px'}
                     border={'1px solid #E2E2E2'}
+                    className="flex-1"  // Full width flex
                 />
 
                 <Button
@@ -85,19 +89,21 @@ const ProductLoyaltyCard = ({
                     onClick={onDelete}
                     backgroundColor={'#000000'}
                     textColor={'#FFFFFF'}
-                    icon={"/img/general/trash.svg"}
+                    icon={"/img/general/delete_icon_white.svg"}
                     showIcon={true}
                     iconPosition={'center'}
                     disabled={false}
                     height={'1.5rem'}
-                    width={'1.5rem'}
+                    width={'1.5rem'}  // Fixed width - circle rahega
                     fontSize={'0.55rem'}
                     padding={'0px'}
-                    iconWidth={'0.7rem'}
-                    iconHeight={'0.7rem'}
-                    iconImageWidth={'0.5rem'}
-                    iconImageHeight={'0.5rem'}
+                    iconWidth={'1rem'}
+                    iconHeight={'1rem'}
+                    iconImageWidth={'1.5rem'}
+                    iconImageHeight={'1.5rem'}
                     borderRadius={'50%'}
+                    iconBackgroundColor="black"
+                    className="flex-shrink-0"
                 />
             </div>
         </div>

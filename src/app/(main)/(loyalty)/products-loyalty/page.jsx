@@ -7,13 +7,15 @@ import ProductLoyaltyCard from "@/components/loyalty/ProductLoyaltyCard";
 import NoDataComponent from "@/components/ui/NoDataComponent";
 import DeleteConfirmationComponent from "@/components/ui/DeleteConfirmationModal";
 import { useGetAllLoyaltyProgramsQuery, useDeleteLoyaltyProgramMutation } from "@/store/slices/loyaltyApis";
+import { useGetAllProductSizesQuery } from "@/store/slices/productSizesApis";
 
 const ProductLoyalty = () => {
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 12; // 4 columns * 3 rows for better grid display
+    const itemsPerPage = 12;
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const { data: productSizes = [] } = useGetAllProductSizesQuery();
 
     const {
         data: loyaltyData,
@@ -25,19 +27,29 @@ const ProductLoyalty = () => {
 
     const [deleteLoyaltyProgram, { isLoading: isDeleting }] = useDeleteLoyaltyProgramMutation();
 
+    const getSizeName = (sizeId) => {
+        if (!sizeId || !productSizes.length) return 'N/A';
+        const size = productSizes.find(s => s.id === sizeId);
+        return size?.size || 'N/A';
+    };
+
     const transformedData = useMemo(() => {
         if (!loyaltyData || !Array.isArray(loyaltyData)) return [];
 
         return loyaltyData.map(item => ({
             id: item.id,
             title: item.rewardTitle,
-            product: item.loyaltyDetail?.productId || "Unknown Product",
+            product: item.product?.name
+                ? `${item.product.name} (${getSizeName(item.product.sizeId)})`
+                : "Unknown Product",
             purchaseQuantity: item.loyaltyDetail?.purchaseQuantity?.toString() || "0",
-            rewardProductId: item.loyaltyDetail?.rewardProductId || "Unknown Reward",
+            rewardProduct: item.rewardProduct?.name
+                ? `${item.rewardProduct.name} (${getSizeName(item.rewardProduct.sizeId)})`
+                : "Unknown Reward",
             rewardQuantity: item.loyaltyDetail?.rewardQuantity?.toString() || "0",
             originalData: item
         }));
-    }, [loyaltyData]);
+    }, [loyaltyData, productSizes]);
 
     const totalItems = transformedData.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -199,7 +211,7 @@ const ProductLoyalty = () => {
                             title={program.title}
                             product={program.product}
                             purchaseQuantity={program.purchaseQuantity}
-                            rewardProductId={program.rewardProductId}
+                            rewardProduct={program.rewardProduct}
                             rewardQuantity={program.rewardQuantity}
                             onView={() => handleView(program)}
                             onEdit={() => handleEdit(program)}
