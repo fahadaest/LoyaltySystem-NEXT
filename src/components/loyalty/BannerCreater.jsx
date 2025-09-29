@@ -3,8 +3,10 @@ import { ChevronDown, Upload, RefreshCw, Info, Eye } from 'lucide-react';
 import InputField from '../input-fields/InputField';
 import ColorPicker from '../input-fields/ColorPicker';
 import Button from '../buttons/Button';
-import BannerPreview from './BannerPreview'; // Import the separate banner component
+import BannerPreview from './BannerPreview';
 import FileUploadArea from '../ui/FileUploadArea';
+import ImageCropperComponent from '../ui/ImageCropperComponent';
+import { createBannerSetting } from '@/utils/loyaltyFormData';
 
 const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
     const [dropdowns, setDropdowns] = useState({
@@ -12,18 +14,16 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
         rewardProduct: false
     });
 
-    const handleFileUpload = (field, event) => {
-        const file = event.target.files[0];
-        if (file) {
+    const handleImageCropped = (field, file, previewUrl) => {
+        if (file && previewUrl) {
             // Store the actual File object for API submission
             updateFormData(field, file, 'bannerSetting');
-
-            // If you need preview, store preview URL separately
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                updateFormData(`${field}Preview`, e.target.result, 'bannerSetting');
-            };
-            reader.readAsDataURL(file);
+            // Store preview URL separately
+            updateFormData(`${field}Preview`, previewUrl, 'bannerSetting');
+        } else {
+            // Handle image removal
+            updateFormData(field, null, 'bannerSetting');
+            updateFormData(`${field}Preview`, null, 'bannerSetting');
         }
     };
 
@@ -61,20 +61,7 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
         if (resetFormData) {
             resetFormData();
         } else {
-            // Fallback reset for banner settings only
-            const resetData = {
-                bannerTitle: '',
-                titleColor: '#2F45F2',
-                backgroundColor: '#4F45E3',
-                backgroundImage: null,
-                backgroundImg: null,
-                icon1: null,
-                icon2: null,
-                icon3: null,
-                text1: '',
-                text2: '',
-                text3: ''
-            };
+            const resetData = createBannerSetting();
             Object.keys(resetData).forEach(key => {
                 handleBannerUpdate(key, resetData[key]);
             });
@@ -158,53 +145,47 @@ const BannerCreator = ({ formData, updateFormData, resetFormData }) => {
 
                         {/* Logo and Banner Image */}
                         <div className="grid grid-cols-1">
-                            <FileUploadArea
+                            <ImageCropperComponent
                                 label="Banner Image"
-                                name="backgroundImage"
-                                onChange={(e) => handleFileUpload('backgroundImage', e)}
-                                placeholder="Click to Upload product image"
-                                labelSize="0.675rem"
-                                placeholderSize="0.575rem"
-                                containerHeight="7rem"
-                                iconSize="1.75rem"
-                                borderRadius="1rem"
+                                required={false}
+                                aspectRatio={16 / 9}  // Landscape ratio
+                                width="100%"
+                                height="7rem"
+                                placeholder="Click to Upload banner image"
+                                initialImage={safeFormData.backgroundImagePreview || safeFormData.backgroundImage}
+                                onImageCropped={(file, previewUrl) => handleImageCropped('backgroundImage', file, previewUrl)}
+                                className=""
                             />
                         </div>
 
                         {/* Icons */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <FileUploadArea
+                            <ImageCropperComponent
                                 label="Icon 1"
-                                name="icon1"
-                                onChange={(e) => handleFileUpload('icon1', e)}
-                                placeholder="Upload"
-                                labelSize="0.675rem"
-                                placeholderSize="0.575rem"
-                                containerHeight="7rem"
-                                iconSize="1.75rem"
-                                borderRadius="1rem"
+                                aspectRatio={1}  // Square ratio
+                                width="100%"
+                                height="7rem"
+                                placeholder="Upload Icon"
+                                initialImage={safeFormData.icon1Preview || safeFormData.icon1}
+                                onImageCropped={(file, previewUrl) => handleImageCropped('icon1', file, previewUrl)}
                             />
-                            <FileUploadArea
+                            <ImageCropperComponent
                                 label="Icon 2"
-                                name="icon2"
-                                onChange={(e) => handleFileUpload('icon2', e)}
-                                placeholder="Upload"
-                                labelSize="0.675rem"
-                                placeholderSize="0.575rem"
-                                containerHeight="7rem"
-                                iconSize="1.75rem"
-                                borderRadius="1rem"
+                                aspectRatio={1}
+                                width="100%"
+                                height="7rem"
+                                placeholder="Upload Icon"
+                                initialImage={safeFormData.icon2Preview || safeFormData.icon2}
+                                onImageCropped={(file, previewUrl) => handleImageCropped('icon2', file, previewUrl)}
                             />
-                            <FileUploadArea
+                            <ImageCropperComponent
                                 label="Icon 3"
-                                name="icon3"
-                                onChange={(e) => handleFileUpload('icon3', e)}
-                                placeholder="Upload"
-                                labelSize="0.675rem"
-                                placeholderSize="0.575rem"
-                                containerHeight="7rem"
-                                iconSize="1.75rem"
-                                borderRadius="1rem"
+                                aspectRatio={1}
+                                width="100%"
+                                height="7rem"
+                                placeholder="Upload Icon"
+                                initialImage={safeFormData.icon3Preview || safeFormData.icon3}
+                                onImageCropped={(file, previewUrl) => handleImageCropped('icon3', file, previewUrl)}
                             />
                         </div>
 

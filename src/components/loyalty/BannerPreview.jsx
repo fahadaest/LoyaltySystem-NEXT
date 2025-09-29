@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 const BannerPreview = ({
     bannerTitle = '',
@@ -22,35 +22,60 @@ const BannerPreview = ({
     footerTitle = 'Powered by RewardHive www.codehive.com',
     footerText = 'Compatible with iPhone and Android devices. Apple users will need to download Apple Wallet, and Android users will need the supporting app'
 }) => {
-    const BannerContent = () => (
-        <div className={`bg-black rounded-3xl border-4 overflow-hidden shadow-2xl ${bannerClassName}`} style={{ borderColor: backgroundColor, width: '100%', maxWidth: '433px', aspectRatio: '433/615', minWidth: '200px' }}>
-            {/* Top Section - Proportional height */}
-            <div className="px-3 py-3 text-white" style={{ backgroundColor: backgroundColor, height: '25.7%' }}>
+    const titleRef = useRef(null);
+    const [fontSize, setFontSize] = useState('1.2rem');
 
-                <div className=" flex justify-between items-center h-full">
-                    <div className="  flex flex-col  gap-2">
+    useEffect(() => {
+        if (titleRef.current && bannerTitle) {
+            const element = titleRef.current;
+            let currentSize = 1.3; // Initial bara size: 1rem se start
+
+            element.style.fontSize = `${currentSize}rem`;
+
+            const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+            const maxHeight = lineHeight * 2;
+
+            while (element.scrollHeight > maxHeight && currentSize > 0.5) {
+                currentSize -= 0.05;
+                element.style.fontSize = `${currentSize}rem`;
+            }
+
+            setFontSize(`${currentSize}rem`);
+        }
+    }, [bannerTitle]);
+
+    const BannerContent = () => (
+        <div className={`bg-black rounded-3xl border-4 overflow-hidden shadow-2xl ${bannerClassName}`} style={{ borderColor: backgroundColor, width: '100%', maxWidth: '433px', aspectRatio: '433/615', minWidth: '200px', overflow: 'hidden' }}>
+            {/* Top Section - Proportional height */}
+            <div className="px-3 py-3 text-white overflow-hidden" style={{ backgroundColor: backgroundColor, height: '25.7%' }}>
+
+                <div className="flex justify-between items-start h-full gap-2">
+                    <div className="flex flex-col gap-2 flex-1 min-w-0">
                         <img
                             src="/img/general/profile_green.svg"
                             alt="Profile image"
                             style={{
-                                width: 'min(35px, 15%)',
-                                height: 'min(35px, 15%)',
-                                maxHeight: '25%'
+                                width: '35px',
+                                height: '35px',
+                                minWidth: '35px',
+                                minHeight: '35px',
+                                flexShrink: 0
                             }}
                             className="object-contain rounded-lg"
                         />
                         <h2
-                            className="font-bold leading-tight mt-1"
+                            ref={titleRef}
+                            className="font-bold leading-tight"
                             style={{
                                 color: titleColor,
-                                fontSize: 'clamp(0.5rem, 3.5vw, 1rem)',
+                                fontSize: fontSize,
                                 lineHeight: '1.2',
                                 overflow: 'hidden',
                                 display: '-webkit-box',
-                                WebkitLineClamp: 3,
+                                WebkitLineClamp: 2,  // Maximum 2 lines
                                 WebkitBoxOrient: 'vertical',
-                                maxHeight: '70%',
-                                maxWidth: '70%'
+                                wordBreak: 'break-word',
+                                maxWidth: '100%'
                             }}
                         >
                             {bannerTitle || defaultTitle}
@@ -59,14 +84,16 @@ const BannerPreview = ({
 
                     <div className="bg-white rounded-xl p-2 flex-shrink-0"
                         style={{
-                            width: 'min(6rem, 25%)',
-                            height: 'min(6rem, 80%)',
+                            width: '5.5rem',
+                            height: '5.5rem',
+                            minWidth: '5.5rem',
+                            minHeight: '5.5rem'
                         }}>
                         <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
                             <img
                                 src="/img/general/QR.png"
                                 alt="QR Code"
-                                className="w-full h-full object-contain "
+                                className="w-full h-full object-contain"
                             />
                         </div>
                     </div>

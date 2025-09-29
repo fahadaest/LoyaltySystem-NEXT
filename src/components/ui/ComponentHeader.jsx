@@ -80,6 +80,7 @@ const ComponentHeader = ({
                             text={button.text}
                             onClick={button.onClick}
                             backgroundColor={button.backgroundColor || '#000000'}
+                            iconBackgroundColor={button.iconBackgroundColor}
                             textColor={button.textColor || '#FFFFFF'}
                             icon={button.icon}
                             showIcon={button.showIcon || false}

@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronDown, Upload, RefreshCw, Info, Eye } from 'lucide-react';
-import InputField from '../input-fields/InputField';
 import ColorPicker from '../input-fields/ColorPicker';
-import BannerPreview from '../loyalty/BannerPreview';
 import FileUploadArea from '../ui/FileUploadArea';
 import Button from '../buttons/Button';
 import WalletCardPreview from './WalletCardPreview';
 import { LOYALTY_TYPES } from '@/utils/loyaltyFormData';
-import ComponentHeader from '../ui/ComponentHeader';
+import ImageCropperComponent from '../ui/ImageCropperComponent';
 
 const WalletCardCustomizer = ({
     formData,
@@ -31,6 +29,16 @@ const WalletCardCustomizer = ({
         }
     };
 
+    const handleImageCropped = (field, file, previewUrl) => {
+        if (file && previewUrl) {
+            updateFormData(field, file, 'customCard');
+            updateFormData(`${field}Preview`, previewUrl, 'customCard');
+        } else {
+            updateFormData(field, null, 'customCard');
+            updateFormData(`${field}Preview`, null, 'customCard');
+        }
+    };
+
     const handleCardUpdate = (field, value) => {
         updateFormData(field, value, 'customCard');
     };
@@ -39,19 +47,22 @@ const WalletCardCustomizer = ({
         if (resetFormData) {
             resetFormData();
         } else {
-            // Fallback reset for custom card settings only
             const resetData = loyaltyType === LOYALTY_TYPES.PRODUCT
                 ? {
                     backgroundColor: '#FFFFFF',
                     backgroundImg: null,
                     backgroundImage: null,
+                    backgroundImagePreview: null,
                     collectedStampImg: null,
-                    uncollectedStampImg: null
+                    collectedStampImgPreview: null,
+                    uncollectedStampImg: null,
+                    uncollectedStampImgPreview: null
                 }
                 : {
                     backgroundColor: '#FFFFFF',
                     backgroundImg: null,
                     backgroundImage: null,
+                    backgroundImagePreview: null,
                     backgroundTitle: ''
                 };
 
@@ -147,28 +158,24 @@ const WalletCardCustomizer = ({
                                     />
                                 </div>
 
-                                <FileUploadArea
+                                <ImageCropperComponent
                                     label="Stamp Collected"
-                                    name="collectedStampImg"
-                                    onChange={(e) => handleFileUpload('collectedStampImg', e)}
-                                    placeholder="Click to Upload collected stamp image"
-                                    labelSize="0.675rem"
-                                    placeholderSize="0.575rem"
-                                    containerHeight="15rem"
-                                    iconSize="1.75rem"
-                                    borderRadius="1rem"
+                                    aspectRatio={1}
+                                    width="100%"
+                                    height="15rem"
+                                    placeholder="Click to Upload collected stamp"
+                                    initialImage={safeCardData.collectedStampImgPreview || safeCardData.collectedStampImg}
+                                    onImageCropped={(file, previewUrl) => handleImageCropped('collectedStampImg', file, previewUrl)}
                                 />
 
-                                <FileUploadArea
+                                <ImageCropperComponent
                                     label="Uncollected Stamp"
-                                    name="uncollectedStampImg"
-                                    onChange={(e) => handleFileUpload('uncollectedStampImg', e)}
-                                    placeholder="Click to Upload uncollected stamp image"
-                                    labelSize="0.675rem"
-                                    placeholderSize="0.575rem"
-                                    containerHeight="15rem"
-                                    iconSize="1.75rem"
-                                    borderRadius="1rem"
+                                    aspectRatio={1}
+                                    width="100%"
+                                    height="15rem"
+                                    placeholder="Click to Upload uncollected stamp"
+                                    initialImage={safeCardData.uncollectedStampImgPreview || safeCardData.uncollectedStampImg}
+                                    onImageCropped={(file, previewUrl) => handleImageCropped('uncollectedStampImg', file, previewUrl)}
                                 />
                             </div>
                         ) : (
@@ -187,16 +194,14 @@ const WalletCardCustomizer = ({
                                     iconSize="0.875rem"
                                 />
 
-                                <FileUploadArea
+                                <ImageCropperComponent
                                     label="Card Background Image"
-                                    name="backgroundImage"
-                                    onChange={(e) => handleFileUpload('backgroundImage', e)}
+                                    aspectRatio={21 / 9} // Landscape
+                                    width="100%"
+                                    height="7rem"
                                     placeholder="Click to Upload background image"
-                                    labelSize="0.675rem"
-                                    placeholderSize="0.575rem"
-                                    containerHeight="7rem"
-                                    iconSize="1.75rem"
-                                    borderRadius="1rem"
+                                    initialImage={safeCardData.backgroundImagePreview || safeCardData.backgroundImage}
+                                    onImageCropped={(file, previewUrl) => handleImageCropped('backgroundImage', file, previewUrl)}
                                 />
                             </div>
                         )}

@@ -156,21 +156,37 @@ const LoyaltyManagementPage = () => {
             onClick: resetFormWithRoute,
             backgroundColor: "#EDEDED",
             textColor: "#000000",
-            icon: "/img/icons/arrow-small-left.svg",
+            icon: "/img/general/arrow_back.svg",
             showIcon: true,
             iconPosition: "left",
             className: "border border-gray-300",
-            disabled: isCreating
+            disabled: isCreating,
+            height: '32px',
+            fontSize: '10px',
+            padding: '0 15px 0px 3px',
+            iconWidth: '20px',
+            iconHeight: '20px',
+            iconImageWidth: '17px',
+            iconImageHeight: '17px',
+            iconBackgroundColor: '#000000'
         },
         {
             text: isCreating ? "Creating..." : "Create Loyalty",
             onClick: handleCreateLoyalty,
             backgroundColor: isCreating ? "#9CA3AF" : "linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%), #000000",
             textColor: "#FFFFFF",
-            icon: isCreating ? null : "/img/icons/plus.svg",
+            icon: isCreating ? null : "/img/general/plus_black.svg",
             showIcon: !isCreating,
             iconPosition: "right",
-            disabled: isCreating
+            disabled: isCreating,
+            height: '32px',
+            fontSize: '10px',
+            padding: '0 5px 0px 15px',
+            iconWidth: '20px',
+            iconHeight: '20px',
+            iconImageWidth: '12px',
+            iconImageHeight: '12px',
+            gap: '8px'
         }
     ];
 
@@ -211,7 +227,7 @@ const LoyaltyManagementPage = () => {
                                     loyaltyType={selectedLoyaltyType}
                                 />
                             </div>
-                            <div className="space-y-6 mt-8">
+                            <div className="space-y-6 mt-0">
                                 <BannerCreator
                                     formData={formData}
                                     updateFormData={updateFormData}
