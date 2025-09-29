@@ -9,6 +9,7 @@ import BannerCreator from '@/components/loyalty/BannerCreater';
 import WalletCardCustomizer from '@/components/wallet-cards/WalletCardCustomizer';
 import { useCreateLoyaltyWithFilesMutation } from '@/store/slices/loyaltyApis';
 import { toast } from 'react-toastify';
+import { useGetLoyaltyProgramByIdQuery, useUpdateLoyaltyProgramMutation } from '@/store/slices/loyaltyApis';
 
 const LoyaltyManagementPage = () => {
     const params = useParams();
@@ -16,20 +17,80 @@ const LoyaltyManagementPage = () => {
     const [formData, setFormData] = useState(null);
     const [selectedLoyaltyType, setSelectedLoyaltyType] = useState(null);
     const [createLoyalty, { isLoading: isCreating }] = useCreateLoyaltyWithFilesMutation();
+    const [updateLoyalty, { isLoading: isUpdating }] = useUpdateLoyaltyProgramMutation();
+    const [editMode, setEditMode] = useState(false);
+    const [loyaltyId, setLoyaltyId] = useState(null);
 
-    // Handle route parameters
+    const { data: existingLoyalty, isLoading: isLoadingLoyalty } = useGetLoyaltyProgramByIdQuery(
+        loyaltyId,
+        { skip: !loyaltyId }
+    );
+
     useEffect(() => {
-        const routeType = params?.type?.[0]; // Get the first segment from the dynamic route
+        const routeType = params?.type?.[0];
+        const id = params?.type?.[1];
 
-        if (routeType === 'product') {
+        if (id) {
+            // Edit mode
+            setLoyaltyId(id);
+            setEditMode(true);
+        } else if (routeType === 'product') {
             initializeForm(LOYALTY_TYPES.PRODUCT);
         } else if (routeType === 'points') {
             initializeForm(LOYALTY_TYPES.POINT);
         } else {
-            // If no valid route type, reset to show selection cards
             resetForm();
         }
     }, [params]);
+
+    useEffect(() => {
+        if (existingLoyalty && editMode) {
+            const loyaltyType = existingLoyalty.loyaltyType === 'product'
+                ? LOYALTY_TYPES.PRODUCT
+                : LOYALTY_TYPES.POINT;
+
+            setSelectedLoyaltyType(loyaltyType);
+
+            const mappedData = {
+                rewardTitle: existingLoyalty.rewardTitle || '',
+                rewardDescription: existingLoyalty.rewardDescription || '',
+                loyaltyDetail: loyaltyType === LOYALTY_TYPES.PRODUCT ? {
+                    purchaseQuantity: existingLoyalty.loyaltyDetail?.purchaseQuantity || 0,
+                    productId: existingLoyalty.loyaltyDetail?.productId || '',
+                    rewardQuantity: existingLoyalty.loyaltyDetail?.rewardQuantity || 0,
+                    rewardProductId: existingLoyalty.loyaltyDetail?.rewardProductId || '',
+                } : {
+                    spendingAmount: existingLoyalty.loyaltyDetail?.spendingAmount || 0,
+                    rewardPoints: existingLoyalty.loyaltyDetail?.rewardPoints || 0,
+                    rewardPointsAmount: existingLoyalty.loyaltyDetail?.rewardPointsAmount || 0,
+                },
+                bannerSetting: {
+                    bannerTitle: existingLoyalty.bannerTitle || '',
+                    titleColor: existingLoyalty.bannerTitleColor || '#2F45F2',
+                    backgroundColor: existingLoyalty.bannerBackgroundColor || '#4F45E3',
+                    backgroundImage: existingLoyalty.bannerBackgroundImage || null,
+                    text1: existingLoyalty.bannerIconText1 || '',
+                    text2: existingLoyalty.bannerIconText2 || '',
+                    text3: existingLoyalty.bannerIconText3 || '',
+                    icon1: existingLoyalty.bannerIcon1 || null,
+                    icon2: existingLoyalty.bannerIcon2 || null,
+                    icon3: existingLoyalty.bannerIcon3 || null,
+                },
+                customCard: {
+                    backgroundColor: existingLoyalty.cardBackgroundColor || '#FFFFFF',
+                    backgroundTitle: existingLoyalty.cardBackgroundTitle || '',
+                    backgroundImg: existingLoyalty.cardBackgroundImg || null,
+                    backgroundImage: existingLoyalty.cardBackgroundImg || null,
+                    ...(loyaltyType === LOYALTY_TYPES.PRODUCT && {
+                        collectedStampImg: existingLoyalty.cardCollectedStampImg || null,
+                        uncollectedStampImg: existingLoyalty.cardUncollectedStampImg || null,
+                    })
+                }
+            };
+
+            setFormData(mappedData);
+        }
+    }, [existingLoyalty, editMode]);
 
     const initializeFormWithRoute = (type) => {
         const routePath = type === LOYALTY_TYPES.PRODUCT ? '/manage-loyalty/product' : '/manage-loyalty/points';
@@ -59,6 +120,8 @@ const LoyaltyManagementPage = () => {
     const resetForm = () => {
         setFormData(null);
         setSelectedLoyaltyType(null);
+        setEditMode(false);
+        setLoyaltyId(null);
     };
 
     const resetBannerData = () => {
@@ -103,30 +166,41 @@ const LoyaltyManagementPage = () => {
         return errors;
     };
 
-    const handleCreateLoyalty = async () => {
+    const handleCreateOrUpdateLoyalty = async () => {
+        console.log("abcd")
+
         if (!formData || !selectedLoyaltyType) {
+            console.log("error")
             toast.error('Please complete the form');
             return;
         }
 
-        const validationErrors = validateFormData(formData, selectedLoyaltyType);
-        if (validationErrors.length > 0) {
-            toast.error(`Please fix the following errors:\n${validationErrors.join('\n')}`);
-            return;
-        }
-
         try {
-            await createLoyalty({ ...formData, loyaltyType: selectedLoyaltyType }).unwrap();
-            toast.success(`${selectedLoyaltyType === LOYALTY_TYPES.PRODUCT ? 'Product' : 'Points'} loyalty program created successfully!`);
+            if (editMode && loyaltyId) {
+                // Update existing loyalty
+                await updateLoyalty({
+                    id: loyaltyId,
+                    ...formData,
+                    loyaltyType: selectedLoyaltyType
+                }).unwrap();
+                toast.success(`${selectedLoyaltyType === LOYALTY_TYPES.PRODUCT ? 'Product' : 'Points'} loyalty program updated successfully!`);
+            } else {
+                // Create new loyalty
+                await createLoyalty({
+                    ...formData,
+                    loyaltyType: selectedLoyaltyType
+                }).unwrap();
+                toast.success(`${selectedLoyaltyType === LOYALTY_TYPES.PRODUCT ? 'Product' : 'Points'} loyalty program created successfully!`);
+            }
 
-            // Redirect to appropriate listing page based on loyalty type
+            // Redirect to appropriate listing page
             const redirectPath = selectedLoyaltyType === LOYALTY_TYPES.PRODUCT
                 ? '/products-loyalty'
                 : '/points-loyalty';
             router.push(redirectPath);
         } catch (error) {
-            console.error('Error creating loyalty program:', error);
-            const errorMessage = error?.data?.message || error?.message || 'Failed to create loyalty program. Please try again.';
+            console.error(`Error ${editMode ? 'updating' : 'creating'} loyalty program:`, error);
+            const errorMessage = error?.data?.message || error?.message || `Failed to ${editMode ? 'update' : 'create'} loyalty program. Please try again.`;
             toast.error(`Error: ${errorMessage}`);
         }
     };
@@ -150,6 +224,8 @@ const LoyaltyManagementPage = () => {
         }
     ];
 
+    const isProcessing = isCreating || isUpdating;
+
     const formButtons = [
         {
             text: "Back",
@@ -160,7 +236,7 @@ const LoyaltyManagementPage = () => {
             showIcon: true,
             iconPosition: "left",
             className: "border border-gray-300",
-            disabled: isCreating,
+            disabled: isProcessing,
             height: '32px',
             fontSize: '10px',
             padding: '0 15px 0px 3px',
@@ -171,14 +247,16 @@ const LoyaltyManagementPage = () => {
             iconBackgroundColor: '#000000'
         },
         {
-            text: isCreating ? "Creating..." : "Create Loyalty",
-            onClick: handleCreateLoyalty,
-            backgroundColor: isCreating ? "#9CA3AF" : "linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%), #000000",
+            text: isProcessing
+                ? (editMode ? "Updating..." : "Creating...")
+                : (editMode ? "Update Loyalty" : "Create Loyalty"),
+            onClick: handleCreateOrUpdateLoyalty,
+            backgroundColor: isProcessing ? "#9CA3AF" : "linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%), #000000",
             textColor: "#FFFFFF",
-            icon: isCreating ? null : "/img/general/plus_black.svg",
-            showIcon: !isCreating,
+            icon: isProcessing ? null : "/img/general/plus_black.svg",
+            showIcon: !isProcessing,
             iconPosition: "right",
-            disabled: isCreating,
+            disabled: isProcessing,
             height: '32px',
             fontSize: '10px',
             padding: '0 5px 0px 15px',
@@ -191,8 +269,12 @@ const LoyaltyManagementPage = () => {
     ];
 
     const isProductLoyalty = selectedLoyaltyType === LOYALTY_TYPES.PRODUCT;
-    const formTitle = !formData ? "Manage Loyalty Programs" : `Add ${isProductLoyalty ? 'Product' : 'Point'} Loyalty Form`;
-    const formSubtitle = !formData ? "Manage your loyalty programs" : `Configure your ${isProductLoyalty ? 'product' : 'point'}-based loyalty program details`;
+    const formTitle = !formData
+        ? "Manage Loyalty Programs"
+        : `${editMode ? 'Edit' : 'Add'} ${isProductLoyalty ? 'Product' : 'Point'} Loyalty Form`;
+    const formSubtitle = !formData
+        ? "Manage your loyalty programs"
+        : `${editMode ? 'Update' : 'Configure'} your ${isProductLoyalty ? 'product' : 'point'}-based loyalty program details`;
 
     return (
         <main className="min-h-[78vh] flex flex-col">
@@ -206,7 +288,11 @@ const LoyaltyManagementPage = () => {
                     />
                 </div>
 
-                {!formData ? (
+                {isLoadingLoyalty && editMode ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="text-center">Loading loyalty program...</div>
+                    </div>
+                ) : !formData ? (
                     <div className="h-[calc(100vh-13rem)] overflow-y-auto bg-white border border-gray-200 rounded-3xl p-4 shadow-sm"
                         style={{ boxShadow: '0px 3.5px 5.5px rgba(0, 0, 0, 0.02)', background: '#FCFCFC' }}
                     >

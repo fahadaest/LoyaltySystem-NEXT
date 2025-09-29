@@ -76,7 +76,7 @@ const BannerPreview = ({
                                 lineHeight: '1.2',
                                 overflow: 'hidden',
                                 display: '-webkit-box',
-                                WebkitLineClamp: 2,  // Maximum 2 lines
+                                WebkitLineClamp: 2,
                                 WebkitBoxOrient: 'vertical',
                                 wordBreak: 'break-word',
                                 maxWidth: '100%'

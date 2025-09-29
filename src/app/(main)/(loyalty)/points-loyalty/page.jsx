@@ -70,8 +70,9 @@ const PointLoyalty = () => {
         console.log("View clicked for:", item.originalData);
     };
 
-    const handleEdit = (item) => {
-        console.log("Edit clicked for:", item.originalData);
+    const handleEdit = (program) => {
+        console.log("Edit point loyalty:", program.originalData);
+        router.push(`/manage-loyalty/points/${program.id}`);
     };
 
     const handleDuplicate = (item) => {

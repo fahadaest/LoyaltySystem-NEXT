@@ -75,7 +75,7 @@ const ProductLoyalty = () => {
 
     const handleEdit = (program) => {
         console.log("Edit product loyalty:", program.originalData);
-        // router.push(`/manage-loyalty/products/edit/${program.id}`);
+        router.push(`/manage-loyalty/product/${program.id}`);
     };
 
     const closeBannerModal = () => {
