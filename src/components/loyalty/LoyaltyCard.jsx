@@ -1,5 +1,4 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
 import Button from '@/components/buttons/Button';
 
 const LoyaltyCard = ({
@@ -18,7 +17,6 @@ const LoyaltyCard = ({
                 background: '#F2F2F2'
             }}
         >
-            {/* Icon Container */}
             <div
                 className="bg-white rounded-[18px] mb-3 flex items-center justify-center flex-shrink-0"
                 style={{
@@ -75,18 +73,18 @@ const LoyaltyCard = ({
                 <Button
                     text={buttonText}
                     onClick={onButtonClick}
-                    backgroundColor="#000000"
+                    backgroundColor="black"
                     textColor="#FFFFFF"
                     showIcon={true}
                     iconPosition="right"
-                    icon={<Plus className="w-2.5 h-2.5" />}
-                    className="w-full"
-                    style={{
-                        height: '32px',
-                        fontFamily: 'Poppins, sans-serif',
-                        fontSize: '10px',
-                        fontWeight: '600'
-                    }}
+                    icon="/img/general/plus_black.svg"
+                    fontSize='10px'
+                    iconWidth='22px'
+                    iconHeight='22px'
+                    iconImageWidth='15px'
+                    iconImageHeight='15px'
+                    className="w-full !justify-between"
+                    padding='0 5px 0px 15px'
                 />
             </div>
         </div>

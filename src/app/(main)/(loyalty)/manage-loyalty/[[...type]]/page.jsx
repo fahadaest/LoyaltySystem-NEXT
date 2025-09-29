@@ -179,7 +179,7 @@ const LoyaltyManagementPage = () => {
     const formSubtitle = !formData ? "Manage your loyalty programs" : `Configure your ${isProductLoyalty ? 'product' : 'point'}-based loyalty program details`;
 
     return (
-        <div className="w-full h-full flex flex-col">
+        <main className="min-h-[78vh] flex flex-col">
             <div className="w-full">
                 <div className="mb-6">
                     <ComponentHeader
@@ -191,7 +191,7 @@ const LoyaltyManagementPage = () => {
                 </div>
 
                 {!formData ? (
-                    <div className="bg-white border border-gray-200 rounded-[40px] p-6"
+                    <div className="h-[calc(100vh-13rem)] overflow-y-auto bg-white border border-gray-200 rounded-3xl p-4 shadow-sm"
                         style={{ boxShadow: '0px 3.5px 5.5px rgba(0, 0, 0, 0.02)', background: '#FCFCFC' }}
                     >
                         <div className="flex gap-6 justify-start">
@@ -229,7 +229,7 @@ const LoyaltyManagementPage = () => {
                     </div>
                 )}
             </div>
-        </div>
+        </main>
     );
 };
 

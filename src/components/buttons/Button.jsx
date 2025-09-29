@@ -7,6 +7,7 @@ const Button = ({
     textColor = '#FFFFFF',
     icon,
     showIcon = false,
+    iconColor = '#000000',
     iconPosition = 'right',
     disabled = false,
     height = '35px',
@@ -69,6 +70,7 @@ const Button = ({
         height: iconImageHeight,
         transform: `rotate(${baseRotation + (isHovered ? 360 : 0)}deg)`,
         transition: 'transform 0.5s ease-in-out',
+        filter: iconColor !== '#000000' ? `brightness(0) saturate(100%)` : 'none',
     };
 
     const iconElement = showIcon && icon && (
