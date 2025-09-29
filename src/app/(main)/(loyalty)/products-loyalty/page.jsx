@@ -8,6 +8,8 @@ import NoDataComponent from "@/components/ui/NoDataComponent";
 import DeleteConfirmationComponent from "@/components/ui/DeleteConfirmationModal";
 import { useGetAllLoyaltyProgramsQuery, useDeleteLoyaltyProgramMutation } from "@/store/slices/loyaltyApis";
 import { useGetAllProductSizesQuery } from "@/store/slices/productSizesApis";
+import Modal from "@/components/ui/Modal";
+import BannerPreview from "@/components/loyalty/BannerPreview";
 
 const ProductLoyalty = () => {
     const router = useRouter();
@@ -15,6 +17,8 @@ const ProductLoyalty = () => {
     const itemsPerPage = 12;
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [showBannerModal, setShowBannerModal] = useState(false);
+    const [selectedBanner, setSelectedBanner] = useState(null);
     const { data: productSizes = [] } = useGetAllProductSizesQuery();
 
     const {
@@ -58,12 +62,45 @@ const ProductLoyalty = () => {
     const paginatedData = transformedData.slice(startIndex, endIndex);
 
     const handleView = (program) => {
-        console.log("View product loyalty:", program.originalData);
+        setSelectedBanner(program.originalData);
+        setShowBannerModal(true);
     };
 
     const handleEdit = (program) => {
         console.log("Edit product loyalty:", program.originalData);
         // router.push(`/manage-loyalty/products/edit/${program.id}`);
+    };
+
+    const closeBannerModal = () => {
+        setShowBannerModal(false);
+        setSelectedBanner(null);
+    };
+
+    const handlePrint = () => {
+        // Create print-specific styles
+        const printStyles = `
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+    `;
+
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = printStyles;
+        document.head.appendChild(styleSheet);
+
+        window.print();
+
+        document.head.removeChild(styleSheet);
     };
 
     const handleCopy = (program) => {
@@ -270,6 +307,49 @@ const ProductLoyalty = () => {
                     </div>
                 )}
             </div>
+
+            {showBannerModal && selectedBanner && (
+                <Modal
+                    isOpen={showBannerModal}
+                    onClose={closeBannerModal}
+                    title="Banner Preview"
+                    maxWidth="350px"
+                    showCloseButton={true}
+                    footer={
+                        <div className="flex justify-center">
+                            <Button
+                                text="Print"
+                                onClick={handlePrint}
+                                backgroundColor="#000000"
+                                textColor="#FFFFFF"
+                                height="34px"
+                                fontSize="12px"
+                                padding="0 40px"
+                                borderRadius="81px"
+                                fontWeight="600"
+                            />
+                        </div>
+                    }
+                >
+                    <div className="flex justify-center print-area bg-pink-100 max-h-[60vh] overflow-auto">
+                        <div className="inline-block">
+                            <BannerPreview
+                                bannerTitle={selectedBanner.bannerTitle}
+                                titleColor={selectedBanner.bannerTitleColor}
+                                backgroundColor={selectedBanner.bannerBackgroundColor}
+                                backgroundImage={selectedBanner.bannerBackgroundImage}
+                                icon1={selectedBanner.bannerIcon1}
+                                icon2={selectedBanner.bannerIcon2}
+                                icon3={selectedBanner.bannerIcon3}
+                                text1={selectedBanner.bannerIconText1}
+                                text2={selectedBanner.bannerIconText2}
+                                text3={selectedBanner.bannerIconText3}
+                                showContainer={false}
+                            />
+                        </div>
+                    </div>
+                </Modal>
+            )}
 
             {/* Delete Confirmation Modal */}
             {showDeleteModal && (

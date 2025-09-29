@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { getImageUrl } from '@/utils/imageUtils';
 
 const BannerPreview = ({
     bannerTitle = '',
@@ -105,14 +106,14 @@ const BannerPreview = ({
             <div className="bg-gray-200 relative w-full" style={{ height: '42.3%' }}>
                 {backgroundImage ? (
                     <img
-                        src={backgroundImage}
+                        src={getImageUrl(backgroundImage)}
                         alt="Banner"
                         className="w-full h-full object-cover"
                     />
                 ) : (
                     <img
                         src="/img/loyalty/banner_placeholder.png"
-                        alt="QR Code"
+                        alt="Banner placeholder"
                         className="w-full h-full object-cover"
                     />
                 )}
@@ -130,7 +131,7 @@ const BannerPreview = ({
                         <div className="flex flex-col gap-1 items-start justify-center h-full w-full">
                             <div className="w-4 h-4 mb-1 flex items-center justify-center flex-shrink-0">
                                 {icon1 ? (
-                                    <img src={icon1} alt="QR Scan" className="w-full h-full object-contain" />
+                                    <img src={getImageUrl(icon1)} alt="QR Scan" className="w-full h-full object-contain" />
                                 ) : (
                                     <img
                                         src="/img/loyalty/banner_scan.svg"
@@ -157,7 +158,7 @@ const BannerPreview = ({
                         <div className="flex flex-col gap-1 items-start justify-center h-full w-full">
                             <div className="w-4 h-4 mb-1 flex items-center justify-center flex-shrink-0">
                                 {icon2 ? (
-                                    <img src={icon2} alt="Star" className="w-full h-full object-contain" />
+                                    <img src={getImageUrl(icon2)} alt="Star" className="w-full h-full object-contain" />
                                 ) : (
                                     <img
                                         src="/img/loyalty/banner_star.svg"
@@ -184,7 +185,7 @@ const BannerPreview = ({
                         <div className="flex flex-col gap-1 items-start justify-center h-full w-full">
                             <div className="w-4 h-4 mb-1 flex items-center justify-center flex-shrink-0">
                                 {icon3 ? (
-                                    <img src={icon3} alt="Coffee" className="w-full h-full object-contain" />
+                                    <img src={getImageUrl(icon3)} alt="Coffee" className="w-full h-full object-contain" />
                                 ) : (
                                     <img
                                         src="/img/loyalty/banner_promotion.svg"
@@ -242,7 +243,7 @@ const BannerPreview = ({
 
     // Return banner with container
     return (
-        <div className={`bg-white border border-gray-300 rounded-3xl shadow-lg flex items-center justify-center ${containerClassName}`}>
+        <div className={`bg-yellow-100 border border-gray-300 rounded-3xl shadow-lg flex items-center justify-center ${containerClassName}`}>
             <BannerContent />
         </div>
     );
