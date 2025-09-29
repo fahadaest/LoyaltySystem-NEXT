@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { getImageUrl } from '@/utils/imageUtils';
+import { QRCodeCanvas } from 'qrcode.react';
 
 const BannerPreview = ({
     bannerTitle = '',
@@ -21,7 +22,9 @@ const BannerPreview = ({
     defaultText2 = 'Download the Point Pass to your mobile',
     defaultText3 = 'Enter your promotion code',
     footerTitle = 'Powered by RewardHive www.codehive.com',
-    footerText = 'Compatible with iPhone and Android devices. Apple users will need to download Apple Wallet, and Android users will need the supporting app'
+    footerText = 'Compatible with iPhone and Android devices. Apple users will need to download Apple Wallet, and Android users will need the supporting app',
+    registrationUrl = null,
+    showQRCode = false
 }) => {
     const titleRef = useRef(null);
     const [fontSize, setFontSize] = useState('1.2rem');
@@ -90,12 +93,22 @@ const BannerPreview = ({
                             minWidth: '5.5rem',
                             minHeight: '5.5rem'
                         }}>
-                        <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                            <img
-                                src="/img/general/QR.png"
-                                alt="QR Code"
-                                className="w-full h-full object-contain"
-                            />
+                        <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center p-1">
+                            {showQRCode && registrationUrl ? (
+                                <QRCodeCanvas
+                                    value={registrationUrl}
+                                    size={72}
+                                    level="H"
+                                    includeMargin={false}
+                                    className="w-full h-full"
+                                />
+                            ) : (
+                                <img
+                                    src="/img/general/QR.png"
+                                    alt="QR Code"
+                                    className="w-full h-full object-contain"
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -243,7 +256,7 @@ const BannerPreview = ({
 
     // Return banner with container
     return (
-        <div className={`bg-yellow-100 border border-gray-300 rounded-3xl shadow-lg flex items-center justify-center ${containerClassName}`}>
+        <div className={`bg-white border border-gray-300 rounded-3xl shadow-lg flex items-center justify-center ${containerClassName}`}>
             <BannerContent />
         </div>
     );

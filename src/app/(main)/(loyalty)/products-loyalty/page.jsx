@@ -62,7 +62,14 @@ const ProductLoyalty = () => {
     const paginatedData = transformedData.slice(startIndex, endIndex);
 
     const handleView = (program) => {
-        setSelectedBanner(program.originalData);
+        const baseUrl = window.location.origin;
+        const registrationUrl = `${baseUrl}/register-customer?product&${program.id}&${program.originalData.adminId}`;
+
+        setSelectedBanner({
+            ...program.originalData,
+            registrationUrl: registrationUrl,
+            showQRCode: true
+        });
         setShowBannerModal(true);
     };
 
@@ -77,19 +84,42 @@ const ProductLoyalty = () => {
     };
 
     const handlePrint = () => {
-        // Create print-specific styles
         const printStyles = `
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            
             body * {
                 visibility: hidden;
             }
-            .print-area, .print-area * {
+            
+            .print-area,
+            .print-area * {
                 visibility: visible;
             }
+            
             .print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
+                position: fixed;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: auto !important;
+                height: auto !important;
+                max-width: none !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+            
+            .print-area > div {
+                display: inline-block !important;
             }
         }
     `;
@@ -98,9 +128,12 @@ const ProductLoyalty = () => {
         styleSheet.innerText = printStyles;
         document.head.appendChild(styleSheet);
 
-        window.print();
-
-        document.head.removeChild(styleSheet);
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+                document.head.removeChild(styleSheet);
+            }, 100);
+        }, 250);
     };
 
     const handleCopy = (program) => {
@@ -331,7 +364,7 @@ const ProductLoyalty = () => {
                         </div>
                     }
                 >
-                    <div className="flex justify-center print-area bg-pink-100 max-h-[60vh] overflow-auto">
+                    <div className="flex justify-center print-area max-h-[60vh] overflow-auto">
                         <div className="inline-block">
                             <BannerPreview
                                 bannerTitle={selectedBanner.bannerTitle}
@@ -344,6 +377,8 @@ const ProductLoyalty = () => {
                                 text1={selectedBanner.bannerIconText1}
                                 text2={selectedBanner.bannerIconText2}
                                 text3={selectedBanner.bannerIconText3}
+                                registrationUrl={selectedBanner.registrationUrl}
+                                showQRCode={selectedBanner.showQRCode}
                                 showContainer={false}
                             />
                         </div>
