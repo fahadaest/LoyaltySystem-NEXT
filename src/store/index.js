@@ -13,6 +13,7 @@ import { permissionsApis } from './slices/permissionsApis';
 import { customerApis } from './slices/customerApis';
 import { adminSettingsApis } from './slices/adminSettingsApis';
 import { loyaltyManagementApis } from './slices/loyaltyManagementApis';
+import { dashboardApis } from './slices/dashboardApis';
 import authSlice from './slices/authSlice';
 import alertSlice from './slices/alertSlice';
 
@@ -33,6 +34,7 @@ export const store = configureStore({
         [customerApis.reducerPath]: customerApis.reducer,
         [adminSettingsApis.reducerPath]: adminSettingsApis.reducer,
         [loyaltyManagementApis.reducerPath]: loyaltyManagementApis.reducer,
+        [dashboardApis.reducerPath]: dashboardApis.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -49,6 +51,7 @@ export const store = configureStore({
             customerApis.middleware,
             adminSettingsApis.middleware,
             loyaltyManagementApis.middleware,
+            dashboardApis.middleware,
         ),
 });
 
