@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCreateOrUpdateCustomerMutation } from "@/store/slices/customerApis";
 import InputField from "@/components/input-fields/InputField";
 import PhoneNumberField from "@/components/input-fields/PhoneNumberField";
@@ -9,8 +9,7 @@ import DatePickerField from "@/components/input-fields/DatePickerField";
 import DropdownField from "@/components/input-fields/Dropdown";
 
 const RegisterCustomer = () => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+    const router = useRouter()
 
     // Redux RTK Query mutation hook
     const [createOrUpdateCustomer, { isLoading, error }] = useCreateOrUpdateCustomerMutation();
