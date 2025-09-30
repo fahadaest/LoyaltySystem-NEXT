@@ -18,6 +18,14 @@ const Sidebar = () => {
         general: [{ name: "Dashboard", svgSrc: "/img/sidebar/dashboard_light.svg", svgSrcDark: "/img/sidebar/dashboard_dark.svg", href: "/dashboard" }],
         admin: [{ name: "Admin", svgSrc: "/img/sidebar/dashboard_light.svg", svgSrcDark: "/img/sidebar/dashboard_dark.svg", href: "/admins" }],
         superadmin: [{ name: "Manage Subscription", svgSrc: "/img/sidebar/settings_light.svg", svgSrcDark: "/img/sidebar/settings_dark.svg", href: "/subscriptions" }],
+        salesperson: [
+            {
+                name: "Scan Card",
+                svgSrc: "/img/sidebar/scan_white.svg",
+                svgSrcDark: "/img/sidebar/scan_black.svg",
+                href: "/sales-portal"
+            }
+        ],
         productLoyalties: [
             { name: "Products", svgSrc: "/img/sidebar/product_light.svg", svgSrcDark: "/img/sidebar/product_dark.svg", href: "/products" },
             {
@@ -49,8 +57,9 @@ const Sidebar = () => {
     const isSubmenuActive = (subItem) => pathname === subItem.href;
 
     const getAllItems = () => [
-        ...menuItems.general,
+        ...(userRole === 'salesperson' ? [] : menuItems.general),
         ...(userRole === 'superadmin' ? menuItems.admin : []),
+        ...(userRole === 'salesperson' ? menuItems.salesperson : []),
         ...menuItems.productLoyalties,
         ...menuItems.management,
         ...menuItems.settings
@@ -174,10 +183,13 @@ const Sidebar = () => {
                 </div>
                 <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
 
-                {renderSection("General", menuItems.general)}
-
-                {userRole === 'superadmin' ? (
+                {userRole === 'salesperson' ? (
                     <>
+                        {renderSection("Actions", menuItems.salesperson)}
+                    </>
+                ) : userRole === 'superadmin' ? (
+                    <>
+                        {renderSection("General", menuItems.general)}
                         <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
                         {renderSection("Admin", menuItems.admin)}
                         <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
@@ -185,6 +197,7 @@ const Sidebar = () => {
                     </>
                 ) : (
                     <>
+                        {renderSection("General", menuItems.general)}
                         <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>
                         {renderSection("Product & Loyalties", menuItems.productLoyalties)}
                         <div className="mb-3 w-full border-t-[0.5px] border-[#636363]"></div>

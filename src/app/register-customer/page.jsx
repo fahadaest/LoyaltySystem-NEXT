@@ -68,6 +68,40 @@ const RegisterCustomer = () => {
         }
     }, [urlParams, type, adminId, loyaltyId]);
 
+    // Device detection function
+    const detectDevice = () => {
+        // const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+        // // iOS detection
+        // if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        //     return 'ios';
+        // }
+
+        // // Android detection
+        // if (/android/i.test(userAgent)) {
+        //     return 'android';
+        // }
+
+        // return 'other';
+
+        return 'ios';
+    };
+
+    // Download Apple Wallet pass
+    const downloadAppleWalletPass = async (downloadUrl) => {
+        console.log("downloading pass")
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+            const fullUrl = `${apiUrl}${downloadUrl}`;
+
+            // Open the download URL directly - Safari will handle the .pkpass file
+            window.location.href = fullUrl;
+
+        } catch (error) {
+            console.error('Error downloading Apple Wallet pass:', error);
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -131,6 +165,18 @@ const RegisterCustomer = () => {
 
             const result = await createOrUpdateCustomer(customerData).unwrap();
 
+            // Check device type and handle wallet download
+            const deviceType = detectDevice();
+
+            if (deviceType === 'ios' && result?.downloadUrl) {
+                // For iOS devices, download Apple Wallet pass
+                await downloadAppleWalletPass(result.downloadUrl);
+            } else if (deviceType === 'android') {
+                // For Android devices, you might want to show a different message or action
+            } else {
+                // For other devices
+            }
+
         } catch (err) {
             // Handle API errors
             if (err?.data?.message) {
@@ -139,12 +185,9 @@ const RegisterCustomer = () => {
                 } else if (err.data.message.includes('phone')) {
                     setErrors({ phoneNumber: 'This phone number is already registered' });
                 } else {
-                    alert(`Registration failed: ${err.data.message}`);
                 }
             } else if (err?.status) {
-                alert(`Registration failed: Server error (${err.status})`);
             } else {
-                alert('Registration failed. Please check your connection and try again.');
             }
         }
     };

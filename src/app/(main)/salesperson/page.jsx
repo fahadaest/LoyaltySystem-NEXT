@@ -46,15 +46,9 @@ const SalesPersonPage = () => {
 
     const tableHeaders = [
         {
-            label: "First Name",
-            key: "firstName",
-            className: "flex-[1.2]",
-            align: "left"
-        },
-        {
-            label: "Last Name",
-            key: "lastName",
-            className: "flex-[1.2]",
+            label: "Name",
+            key: "name",
+            className: "flex-[2]",
             align: "left"
         },
         {
@@ -132,7 +126,13 @@ const SalesPersonPage = () => {
     ];
 
     const handleEdit = (item) => {
-        setSalespersonToEdit(item);
+        const editData = {
+            ...item,
+            firstName: item.name.split(' ')[0] || '',
+            lastName: item.name.split(' ').slice(1).join(' ') || '',
+            permissions: item.permissions || []
+        };
+        setSalespersonToEdit(editData);
         setIsEditModalOpen(true);
     };
 
@@ -370,7 +370,7 @@ const SalesPersonPage = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                         <DeleteConfirmationComponent
-                            itemName={`${salespersonToDelete.firstName} ${salespersonToDelete.lastName}`}
+                            itemName={salespersonToDelete.name}
                             onConfirm={handleConfirmDelete}
                             onCancel={handleCloseDeleteModal}
                             isLoading={isDeleting}

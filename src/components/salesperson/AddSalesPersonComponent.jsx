@@ -11,11 +11,10 @@ const AddSalesPersonComponent = ({
     permissions = []
 }) => {
     const [formData, setFormData] = useState({
-        firstName: initialData?.firstName || '',
-        lastName: initialData?.lastName || '',
+        name: initialData?.name || '',
         email: initialData?.email || '',
         password: '',
-        confirmPassword: '', // Separate field for password confirmation
+        confirmPassword: '',
         permissionIds: initialData?.permissions?.map(p => p.id) || []
     });
 
@@ -24,8 +23,7 @@ const AddSalesPersonComponent = ({
     useEffect(() => {
         if (editMode && initialData) {
             setFormData({
-                firstName: initialData.firstName || '',
-                lastName: initialData.lastName || '',
+                name: initialData.name || '',
                 email: initialData.email || '',
                 password: '',
                 confirmPassword: '',
@@ -33,6 +31,7 @@ const AddSalesPersonComponent = ({
             });
         }
     }, [editMode, initialData]);
+
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -46,11 +45,8 @@ const AddSalesPersonComponent = ({
         const newErrors = {};
 
         // Required field validation
-        if (!formData.firstName.trim()) {
-            newErrors.firstName = 'First name is required';
-        }
-        if (!formData.lastName.trim()) {
-            newErrors.lastName = 'Last name is required';
+        if (!formData.name.trim()) {
+            newErrors.name = 'Name is required';
         }
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
@@ -81,7 +77,7 @@ const AddSalesPersonComponent = ({
 
         if (onSubmit) {
             const payload = {
-                name: `${formData.firstName} ${formData.lastName}`.trim(),
+                name: formData.name.trim(),
                 email: formData.email,
                 permissionIds: formData.permissionIds
             };
@@ -142,12 +138,12 @@ const AddSalesPersonComponent = ({
                         <div className="grid grid-cols-2 gap-6">
                             <div>
                                 <InputField
-                                    label="First Name"
-                                    name="firstName"
+                                    label="Name"
+                                    name="name"
                                     type="text"
-                                    placeholder="Enter first name"
-                                    value={formData.firstName}
-                                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                                    placeholder="Enter name"
+                                    value={formData.name}
+                                    onChange={(e) => handleInputChange('name', e.target.value)}
                                     required={true}
                                     labelSize="0.6rem"
                                     placeholderSize="0.6rem"
@@ -158,42 +154,12 @@ const AddSalesPersonComponent = ({
                                         input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
                                     }}
                                 />
-                                {errors.firstName && (
-                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.firstName}</span>
+                                {errors.name && (
+                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.name}</span>
                                 )}
                             </div>
 
-                            <div>
-                                <InputField
-                                    label="Last Name"
-                                    name="lastName"
-                                    type="text"
-                                    placeholder="Enter last name"
-                                    value={formData.lastName}
-                                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                    required={true}
-                                    labelSize="0.6rem"
-                                    placeholderSize="0.6rem"
-                                    fieldHeight="8px"
-                                    customStyles={{
-                                        container: "w-full",
-                                        label: "block text-[12px] font-medium text-black mb-3 font-['Poppins']",
-                                        input: "w-full h-[42px] px-6 bg-white border border-[#E2E2E2] rounded-[36px] text-[12px] placeholder-[#636363] text-black font-['Poppins'] focus:outline-none focus:border-gray-400"
-                                    }}
-                                />
-                                {errors.lastName && (
-                                    <span className="text-red-500 text-[10px] mt-1 block">{errors.lastName}</span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Account Information Section */}
-                    <div className="mb-3">
-                        <h3 className="text-[0.7rem] font-semibold text-black mb-2">
-                            Account Information
-                        </h3>
-                        <div className="grid grid-cols-1 gap-6 mb-4">
                             <div>
                                 <InputField
                                     label="Email Address"
@@ -217,6 +183,13 @@ const AddSalesPersonComponent = ({
                                 )}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Account Information Section */}
+                    <div className="mb-3">
+                        <h3 className="text-[0.7rem] font-semibold text-black mb-2">
+                            Account Information
+                        </h3>
 
                         <div className="grid grid-cols-2 gap-6">
                             <div>
