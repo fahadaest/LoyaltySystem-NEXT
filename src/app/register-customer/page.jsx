@@ -70,29 +70,36 @@ const RegisterCustomer = () => {
 
     // Device detection function
     const detectDevice = () => {
-        // const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
-        // // iOS detection
-        // if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-        //     return 'ios';
-        // }
+        // iOS detection (iPhone, iPad, iPod)
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            return 'ios';
+        }
 
-        // // Android detection
-        // if (/android/i.test(userAgent)) {
-        //     return 'android';
-        // }
+        // macOS detection (Safari on Mac)
+        if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(userAgent)) {
+            return 'mac';
+        }
 
-        // return 'other';
+        // Android detection
+        if (/android/i.test(userAgent)) {
+            return 'android';
+        }
 
-        return 'ios';
+        return 'other';
     };
 
     // Download Apple Wallet pass
     const downloadAppleWalletPass = async (downloadUrl) => {
-        console.log("downloading pass")
+        console.log("Downloading Apple Wallet pass...");
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-            const fullUrl = `${apiUrl}${downloadUrl}`;
+            // Remove /api from the base URL since downloadUrl already includes it
+            const baseUrl = apiUrl.replace(/\/api$/, '');
+            const fullUrl = `${baseUrl}${downloadUrl}`;
+
+            console.log("Download URL:", fullUrl);
 
             // Open the download URL directly - Safari will handle the .pkpass file
             window.location.href = fullUrl;
@@ -168,13 +175,23 @@ const RegisterCustomer = () => {
             // Check device type and handle wallet download
             const deviceType = detectDevice();
 
-            if (deviceType === 'ios' && result?.downloadUrl) {
-                // For iOS devices, download Apple Wallet pass
-                await downloadAppleWalletPass(result.downloadUrl);
-            } else if (deviceType === 'android') {
-                // For Android devices, you might want to show a different message or action
-            } else {
-                // For other devices
+            console.log("Device type detected:", deviceType);
+            console.log("API Response:", result);
+
+            // Handle Apple Wallet for iOS and Mac
+            if ((deviceType === 'ios' || deviceType === 'mac') && result?.appleWalletPass?.available && result?.appleWalletPass?.downloadUrl) {
+                await downloadAppleWalletPass(result.appleWalletPass.downloadUrl);
+            }
+            // Handle Android devices
+            else if (deviceType === 'android' && result?.googleWalletPass?.available) {
+                // For Android devices, handle Google Wallet pass if needed
+                console.log("Google Wallet pass available for Android");
+                // Implement Google Wallet download logic here if needed
+            }
+            // For other devices or if passes are not available
+            else {
+                console.log("No wallet pass available for this device");
+                // You might want to show a success message or redirect
             }
 
         } catch (err) {
@@ -185,9 +202,12 @@ const RegisterCustomer = () => {
                 } else if (err.data.message.includes('phone')) {
                     setErrors({ phoneNumber: 'This phone number is already registered' });
                 } else {
+                    console.error("API Error:", err.data.message);
                 }
             } else if (err?.status) {
+                console.error("API Status Error:", err.status);
             } else {
+                console.error("Unknown Error:", err);
             }
         }
     };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DropdownButton from '../input-fields/DropDownButton';
 import BarChart from '../ui/BarChart';
 import { ShoppingBag, Star } from 'lucide-react';
+import Button from '../buttons/Button';
 
 const RewardAnalytics = () => {
     // Sample data for the bar chart representing 2 weeks of daily data
@@ -157,42 +158,63 @@ const RewardAnalytics = () => {
                     </div>
 
                     {/* Filter Controls Container */}
-                    <div
-                        className="flex items-center gap-2 px-4 py-2 rounded-full"
-                        style={{
-                            background: '#EDEDED',
-                            borderRadius: '68px',
-                            height: '63px'
-                        }}
-                    >
-                        <span
-                            className="text-gray-600 mr-2"
-                            style={{
-                                fontFamily: 'Poppins, sans-serif',
-                                fontSize: '12px',
-                                fontWeight: '600',
-                                color: '#626262'
-                            }}
-                        >
-                            Period
-                        </span>
-
+                    <div className="flex gap-1.5 bg-[#EDEDED] rounded-[2rem] px-3 py-2">
                         <DropdownButton
-                            text="This Month"
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
+                            text="View"
                             backgroundColor="#FFFFFF"
                             textColor="black"
                             circleColor="black"
                             iconColor="white"
-                            onClick={() => handleDropdownClick('Period')}
+                            onClick={() => handleDropdownClick('View')}
                         />
 
                         <DropdownButton
-                            text="Refresh"
+                            text="Filter"
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
+                            backgroundColor="#FFFFFF"
+                            textColor="black"
+                            circleColor="black"
+                            iconColor="white"
+                            onClick={() => handleDropdownClick('Filter')}
+                        />
+
+                        <DropdownButton
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
+                            text="Week"
                             backgroundColor="black"
                             textColor="white"
                             circleColor="white"
                             iconColor="black"
-                            onClick={handleRefreshClick}
+                            onClick={() => handleDropdownClick('Week')}
+                        />
+
+                        <Button
+                            text="Export"
+                            fontSize='10px'
+                            textColor="black"
+                            backgroundColor="#FFFFFF"
+                            height="auto"
+                            border="1px solid black"
+                            onClick={() => handleDropdownClick('Week')}
                         />
                     </div>
                 </div>

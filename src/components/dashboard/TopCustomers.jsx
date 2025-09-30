@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DropdownButton from '../input-fields/DropDownButton';
 import Table from '../ui/Table';
+import Button from '../buttons/Button';
 
 const TopCustomers = () => {
     // Sample customer data
@@ -185,41 +186,63 @@ const TopCustomers = () => {
                     </div>
 
                     {/* Filter Controls */}
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex gap-1.5 bg-[#EDEDED] rounded-[2rem] px-3 py-2">
                         <DropdownButton
-                            text="This Month"
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
+                            text="View"
                             backgroundColor="#FFFFFF"
                             textColor="black"
                             circleColor="black"
                             iconColor="white"
-                            onClick={() => handleDropdownClick('Period')}
+                            onClick={() => handleDropdownClick('View')}
                         />
 
                         <DropdownButton
-                            text="All Customers"
+                            text="Filter"
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
                             backgroundColor="#FFFFFF"
                             textColor="black"
                             circleColor="black"
                             iconColor="white"
-                            onClick={() => handleDropdownClick('Customer Type')}
+                            onClick={() => handleDropdownClick('Filter')}
                         />
 
                         <DropdownButton
-                            text="Top 10"
-                            backgroundColor="#FFFFFF"
-                            textColor="black"
-                            circleColor="black"
-                            iconColor="white"
-                            onClick={() => handleDropdownClick('Limit')}
-                        />
-
-                        <DropdownButton
-                            text="Refresh"
+                            fontSize="10px"
+                            iconWidth='12px'
+                            iconHeight='12px'
+                            circleWidth='16px'
+                            circleHeight='16px'
+                            paddingLeft='10px'
+                            paddingRight='5px'
+                            text="Week"
                             backgroundColor="black"
                             textColor="white"
                             circleColor="white"
                             iconColor="black"
-                            onClick={handleRefreshClick}
+                            onClick={() => handleDropdownClick('Week')}
+                        />
+
+                        <Button
+                            text="Export"
+                            fontSize='10px'
+                            textColor="black"
+                            backgroundColor="#FFFFFF"
+                            height="auto"
+                            border="1px solid black"
+                            onClick={() => handleDropdownClick('Week')}
                         />
                     </div>
                 </div>
